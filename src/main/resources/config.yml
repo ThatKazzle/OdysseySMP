@@ -1,0 +1,59 @@
+players:
+  ItsKazzle:
+    mode: 1
+defaults:
+  very_very_frightening: "adventure/very_very_frightening"
+  complete_catalogue: "husbandry/complete_catalogue"
+  all_effects: "nether/all_effects"
+  kill_all_mobs: "adventure/kill_all_mobs"
+  sniper_duel: "adventure/sniper_duel"
+  uneasy_alliance: "nether/uneasy_alliance"
+  ride_strider_in_overworld_lava: "nether/ride_strider_in_overworld_lava"
+descriptions:
+  very_very_frightening:
+    - " "
+    - "§bAbilities:"
+    - " "
+    - "1. §lDash ability§r§b: Dash every 10 seconds."
+    - "2. §lDisable ability§r§b: Every 30s, disable a player's"
+    - "   item for 3 seconds by shift-right clicking on a them."
+  complete_catalogue:
+    - " "
+    - "§bPassives:"
+    - "1. Luck I"
+    - "2. No fall damage"
+    - "3. 2 permanent hearts (until you lose the power)"
+  all_effects:
+    - " "
+    - "§bAbilities:"
+    - "1. §lPoison-Tipped Sword§r§b: A 1 in 20 chance to effect a player with a negative effect,"
+    - "either Blindness, Wither, Weakness, or Slowness I."
+    - "2. §lKeep my abilities!§r§b: allows you to keep your abilities after death."
+  how_did_we_get_here?:
+    - " "
+    - "§bAbilities:"
+    - "1. §lPoison-Tipped Sword§r§b: A 1 in 20 chance to effect a player with a negative effect,"
+    - "either Blindness, Wither, Weakness, or Slowness I."
+    - "2. §lKeep my abilities!§r§b: allows you to keep your abilities after death."
+  kill_all_mobs:
+    - " "
+    - "§bAbilities:"
+    - "1. §lDomain Expansion (ig)§r§b: A 14 block wide ice orb surrounds you for 5 seconds."
+  sniper_duel:
+    - " "
+    - "§bAbilities:"
+    - "1. §lSniper Vision§r§b: your vision allows you to apply glowing to anyone within"
+    - "a 25 block radius."
+  uneasy_alliance:
+    - " "
+    - "§bAbilities:"
+    - "1. §lInvisibility§r§b: Make yourself COMPLETELY invisible for 30 seconds."
+    - "   - 2 minute cooldown."
+  ride_strider_in_overworld_lava:
+    - " "
+    - "§bPassives:"
+    - "1. §lFire Resistance§r§b: Gain permanent Fire Resistance."
+    - "2. §lUn-salted wounds§r§b: You gain regen 1 while swimming in lava."
+    - ""
+    - "§bAbilities:"
+    - "1. §lStrider Copycat§r§b: You are able to walk on lava for 20 seconds."

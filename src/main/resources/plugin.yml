@@ -1,0 +1,25 @@
+name: SimpleS5
+version: '${project.version}'
+main: kazzleinc.simples5.SimpleS5
+api-version: '1.20'
+
+softdepend: [ ProtocolLib ]
+
+commands:
+  reloadconfig:
+    description: "Reloads the server config.yml."
+    usage: "/reloadconfig"
+  odyssey:
+    description: "All things odyssey-plugin related."
+    usage: "/odyssey <withdraw|powers>"
+    aliases:
+      - "od"
+  power1:
+    usage: "sigma"
+  power2:
+    usage: "sigma"
+  resetcooldowns:
+    usage: "/resetcooldowns"
+    description: "resets the cooldowns of your enabled powers."
+    aliases:
+      - "rc"

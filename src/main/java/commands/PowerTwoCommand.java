@@ -1,6 +1,8 @@
 package commands;
 
 import kazzleinc.simples5.SimpleS5;
+import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -10,12 +12,12 @@ import org.jetbrains.annotations.NotNull;
 import java.util.ArrayList;
 import java.util.List;
 
-public class powerOneCommand implements CommandExecutor {
+public class PowerTwoCommand implements CommandExecutor {
     SimpleS5 plugin;
 
     public List<String> enabledKeys = new ArrayList<>();
 
-    public powerOneCommand(SimpleS5 plugin) {
+    public PowerTwoCommand(SimpleS5 plugin) {
         this.plugin = plugin;
     }
 
@@ -24,43 +26,57 @@ public class powerOneCommand implements CommandExecutor {
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
             String playerName = player.getName();
-
-            if (!enabledKeys.isEmpty()) {
-                enabledKeys.clear();
-            }
-
-            for (String keys : this.plugin.getConfig().getConfigurationSection("players." + player.getName() + ".powers").getKeys(false)) {
-                String key = keys;
-                Boolean value = this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + key);
-
-                if (value) {
-                    enabledKeys.add(key);
+            if (this.plugin.getConfig().getConfigurationSection("players." + player.getName() + ".powers") != null) {
+                if (!enabledKeys.isEmpty()) {
+                    enabledKeys.clear();
                 }
+
+                for (String keys : this.plugin.getConfig().getConfigurationSection("players." + player.getName() + ".powers").getKeys(false)) {
+                    String key = keys;
+                    Boolean value = this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + key);
+
+                    if (value) {
+                        enabledKeys.add(key);
+                    }
+                }
+
+                player.sendMessage(String.valueOf(this.plugin.getConfig().getInt("players." + playerName + ".mode")));
+
+                if (!enabledKeys.isEmpty()) {
+                    switch (enabledKeys.get(this.plugin.getConfig().getInt("players." + playerName + ".mode"))) {
+                        case "adventure/very_very_frightening":
+                            plugin.vvfClass.action(playerName);
+                            break;
+                        case "nether/all_effects":
+                            plugin.hdwghClass.action(playerName);
+                            break;
+                        case "husbandry/complete_catalogue":
+                            plugin.catalogueClass.action(playerName);
+                            break;
+                        case "adventure/kill_all_mobs":
+                            plugin.monstersClass.action(playerName);
+                            break;
+                        case "adventure/sniper_duel":
+                            plugin.sniperDuelClass.action(playerName);
+                        case "nether/uneasy_alliance":
+                            plugin.uneasyAllianceClass.action(playerName);
+                            break;
+                    }
+
+                    this.plugin.updateCooldownDisplay();
+                } else {
+                    player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.1f);
+                    player.sendActionBar(ChatColor.RED + "You don't have any powers.");
+                }
+
+                return true;
+            } else {
+                return false;
             }
 
-            switch (enabledKeys.get(this.plugin.getConfig().getInt("players." + playerName + ".mode") - 1)) {
-                case "adventure/very_very_frightening":
-                    plugin.vvfClass.action(playerName);
-                    break;
-                case "nether/all_effects":
-                    plugin.hdwghClass.action(playerName);
-                    break;
-                case "husbandry/complete_catalogue":
-                    plugin.catalogueClass.action(playerName);
-                    break;
-                case "adventure/kill_all_mobs":
-                    plugin.monstersClass.action(playerName);
-                    break;
-                case "adventure/sniper_duel":
-                    plugin.sniperDuelClass.action(playerName);
-                case "nether/uneasy_alliance":
-                    plugin.uneasyAllianceClass.action(playerName);
-                    break;
-            }
-
-            return true;
         } else {
             return false;
         }
+
     }
 }
