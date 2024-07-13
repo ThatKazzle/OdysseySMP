@@ -485,7 +485,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
                             break;
                         case "nether/all_effects":
-                            cooldownMessage = ChatColor.GOLD + "(This ability works in any mode)";
+                            cooldownMessage = hdwghClass.getCooldownString(player, hdwghClass.rightClickedCooldowns, "Item Disable: ");
                             break;
                         case "husbandry/complete_catalogue":
                             cooldownMessage = ChatColor.GOLD + "(This ability works in any mode)";

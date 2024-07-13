@@ -13,13 +13,13 @@ PowerClasses\MonstersHunted.class
 PowerClasses\FeelsLikeHome.class
 PowerClasses\ParentPowerClass.class
 kazzleinc\simples5\modPacketListener.class
+PowerClasses\HowDidWeGetHere$1.class
 commands\allPowersCommand.class
 PowerClasses\UneasyAlliance.class
 PowerClasses\Beaconator.class
 commands\odysseyCommands.class
 PowerClasses\HowDidWeGetHere.class
 PowerClasses\UneasyAlliance$1.class
-PowerClasses\DoubleJumpListener$1.class
 PowerClasses\MonstersHunted$2.class
 kazzleinc\simples5\RandomUtils.class
 commands\resetCooldownCommand.class
