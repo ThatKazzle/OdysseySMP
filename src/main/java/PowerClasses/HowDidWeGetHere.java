@@ -3,7 +3,9 @@ package PowerClasses;
 import kazzleinc.simples5.RandomUtils;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.ChatColor;
+import org.bukkit.Location;
 import org.bukkit.Sound;
+import org.bukkit.World;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -42,6 +44,7 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
 
                     hitPlayer.addPotionEffect(new PotionEffect(potion, 20 * 10, 1, false, true));
 
+                    strikeLightningEffect(hitPlayer, hitPlayer.getLocation());
 
                     hitPlayer.playSound(hitPlayer, Sound.BLOCK_ANVIL_BREAK, 1.f, 1.f);
                     hitPlayer.sendMessage(ChatColor.AQUA + damager.getName() + ChatColor.GREEN + " has given you " + ChatColor.YELLOW + plugin.titleCaseString(potion.getName().replace("_", " ").toLowerCase()) + ChatColor.GREEN + "!");
@@ -60,6 +63,11 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
             }
 
         }
+    }
+
+    public void strikeLightningEffect(Player player, Location location) {
+        World world = player.getWorld();
+        world.strikeLightningEffect(location);
     }
 
     public static PotionEffectType getRandomElement(List<PotionEffectType> list) {

@@ -452,9 +452,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                 ArrayList<String> powerList = getPlayerPowersList(player);
 
-                int playerMode = 0;
-
-                playerMode = (Integer) getConfig().get("players." + player.getName() + ".mode", -1);
+                int playerMode = (Integer) getConfig().get("players." + player.getName() + ".mode", -1);
 
                 if (powerList.get(playerMode) != null && playerMode != -1) {
                     switch (powerList.get(playerMode)) {
@@ -462,8 +460,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
                             break;
                         case "nether/all_effects":
+                            cooldownMessage = ChatColor.GOLD + "(This ability works in any mode)";
                             break;
                         case "husbandry/complete_catalogue":
+                            cooldownMessage = ChatColor.GOLD + "(This ability works in any mode)";
                             break;
                         case "adventure/kill_all_mobs":
                             cooldownMessage = monstersClass.getCooldownString(player, monstersClass.sphereCooldowns, "Domain Expansion: ");
@@ -485,8 +485,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
                             break;
                         case "nether/all_effects":
+                            cooldownMessage = ChatColor.GOLD + "(This ability works in any mode)";
                             break;
                         case "husbandry/complete_catalogue":
+                            cooldownMessage = ChatColor.GOLD + "(This ability works in any mode)";
                             break;
                         case "adventure/kill_all_mobs":
                             cooldownMessage = monstersClass.getCooldownString(player, monstersClass.sphereCooldowns, "Domain Expansion: ");

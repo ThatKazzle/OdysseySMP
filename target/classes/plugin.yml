@@ -1,5 +1,5 @@
 name: SimpleS5
-version: '1.2.2.1'
+version: '1.2.4'
 main: kazzleinc.simples5.SimpleS5
 api-version: '1.20'
 

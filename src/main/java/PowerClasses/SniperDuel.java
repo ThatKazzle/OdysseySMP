@@ -1,12 +1,18 @@
 package PowerClasses;
 
 import kazzleinc.simples5.SimpleS5;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityShootBowEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -73,6 +79,59 @@ public class SniperDuel extends ParentPowerClass implements Listener {
                 displayableList.setLength(0);
             }
         }
+    }
+
+    @EventHandler
+    public void onShootBowEvent(EntityShootBowEvent event) {
+        if (!(event.getEntity() instanceof Player)) {
+            return;
+        }
+
+        Player shooter = (Player) event.getEntity();
+        if (!(event.getProjectile() instanceof Arrow)) {
+            return;
+        }
+
+        Arrow arrow = (Arrow) event.getProjectile();
+        Player target = getNearestPlayer(shooter);
+
+        if (target != null) {
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    if (arrow.isDead() || target.isDead() || !arrow.isValid() || !target.isValid()) {
+                        this.cancel();
+                        return;
+                    }
+
+                    Vector toTarget = target.getLocation().toVector().subtract(arrow.getLocation().toVector());
+                    Vector direction = arrow.getVelocity().clone().normalize();
+
+                    Vector newDirection = direction.multiply(0.9).add(toTarget.normalize().multiply(0.1)).normalize();
+
+                    arrow.setVelocity(newDirection.multiply(arrow.getVelocity().length()));
+                }
+            }.runTaskTimer(plugin, 0L, 1L);
+        }
+    }
+
+    private Player getNearestPlayer(Player shooter) {
+        Player nearestPlayer = null;
+        double nearestDistanceSquared = Double.MAX_VALUE;
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.equals(shooter) || !player.getWorld().equals(shooter.getWorld())) {
+                continue;
+            }
+
+            double distanceSquared = player.getLocation().distanceSquared(shooter.getLocation());
+            if (distanceSquared < nearestDistanceSquared) {
+                nearestDistanceSquared = distanceSquared;
+                nearestPlayer = player;
+            }
+        }
+
+        return nearestPlayer;
     }
 
     private void applyEffects(Player player) {
