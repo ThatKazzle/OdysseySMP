@@ -1,5 +1,5 @@
 # SimpleS5
-The new plugin for the 5th season of Simple SMP.
+The new plugin for the 1st season of Odyssey SMP.
 
 
 very sigma.
