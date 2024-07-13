@@ -96,7 +96,7 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
         if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "adventure/very_very_frightening")) {
             if (isOnCooldown(player.getUniqueId(), zeusCooldowns)) {
                 cantUsePowerMessage(player, zeusCooldowns, "Zeus Bolt");
-            } else if (player.isSneaking() && !isOnCooldown(player.getUniqueId(), zeusCooldowns)) {
+            } else if (!isOnCooldown(player.getUniqueId(), zeusCooldowns)) {
                 strikeLightningEffect(player, player.getLocation());
 
                 player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 20 * 10, 1, false, false, true));
