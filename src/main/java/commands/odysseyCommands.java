@@ -31,6 +31,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     String usageString = ChatColor.RED + "usage: /odyssey <withdraw|powers>";
 
     private static final List<String> AUTOFILL_ARGS_1 = Arrays.asList("withdraw", "powers");
+    private static final List<String> AUTOFILL_ARGS_2 = new ArrayList<>();
 
     public odysseyCommands(SimpleS5 plugin) {
         this.plugin = plugin;
@@ -45,14 +46,16 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
             if (args.length == 1 && args[0].equals("withdraw")) {
                 openGUI(player);
 
-//                Just to make sure I remember how to loop through a section
+            } else if (args.length == 2 && args[0].equals("powers")) {
+                for (String keys : this.plugin.getConfig().getConfigurationSection("defaults.").getKeys(false)) {
+                    String value = this.plugin.getConfig().getString("defaults." + keys);
+                    AUTOFILL_ARGS_2.add(keys);
 
-//                for (String keys : this.plugin.getConfig().getConfigurationSection("players." + player.getName() + ".powers").getKeys(false)) {
-//                    String key = keys;
-//                    Boolean value = this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + keys);
-//
-//
-//                }
+                    if (args[1].equals(keys)) {
+                        sendDescriptionMessage(player, keys);
+                    }
+                }
+
             } else {
                 player.sendMessage(usageString);
             }
@@ -66,8 +69,15 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
+        Player player = (Player) commandSender;
         if (args.length == 1) {
             return StringUtil.copyPartialMatches(args[0], AUTOFILL_ARGS_1, new ArrayList<>());
+        } else if (args.length == 2 && args[0].equals("powers")) {
+            for (String keys : this.plugin.getConfig().getConfigurationSection("defaults.").getKeys(false)) {
+                String value = this.plugin.getConfig().getString("defaults." + keys);
+                AUTOFILL_ARGS_2.add(keys);
+            }
+            return StringUtil.copyPartialMatches(args[1], AUTOFILL_ARGS_2, new ArrayList<>());
         }
 
         return Collections.emptyList();
@@ -130,5 +140,10 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
             Location loc = player.getLocation();
             player.getWorld().dropItemNaturally(loc, item);
         }
+    }
+
+    private void sendDescriptionMessage(Player player, String key) {
+        player.sendMessage(plugin.getConfig().getStringList("defaults.") + key);
+        AUTOFILL_ARGS_2.clear();
     }
 }
