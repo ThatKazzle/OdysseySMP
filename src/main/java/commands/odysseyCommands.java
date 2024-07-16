@@ -12,6 +12,7 @@ import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
@@ -93,6 +94,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     public void onInventoryClick(InventoryClickEvent event) {
 
         if (!event.getView().getTitle().equals("Choose an effect to withdraw:")) return;
+        if (!event.getAction().equals(InventoryAction.PICKUP_ONE)) return;
 
         event.setCancelled(true);
         Player player = (Player) event.getWhoClicked();

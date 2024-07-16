@@ -1,6 +1,7 @@
 package commands;
 
 import kazzleinc.simples5.SimpleS5;
+import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -21,12 +22,26 @@ public class resetCooldownCommand implements CommandExecutor {
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
         if (sender instanceof Player) {
-            Player player = (Player) sender;
+            Player cmdSender = (Player) sender;
+            Player player2 = plugin.getServer().getPlayer(args[1]);
 
-            if (player.isOp()) {
-                resetAllCooldowns(player);
-                plugin.updateCooldownDisplay();
+            if (player2 != null) {
+                if (args.length == 2) {
+                    if (cmdSender.isOp()) {
+                        resetAllCooldowns(player2);
+                        plugin.updateCooldownDisplay();
+                    }
+                } else {
+                    usageMessage(player2);
+                }
+                Player player = (Player) sender;
+
+
+            } else {
+                player2.sendMessage(ChatColor.RED + "That player does not exist.");
             }
+
+
 
             return true;
         } else {
@@ -66,4 +81,9 @@ public class resetCooldownCommand implements CommandExecutor {
             }
         }
     }
+
+    private void usageMessage(Player player) {
+        player.sendMessage(ChatColor.RED + "Usage: /rc [player]");
+    }
+
 }
