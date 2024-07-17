@@ -361,6 +361,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 player.sendTitle("New Power Collected!: " + "How Did We Get Here?", ChatColor.RED + "But it has been dropped, you have 2 powers!");
             } else if (getAdvancementNameFormattedFromAdvancement(advancement).equals("Kill All Mobs")) {
                 player.sendTitle("New Power Collected!: " + "Monsters Hunted", ChatColor.RED + "But it has been dropped, you have 2 powers!");
+            } else if (getAdvancementNameFormattedFromAdvancement(advancement).equals("Froglights")) {
+                player.sendTitle("New Power Collected!: " + "WOPC", ChatColor.RED + "But it has been dropped, you have 2 powers!");
             } else {
                 player.sendTitle("New Power Collected!: " + getAdvancementNameFormattedFromAdvancement(advancement), ChatColor.RED + "But it has been dropped, you have 2 powers!");
             }
@@ -371,6 +373,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 player.sendTitle("New Power Collected!: " + "How Did We Get Here?", "Type " + ChatColor.GREEN + "/odyssey powers" + ChatColor.RESET + " to see your power abilities!");
             } else if (getAdvancementNameFormattedFromAdvancement(advancement).equals("Kill All Mobs")) {
                 player.sendTitle("New Power Collected!: " + "Monsters Hunted", "Type " + ChatColor.GREEN + "/odyssey powers" + ChatColor.RESET + " to see your power abilities!");
+            } else if (getAdvancementNameFormattedFromAdvancement(advancement).equals("Froglights")) {
+                player.sendTitle("New Power Collected!: " + "WOPC", "Type " + ChatColor.GREEN + "/odyssey powers" + ChatColor.RESET + " to see your power abilities!");
             } else {
                 player.sendTitle("New Power Collected!: " + getAdvancementNameFormattedFromAdvancement(advancement), "Type " + ChatColor.GREEN + "/odyssey powers" + ChatColor.RESET + " to see your power abilities!");
             }
@@ -497,6 +501,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         case "nether/uneasy_alliance":
                             cooldownMessage = uneasyAllianceClass.getCooldownString(player, uneasyAllianceClass.cooldowns, "Invisibility: ");
                             break;
+                        case "husbandry/froglights":
+                            cooldownMessage = wopcClass.getCooldownString(player, wopcClass.cooldowns, "Odyssey Stealer: ");
+                            break;
                     }
                 }
             } else if (getPlayerPowersList(player) != null && localPlugin.getPlayerPowersList(player).size() == 1) {
@@ -521,6 +528,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             break;
                         case "nether/uneasy_alliance":
                             cooldownMessage = uneasyAllianceClass.getCooldownString(player, uneasyAllianceClass.cooldowns, "Invisibility: ");
+                            break;
+                        case "husbandry/froglights":
+                            cooldownMessage = wopcClass.getCooldownString(player, wopcClass.cooldowns, "Odyssey Stealer: ");
                             break;
                     }
                 }
