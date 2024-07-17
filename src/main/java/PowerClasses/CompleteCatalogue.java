@@ -19,6 +19,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
     SimpleS5 plugin;
     public CompleteCatalogue(SimpleS5 plugin) {
         super(plugin);
+        this.plugin = plugin;
     }
 
     @Override

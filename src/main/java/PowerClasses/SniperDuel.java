@@ -94,6 +94,10 @@ public class SniperDuel extends ParentPowerClass implements Listener {
             return;
         }
 
+        if (isOnCooldown(shooter.getUniqueId(), cooldowns)) {
+            return;
+        }
+
         Arrow arrow = (Arrow) event.getProjectile();
         Player target = getTargetedPlayer((Player) event.getEntity(), 1000);
 

@@ -10,6 +10,7 @@ defaults:
   uneasy_alliance: "nether/uneasy_alliance"
   ride_strider_in_overworld_lava: "nether/ride_strider_in_overworld_lava"
   froglights: "husbandry/froglights"
+  summon_iron_golem: "adventure/summon_iron_golem"
 descriptions:
   very_very_frightening:
     - " "
@@ -58,3 +59,7 @@ descriptions:
     - ""
     - "§bAbilities:"
     - "1. §lStrider Copycat§r§b: You are able to walk on lava for 20 seconds."
+  froglights:
+    - "WIP, im too lazy"
+  summon_iron_golem:
+    - "WIP, im too lazy"

@@ -61,6 +61,11 @@ public class PowerTwoCommand implements CommandExecutor {
                         case "nether/uneasy_alliance":
                             plugin.uneasyAllianceClass.action(playerName);
                             break;
+                        case "husbandry/froglights":
+                            plugin.wopcClass.action(playerName);
+                            break;
+                        case "adventure/summon_iron_golem":
+                            plugin.hiredHelpClass.action(playerName);
                     }
 
                     this.plugin.updateCooldownDisplay();

@@ -56,6 +56,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public UneasyAlliance uneasyAllianceClass = new UneasyAlliance(this);
     public FeelsLikeHome feelsLikeHomeClass = new FeelsLikeHome(this);
     public WithOurPowersCombined wopcClass = new WithOurPowersCombined(this);
+    public HiredHelp hiredHelpClass = new HiredHelp(this);
 
     public boolean resetPlayerHealthAttribute = false;
 
@@ -74,6 +75,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(uneasyAllianceClass, this);
         getServer().getPluginManager().registerEvents(feelsLikeHomeClass, this);
         getServer().getPluginManager().registerEvents(wopcClass, this);
+        getServer().getPluginManager().registerEvents(hiredHelpClass, this);
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         uneasyAllianceClass.registerInvisListener();
@@ -105,6 +107,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (getPlayerPowersList(player) != null && !getPlayerPowersList(player).contains("complete_catalogue")) {
                         catalogueClass.removeCataloguePower(player);
+                    }
+
+                    if (localPlugin.getConfig().getInt("players." + player.getName() + ".mode", -1) == -1) {
+                        localPlugin.getConfig().set("players." + player.getName() + ".mode", 0);
                     }
                 }
             }
@@ -354,8 +360,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 0.5f, 1.f);
         }
 
-
-
         if (isAtPowerLimit) {
             if (getAdvancementNameFormattedFromAdvancement(advancement).equals("All Effects")) {
                 player.sendTitle("New Power Collected!: " + "How Did We Get Here?", ChatColor.RED + "But it has been dropped, you have 2 powers!");
@@ -481,7 +485,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                 int playerMode = (Integer) getConfig().get("players." + player.getName() + ".mode", -1);
 
-                if (powerList.get(playerMode) != null && playerMode != -1) {
+                if (playerMode != -1 && powerList.get(playerMode) != null) {
                     switch (powerList.get(playerMode)) {
                         case "adventure/very_very_frightening":
                             cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
@@ -503,6 +507,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             break;
                         case "husbandry/froglights":
                             cooldownMessage = wopcClass.getCooldownString(player, wopcClass.cooldowns, "Odyssey Stealer: ");
+                            break;
+                        case "adventure/summon_iron_golem":
+                            cooldownMessage = hiredHelpClass.getCooldownString(player, hiredHelpClass.cooldowns, "Hired Help: ");
                             break;
                     }
                 }
@@ -531,6 +538,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             break;
                         case "husbandry/froglights":
                             cooldownMessage = wopcClass.getCooldownString(player, wopcClass.cooldowns, "Odyssey Stealer: ");
+                            break;
+                        case "adventure/summon_iron_golem":
+                            cooldownMessage = hiredHelpClass.getCooldownString(player, hiredHelpClass.cooldowns, "Hired Help: ");
                             break;
                     }
                 }
