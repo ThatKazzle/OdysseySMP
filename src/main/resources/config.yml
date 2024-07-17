@@ -9,6 +9,7 @@ defaults:
   sniper_duel: "adventure/sniper_duel"
   uneasy_alliance: "nether/uneasy_alliance"
   ride_strider_in_overworld_lava: "nether/ride_strider_in_overworld_lava"
+  froglights: "husbandry/froglights"
 descriptions:
   very_very_frightening:
     - " "

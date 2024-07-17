@@ -28,6 +28,8 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
+import kazzleinc.simples5.ParticleUtils;
+
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
@@ -53,6 +55,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public SniperDuel sniperDuelClass = new SniperDuel(this);
     public UneasyAlliance uneasyAllianceClass = new UneasyAlliance(this);
     public FeelsLikeHome feelsLikeHomeClass = new FeelsLikeHome(this);
+    public WithOurPowersCombined wopcClass = new WithOurPowersCombined(this);
 
     public boolean resetPlayerHealthAttribute = false;
 
@@ -70,6 +73,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(sniperDuelClass, this);
         getServer().getPluginManager().registerEvents(uneasyAllianceClass, this);
         getServer().getPluginManager().registerEvents(feelsLikeHomeClass, this);
+        getServer().getPluginManager().registerEvents(wopcClass, this);
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         uneasyAllianceClass.registerInvisListener();
@@ -89,12 +93,36 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getMessenger().registerIncomingPluginChannel(this, "odysseyclientside:power_channel", new modPacketListener(this));
         getServer().getMessenger().registerOutgoingPluginChannel(this, "odysseyclientside:power_channel_rec");
 
+        CustomWorldGenerator.createVoidWorld(this, "void_world");
+
         secondsTask = new BukkitRunnable() {
             @Override
             public void run() {
+                //updating the cooldown display so it shows the cooldown
                 updateCooldownDisplay();
+
+                //fixing the bug with the catalogue not removing the power
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (getPlayerPowersList(player) != null && !getPlayerPowersList(player).contains("complete_catalogue")) {
+                        catalogueClass.removeCataloguePower(player);
+                    }
+                }
             }
         }.runTaskTimer(this, 0, 20);
+
+        final int[] rotation = {0};
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                rotation[0] += 4;
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    //ParticleUtils.createParticleDodecahedron(player.getEyeLocation(), 4, 30, Particle.DUST, Color.PURPLE);
+                }
+            }
+        }.runTaskTimer(this, 0, 0);
+
+
     }
 
     @Override
@@ -128,11 +156,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
         for (String keys : getConfig().getConfigurationSection("defaults").getKeys(false)) {
             if (keys.equals(advName.split("/")[1])) {
-                if (playerIsAtPowerLimit(player)) {
-                    grantAdvancementPower(advancement, player, true);
-                } else {
-                    grantAdvancementPower(advancement, player, false);
-                }
+                grantAdvancementPower(advancement, player, playerIsAtPowerLimit(player));
                 saveConfig();
             }
         }
@@ -446,7 +470,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public void updateCooldownDisplay() {
         String cooldownMessage = "";
         for (Player player : getServer().getOnlinePlayers()) {
-            //getConfig().set("players." + player.getName() + ".mode", getPlayerPowersList(player) != null ? getPlayerPowersList(player).size() - 1 : 0);
 
             if (localPlugin.playerIsAtPowerLimit(player) && getPlayerPowersList(player) != null) {
 
@@ -509,11 +532,11 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         }
     }
 
-
-
     public static double roundDecimalNumber(double number, int decimalPlaces) {
         BigDecimal bd = BigDecimal.valueOf(number);
         bd = bd.setScale(decimalPlaces, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
+
+
 }

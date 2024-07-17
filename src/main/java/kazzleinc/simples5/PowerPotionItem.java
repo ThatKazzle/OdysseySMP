@@ -67,6 +67,10 @@ public class PowerPotionItem {
                     meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "Monsters Hunted");
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + "kill_all_mobs");
                     break;
+                case "Froglights":
+                    meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "With Our Powers Combined");
+                    loreConf = this.plugin.getConfig().getStringList("descriptions." + "froglights");
+                    break;
                 default:
                     meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + displayName);
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + this.plugin.getAdvancementNameUnformattedFromFormattedString(ChatColor.stripColor(meta.getDisplayName())));

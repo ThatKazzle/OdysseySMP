@@ -14,6 +14,7 @@ import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 
@@ -122,6 +123,8 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
                                 Block block = center.getWorld().getBlockAt(center.getBlockX() + x, center.getBlockY() + y, center.getBlockZ() + z);
                                 if (!unreplaceableMaterials.contains(block.getType())) {
                                     block.setType(replacementMaterial);
+                                    Particle.DustOptions dustOptions = new Particle.DustOptions(Color.AQUA, 1);
+                                    center.getWorld().spawnParticle(Particle.DUST, block.getLocation().add(new Vector(0.5, 0.5, 0.5)), 1, dustOptions);
                                 }
                             }
                         }
