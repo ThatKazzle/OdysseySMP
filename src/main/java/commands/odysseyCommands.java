@@ -16,6 +16,7 @@ import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.util.StringUtil;
 import org.jetbrains.annotations.NotNull;
@@ -33,9 +34,16 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     private static final List<String> AUTOFILL_ARGS_1 = Arrays.asList("withdraw", "powers");
     private static final List<String> AUTOFILL_ARGS_2 = new ArrayList<>();
 
+    private NamespacedKey canClickKey;
+
+
     public odysseyCommands(SimpleS5 plugin) {
         this.plugin = plugin;
+
+        canClickKey = new NamespacedKey(plugin, "isInGUI");
     }
+
+
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String label, @NotNull String[] args) {
@@ -92,6 +100,13 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
             Boolean value = this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + keys);
             if (value) {
                 ItemStack item = new PowerPotionItem(this.plugin, this.plugin.getAdvancementNameFormattedFromUnformattedString(keys), this.plugin.powerPotionKey).getItemStack();
+
+                ItemMeta meta = item.getItemMeta();
+
+                meta.getPersistentDataContainer().set(canClickKey, PersistentDataType.BOOLEAN, true);
+
+                item.setItemMeta(meta);
+
                 gui.addItem(item);
             }
 
@@ -104,7 +119,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     public void onInventoryClick(InventoryClickEvent event) {
 
         if (!event.getView().getTitle().equals("Choose an effect to withdraw:")) return;
-        if (!event.getAction().equals(InventoryAction.PICKUP_ONE)) return;
+        if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) return;
 
         event.setCancelled(true);
         Player player = (Player) event.getWhoClicked();
@@ -114,7 +129,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
         String powerName = clickedItem.getItemMeta().getPersistentDataContainer().get(this.plugin.powerPotionKey, PersistentDataType.STRING);
 
-        if (clickedItem.getItemMeta().getPersistentDataContainer().has(this.plugin.powerPotionKey) && event.getSlot() <= 1) {
+        if (clickedItem.getItemMeta().getPersistentDataContainer().has(this.plugin.powerPotionKey) && clickedItem.getItemMeta().getPersistentDataContainer().has(this.canClickKey) && event.getSlot() <= 1) {
             this.plugin.removePlayerAdvancement(player, plugin.getAdvancementKeyFromFormattedString(powerName));
             this.plugin.getConfig().set("players." + player.getName() + ".powers." +  plugin.getAdvancementKeyFromFormattedString(powerName), false);
 
