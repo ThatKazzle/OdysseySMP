@@ -82,20 +82,28 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
     public void onPlayerDamage(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (player.getHealth() - event.getFinalDamage() <= 0 && player.getInventory().getItemInOffHand().getType() != Material.TOTEM_OF_UNDYING) {
-                event.setCancelled(true);
 
-                ItemStack offhandItem = player.getInventory().getItemInOffHand();
+            if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue")) {
+                if (player.getHealth() - event.getFinalDamage() <= 0 && player.getInventory().getItemInOffHand().getType() != Material.TOTEM_OF_UNDYING) {
+                    event.setCancelled(true);
 
-                player.getInventory().setItemInOffHand(new ItemStack(Material.TOTEM_OF_UNDYING));
+                    ItemStack offhandItem = player.getInventory().getItemInOffHand();
 
-                player.damage(1);
+                    player.getInventory().setItemInOffHand(new ItemStack(Material.TOTEM_OF_UNDYING));
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            player.damage(1);
 
-                player.getInventory().setItemInOffHand(offhandItem);
+                            player.getInventory().setItemInOffHand(offhandItem);
 
-                player.setHealth(0.5f);
+                            player.setHealth(0.5f);
 
-                applyTotemEffects(player);
+                            applyTotemEffects(player);
+                        }
+                    }.runTaskLater(plugin, 1L);
+
+                }
             }
         }
     }

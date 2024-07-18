@@ -1,9 +1,8 @@
 package PowerClasses;
 
+import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Location;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -29,6 +28,8 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
     public void stealerAction(Player player) {
         RayTraceResult result = plugin.getServer().getWorld("world").rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection().normalize(), 4.5);
+
+        ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 1, 20, Particle.DUST, Color.RED);
 
         //checks to make sure everything lines up right
         if (result.getHitEntity() == null) return;

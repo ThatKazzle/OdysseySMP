@@ -84,6 +84,8 @@ public class resetCooldownCommand implements CommandExecutor {
                         case "nether/uneasy_alliance":
                             plugin.uneasyAllianceClass.cooldowns.replace(player.getUniqueId(), 0L);
                             break;
+                        case "husbandry/froglights":
+                            plugin.wopcClass.cooldowns.replace(player.getUniqueId(), 0L);
                     }
                 }
             }
