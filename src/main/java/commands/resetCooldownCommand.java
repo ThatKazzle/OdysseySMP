@@ -30,27 +30,25 @@ public class resetCooldownCommand implements CommandExecutor {
                 player2 = null;
             }
 
-            if (player2 == null) {
-                if (cmdSender.isOp()) {
-                    resetAllCooldowns(cmdSender);
-                    plugin.updateCooldownDisplay();
-                }
-            } else {
-                if (player2 != null) {
-                    if (args.length == 1) {
-                        if (cmdSender.isOp()) {
-                            resetAllCooldowns(player2);
-                            plugin.updateCooldownDisplay();
-                        } else {
-                            cmdSender.sendMessage(ChatColor.RED + "You can't run that command!");
-                        }
-                    } else {
-                        usageMessage(cmdSender);
-                    }
+            if (cmdSender.isOp()) {
+                resetAllCooldowns(cmdSender);
+                plugin.updateCooldownDisplay();
+            }
 
+            if (player2 == null) {
+
+            } else {
+                if (args.length == 1) {
+                    if (cmdSender.isOp()) {
+                        resetAllCooldowns(player2);
+                        plugin.updateCooldownDisplay();
+                    } else {
+                        cmdSender.sendMessage(ChatColor.RED + "You can't run that command!");
+                    }
                 } else {
-                    cmdSender.sendMessage(ChatColor.RED + "That player does not exist.");
+                    usageMessage(cmdSender);
                 }
+
             }
 
             return true;

@@ -1,6 +1,7 @@
 package PowerClasses;
 
 import kazzleinc.simples5.SimpleS5;
+import org.bukkit.Material;
 import org.bukkit.Particle;
 import org.bukkit.Sound;
 import org.bukkit.attribute.Attribute;
@@ -8,8 +9,11 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
@@ -55,6 +59,44 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
 //                player.getWorld().playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1.0f, 1.0f);
 //                player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation(), 30);
 //            }
+        }
+    }
+
+//    @EventHandler
+//    public void onPlayerDeath(PlayerDeathEvent event) {
+//        // Restore the player's health and cancel the death
+//        new BukkitRunnable() {
+//            @Override
+//            public void run() {
+//                if (event.getEntity().isDead()) {
+//                    // Prevent the player from dying
+//                    event.getEntity().setHealth(event.getEntity().getMaxHealth());
+//                    event.getEntity().spigot().respawn();
+//                    event.getEntity().sendMessage("You were saved from death!");
+//                }
+//            }
+//        }.runTaskLater(this.plugin, 1L); // Schedule to run 1 tick later to ensure the player is still alive
+//    }
+
+    @EventHandler
+    public void onPlayerDamage(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (player.getHealth() - event.getFinalDamage() <= 0 && player.getInventory().getItemInOffHand().getType() != Material.TOTEM_OF_UNDYING) {
+                event.setCancelled(true);
+
+                ItemStack offhandItem = player.getInventory().getItemInOffHand();
+
+                player.getInventory().setItemInOffHand(new ItemStack(Material.TOTEM_OF_UNDYING));
+
+                player.damage(1);
+
+                player.getInventory().setItemInOffHand(offhandItem);
+
+                player.setHealth(0.5f);
+
+                applyTotemEffects(player);
+            }
         }
     }
 

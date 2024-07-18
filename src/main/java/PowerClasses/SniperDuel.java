@@ -94,7 +94,7 @@ public class SniperDuel extends ParentPowerClass implements Listener {
             return;
         }
 
-        if (isOnCooldown(shooter.getUniqueId(), cooldowns)) {
+        if (!isOnCooldown(shooter.getUniqueId(), cooldowns)) {
             return;
         }
 

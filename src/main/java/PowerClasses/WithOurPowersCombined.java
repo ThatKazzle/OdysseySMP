@@ -1,6 +1,7 @@
 package PowerClasses;
 
 import kazzleinc.simples5.SimpleS5;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Location;
 import org.bukkit.entity.Player;
@@ -23,46 +24,55 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
     @Override
     public void action(String playerName) {
-
+        stealerAction(plugin.getServer().getPlayer(playerName));
     }
 
-    @EventHandler
-    public void onPlayerInteractEntityEvent(PlayerInteractEntityEvent event) {
-        Player player = event.getPlayer();
+    public void stealerAction(Player player) {
+        RayTraceResult result = plugin.getServer().getWorld("world").rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection().normalize(), 4.5);
+
+        //checks to make sure everything lines up right
+        if (result.getHitEntity() == null) return;
+
+        if (!(result.getHitEntity() instanceof Player)) return;
+
+        Player targetPlayer = ((Player) result.getHitEntity());
 
         if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/froglights")) {
             if (isOnCooldown(player.getUniqueId(), cooldowns)) {
                 cantUsePowerMessage(player, cooldowns, "Odyssey Stealer");
             } else if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
-                Location startLocation = player.getEyeLocation();
-
-                Vector dir = player.getEyeLocation().getDirection().normalize();
-
-                RayTraceResult result = player.getWorld().rayTraceEntities(startLocation, dir, 4.5);
-
-                player.sendMessage("result of ray trace: " + result.getHitEntity().getName());
-
-                if (result.getHitEntity() != null && event.getRightClicked() instanceof Player) {
+                if (result.getHitEntity() != null) {
 
                     setCooldown(player.getUniqueId(), cooldowns, 60 * 10);
 
-                    Player targetPlayer = (Player) event.getRightClicked();
+                    String targetPlayerEnabledKey;
 
-                    String targetPlayerEnabledKey = plugin.getPlayerPowersList(targetPlayer).get(plugin.getConfig().getInt("players." + targetPlayer.getName() + ".mode"));
+                    if (plugin.getPlayerPowersList(targetPlayer).get(plugin.getConfig().getInt("players." + targetPlayer.getName() + ".mode")) != null) {
+                        targetPlayerEnabledKey = plugin.getPlayerPowersList(targetPlayer).get(plugin.getConfig().getInt("players." + targetPlayer.getName() + ".mode"));
+                    } else {
+                        player.sendMessage("That player doesn't have a power you can steal!");
+                        return;
+                    }
+
+
+
+                    plugin.getConfig().set("players." + player.getName() + ".powers." + "husbandry/froglights", false);
+                    plugin.getConfig().set("players." + targetPlayer.getName() + ".powers." + targetPlayerEnabledKey, false);
 
                     plugin.getConfig().set("players." + player.getName() + ".powers." + targetPlayerEnabledKey, true);
-                    plugin.getConfig().set("players." + targetPlayer.getName() + ".powers." + targetPlayerEnabledKey, false);
 
                     player.sendMessage(ChatColor.RED + "You stole " + ChatColor.AQUA + targetPlayerEnabledKey + ChatColor.RED + " from " + ChatColor.AQUA + targetPlayer.getName() + "!");
                     targetPlayer.sendMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " stole " + ChatColor.AQUA + targetPlayerEnabledKey + "!");
 
                     plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                         plugin.getConfig().set("players." + player.getName() + ".powers." + targetPlayerEnabledKey, false);
+                        plugin.getConfig().set("players." + player.getName() + ".powers." + "husbandry/froglights", true);
+
                         plugin.getConfig().set("players." + targetPlayer.getName() + ".powers." + targetPlayerEnabledKey, true);
 
                         player.sendMessage(ChatColor.GREEN + "you lost your stolen power, and it has been given back to them.");
                         targetPlayer.sendMessage(ChatColor.GREEN + "You have been given your power back.");
-                    }, 30 * 20); //change this to 2 minutes
+                    }, 20 * 120);
                 } else {
                     player.sendMessage(ChatColor.RED + "You didn't hit a player!");
                 }
