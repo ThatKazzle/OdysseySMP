@@ -17,8 +17,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.Method;
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.UUID;
 
 public class CompleteCatalogue extends ParentPowerClass implements Listener {
+
+    public HashMap<UUID, Long> cooldowns = new HashMap<>();
 
     SimpleS5 plugin;
     public CompleteCatalogue(SimpleS5 plugin) {
@@ -32,13 +37,13 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
     }
 
     public void giveCataloguePower(Player player) {
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(24);
-        player.addPotionEffect(new PotionEffect(PotionEffectType.LUCK, Integer.MAX_VALUE, 0, true, true));
+//        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(24);
+//        player.addPotionEffect(new PotionEffect(PotionEffectType.LUCK, Integer.MAX_VALUE, 0, true, true));
     }
 
     public void removeCataloguePower(Player player) {
-        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
-        player.removePotionEffect(PotionEffectType.LUCK);
+//        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+//        player.removePotionEffect(PotionEffectType.LUCK);
     }
 
     @EventHandler
@@ -83,8 +88,10 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue")) {
+            if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue") && !isOnCooldown(player.getUniqueId(), cooldowns)) {
                 if (player.getHealth() - event.getFinalDamage() <= 0 && player.getInventory().getItemInOffHand().getType() != Material.TOTEM_OF_UNDYING) {
+                    setCooldown(player.getUniqueId(), cooldowns, 10 * 60);
+
                     event.setCancelled(true);
 
                     ItemStack offhandItem = player.getInventory().getItemInOffHand();
@@ -93,15 +100,12 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
                     new BukkitRunnable() {
                         @Override
                         public void run() {
-                            player.damage(1);
-
+                            player.damage(20);
                             player.getInventory().setItemInOffHand(offhandItem);
-
                             player.setHealth(0.5f);
-
                             applyTotemEffects(player);
                         }
-                    }.runTaskLater(plugin, 1L);
+                    }.runTaskLater(plugin, 6L);
 
                 }
             }
@@ -132,12 +136,12 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
 
     private void applyTotemEffects(Player player) {
         // Apply Absorption effect (4 additional health points for 5 seconds)
-        player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 100, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.ABSORPTION, 20 * 5, 1));
 
         // Apply Regeneration effect (heals 1 health point every 0.5 seconds for 45 seconds)
-        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 900, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.REGENERATION, 20 * 45, 1));
 
         // Apply Fire Resistance effect (prevents fire damage for 40 seconds)
-        player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 800, 1));
+        player.addPotionEffect(new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 40 * 20, 0));
     }
 }
