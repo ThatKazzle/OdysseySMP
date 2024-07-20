@@ -105,8 +105,19 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                 //fixing the bug with the catalogue not removing the power
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (getPlayerPowersList(player) != null && !getPlayerPowersList(player).contains("complete_catalogue")) {
-                        catalogueClass.removeCataloguePower(player);
+                    if (getPlayerPowersList(player) != null) {
+                        if (!getPlayerPowersList(player).contains("husbandry/complete_catalogue")) {
+                            catalogueClass.removeCataloguePower(player);
+                        }
+
+                        if (!getPlayerPowersList(player).contains("nether/ride_strider_in_overworld_lava")) {
+                            feelsLikeHomeClass.removeFireResistance(player);
+                        }
+                    }
+
+
+                    if (getPlayerPowersList(player) != null && getPlayerPowersList(player).size() == 1) {
+                        localPlugin.getConfig().set("players." + player.getName() + ".mode", 0);
                     }
 
                     if (localPlugin.getConfig().getInt("players." + player.getName() + ".mode", -1) == -1) {
@@ -511,6 +522,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         case "adventure/summon_iron_golem":
                             cooldownMessage = hiredHelpClass.getCooldownString(player, hiredHelpClass.cooldowns, "Hired Help: ");
                             break;
+                        case "nether/ride_strider_in_overworld_lava":
+                            cooldownMessage = feelsLikeHomeClass.getCooldownString(player, feelsLikeHomeClass.cooldowns, "Blazed: ");
+                            break;
                     }
                 }
             } else if (getPlayerPowersList(player) != null && localPlugin.getPlayerPowersList(player).size() == 1) {
@@ -541,6 +555,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             break;
                         case "adventure/summon_iron_golem":
                             cooldownMessage = hiredHelpClass.getCooldownString(player, hiredHelpClass.cooldowns, "Hired Help: ");
+                            break;
+                        case "nether/ride_strider_in_overworld_lava":
+                            cooldownMessage = feelsLikeHomeClass.getCooldownString(player, feelsLikeHomeClass.cooldowns, "Blazed: ");
                             break;
                     }
                 }

@@ -32,7 +32,6 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
 
     public final HashMap<UUID, Long> cooldowns = new HashMap<>();
 
-
     private final int cooldownTime = 10;
     private HashSet<Player> dashed = new HashSet<>(); //for making sure the player can only dash once
 

@@ -66,6 +66,9 @@ public class PowerTwoCommand implements CommandExecutor {
                             break;
                         case "adventure/summon_iron_golem":
                             plugin.hiredHelpClass.action(playerName);
+                        case "nether/ride_strider_in_overworld_lava":
+                            plugin.feelsLikeHomeClass.action(playerName);
+                            break;
                     }
 
                     this.plugin.updateCooldownDisplay();
