@@ -67,7 +67,7 @@ public class PowerTwoCommand implements CommandExecutor {
                         case "nether/ride_strider_in_overworld_lava":
                             plugin.feelsLikeHomeClass.action(playerName);
                             break;
-                        case "nether/create_beacon":
+                        case "nether/create_full_beacon":
                             plugin.beaconatorClass.action(playerName);
                             break;
                     }

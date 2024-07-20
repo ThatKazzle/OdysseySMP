@@ -17,8 +17,6 @@ public class Beaconator extends ParentPowerClass implements Listener {
 
     private final List<PotionEffectType> potionTypes = Arrays.asList(PotionEffectType.SPEED, PotionEffectType.REGENERATION, PotionEffectType.HASTE);
 
-    SimpleS5 plugin;
-
     public Beaconator(SimpleS5 plugin) {
         super(plugin);
     }
@@ -35,7 +33,9 @@ public class Beaconator extends ParentPowerClass implements Listener {
         if (isOnCooldown(player.getUniqueId(), cooldowns)) {
             cantUsePowerMessage(player, cooldowns, "Beaconator");
         } else if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
+            setCooldown(player.getUniqueId(), cooldowns, 90);
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
+
             player.sendMessage(ChatColor.GREEN + "You gained " + ChatColor.AQUA + plugin.titleCaseString(addRandomPotionEffects(player).getName().toLowerCase()));
         }
     }
@@ -54,5 +54,9 @@ public class Beaconator extends ParentPowerClass implements Listener {
         }
         int randomIndex = ThreadLocalRandom.current().nextInt(list.size());
         return list.get(randomIndex);
+    }
+
+    public String formatPotionName() {
+        return "balls";
     }
 }

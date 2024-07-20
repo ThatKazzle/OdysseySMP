@@ -396,7 +396,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 case "Froglights":
                     powerName = "WOPC";
                     break;
-                case "Create Beacon":
+                case "Create Full Beacon":
                     powerName = "Beaconator";
                     break;
                 case "Ride Strider In Overworld Lava":
@@ -422,10 +422,18 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 case "Froglights":
                     powerName = "WOPC";
                     break;
+                case "Create Full Beacon":
+                    powerName = "Beaconator";
+                    break;
+                case "Ride Strider In Overworld Lava":
+                    powerName = "Feels Like Home";
+                    break;
                 default:
                     powerName = getAdvancementNameFormattedFromAdvancement(advancement);
                     break;
             }
+
+            player.sendTitle("New Power Collected!: " + powerName, "type " + ChatColor.GREEN + "\"/od powers\" for details.");
 
             getConfig().set("players." + player.getName() + ".powers." + getAdvancementNameUnformatted(advancement), true);
             if (advancement.getKey().getKey().equals("husbandry/complete_catalogue")) {
@@ -558,15 +566,13 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         case "nether/ride_strider_in_overworld_lava":
                             cooldownMessage = feelsLikeHomeClass.getCooldownString(player, feelsLikeHomeClass.cooldowns, "Blazed: ");
                             break;
-                        case "nether/create_beacon":
+                        case "nether/create_full_beacon":
                             cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
                             break;
                     }
                 }
             } else if (getPlayerPowersList(player) != null && localPlugin.getPlayerPowersList(player).size() == 1) {
                 ArrayList<String> powerList = localPlugin.getPlayerPowersList(player);
-
-                player.sendMessage("This code wasn't supposed to run...");
 
                 if (localPlugin.getPlayerPowersList(player).get(0) != null) {
                     switch (localPlugin.getPlayerPowersList(player).get(0)) {
@@ -597,7 +603,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         case "nether/ride_strider_in_overworld_lava":
                             cooldownMessage = feelsLikeHomeClass.getCooldownString(player, feelsLikeHomeClass.cooldowns, "Blazed: ");
                             break;
-                        case "nether/create_beacon":
+                        case "nether/create_full_beacon":
                             cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
                             break;
                     }
