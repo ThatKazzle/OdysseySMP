@@ -11,6 +11,7 @@ defaults:
   ride_strider_in_overworld_lava: "nether/ride_strider_in_overworld_lava"
   froglights: "husbandry/froglights"
   summon_iron_golem: "adventure/summon_iron_golem"
+  create_beacon: "nether/create_beacon"
 descriptions:
   very_very_frightening:
     - " "

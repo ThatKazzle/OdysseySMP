@@ -12,6 +12,8 @@ import org.bukkit.event.block.Action;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
@@ -76,6 +78,9 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
                 sphereCenterLocations.put(player.getUniqueId(), player.getLocation());
                 saveOriginalBlocks(sphereCenterLocations.get(player.getUniqueId()), sphereRadius);
                 //to run the code
+
+                player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 8 * 20, 0, false, false, true));
+
                 BukkitTask tickRunner = new BukkitRunnable() {
                     @Override
                     public void run() {

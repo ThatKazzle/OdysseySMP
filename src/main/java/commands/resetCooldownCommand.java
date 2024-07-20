@@ -73,6 +73,7 @@ public class resetCooldownCommand implements CommandExecutor {
                             plugin.vvfClass.cooldowns.replace(player.getUniqueId(), 0L);
                             break;
                         case "nether/all_effects":
+                            plugin.hdwghClass.rightClickedCooldowns.replace(player.getUniqueId(), 0L);
                             break;
                         case "husbandry/complete_catalogue":
                             break;
@@ -81,11 +82,15 @@ public class resetCooldownCommand implements CommandExecutor {
                             break;
                         case "adventure/sniper_duel":
                             plugin.sniperDuelClass.cooldowns.replace(player.getUniqueId(), 0L);
+                            break;
                         case "nether/uneasy_alliance":
                             plugin.uneasyAllianceClass.cooldowns.replace(player.getUniqueId(), 0L);
                             break;
                         case "husbandry/froglights":
                             plugin.wopcClass.cooldowns.replace(player.getUniqueId(), 0L);
+                            break;
+                        case "nether/create_beacon":
+                            plugin.beaconatorClass.cooldowns.replace(player.getUniqueId(), 0L);
                     }
                 }
             }

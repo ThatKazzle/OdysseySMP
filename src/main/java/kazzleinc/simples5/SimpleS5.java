@@ -57,6 +57,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public FeelsLikeHome feelsLikeHomeClass = new FeelsLikeHome(this);
     public WithOurPowersCombined wopcClass = new WithOurPowersCombined(this);
     public HiredHelp hiredHelpClass = new HiredHelp(this);
+    public Beaconator beaconatorClass = new Beaconator(this);
 
     public boolean resetPlayerHealthAttribute = false;
 
@@ -76,6 +77,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(feelsLikeHomeClass, this);
         getServer().getPluginManager().registerEvents(wopcClass, this);
         getServer().getPluginManager().registerEvents(hiredHelpClass, this);
+        getServer().getPluginManager().registerEvents(beaconatorClass, this);
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         uneasyAllianceClass.registerInvisListener();
@@ -139,6 +141,15 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             }
         }.runTaskTimer(this, 0, 0);
 
+        //fixes the config thing so that things can work without deleting the config
+        if (getConfig().getConfigurationSection("defaults") != Objects.requireNonNull(getConfig().getDefaults()).getConfigurationSection("defaults")) {
+            for (String keys : getConfig().getConfigurationSection("defaults").getKeys(false)) {
+                if (!getConfig().getDefaults().isSet(keys)) {
+                    getConfig().set(keys, getConfig().getDefaults().get("defaults.") + keys);
+                    saveConfig();
+                }
+            }
+        }
 
     }
 
@@ -370,28 +381,50 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         if (advancement.getDisplay().frame() != AdvancementDisplay.Frame.CHALLENGE) {
             player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 0.5f, 1.f);
         }
+        String powerName;
 
         if (isAtPowerLimit) {
-            if (getAdvancementNameFormattedFromAdvancement(advancement).equals("All Effects")) {
-                player.sendTitle("New Power Collected!: " + "How Did We Get Here?", ChatColor.RED + "But it has been dropped, you have 2 powers!");
-            } else if (getAdvancementNameFormattedFromAdvancement(advancement).equals("Kill All Mobs")) {
-                player.sendTitle("New Power Collected!: " + "Monsters Hunted", ChatColor.RED + "But it has been dropped, you have 2 powers!");
-            } else if (getAdvancementNameFormattedFromAdvancement(advancement).equals("Froglights")) {
-                player.sendTitle("New Power Collected!: " + "WOPC", ChatColor.RED + "But it has been dropped, you have 2 powers!");
-            } else {
-                player.sendTitle("New Power Collected!: " + getAdvancementNameFormattedFromAdvancement(advancement), ChatColor.RED + "But it has been dropped, you have 2 powers!");
+
+
+            switch (getAdvancementNameFormattedFromAdvancement(advancement)) {
+                case "All Effects":
+                    powerName = "How Did We Get Here?";
+                    break;
+                case "Kill All Mobs":
+                    powerName = "Monsters Hunted";
+                    break;
+                case "Froglights":
+                    powerName = "WOPC";
+                    break;
+                case "Create Beacon":
+                    powerName = "Beaconator";
+                    break;
+                case "Ride Strider In Overworld Lava":
+                    powerName = "Feels Like Home";
+                    break;
+                default:
+                    powerName = getAdvancementNameFormattedFromAdvancement(advancement);
+                    break;
             }
+
+            player.sendTitle("New Power Collected!: " + powerName, ChatColor.RED + "But it has been dropped, you have 2 powers!");
+
             player.getWorld().dropItem(player.getLocation(), new PowerPotionItem(this, getAdvancementNameFormattedFromAdvancement(advancement), powerPotionKey).getItemStack());
 
         } else {
-            if (getAdvancementNameFormattedFromAdvancement(advancement).equals("All Effects")) {
-                player.sendTitle("New Power Collected!: " + "How Did We Get Here?", "Type " + ChatColor.GREEN + "/odyssey powers" + ChatColor.RESET + " to see your power abilities!");
-            } else if (getAdvancementNameFormattedFromAdvancement(advancement).equals("Kill All Mobs")) {
-                player.sendTitle("New Power Collected!: " + "Monsters Hunted", "Type " + ChatColor.GREEN + "/odyssey powers" + ChatColor.RESET + " to see your power abilities!");
-            } else if (getAdvancementNameFormattedFromAdvancement(advancement).equals("Froglights")) {
-                player.sendTitle("New Power Collected!: " + "WOPC", "Type " + ChatColor.GREEN + "/odyssey powers" + ChatColor.RESET + " to see your power abilities!");
-            } else {
-                player.sendTitle("New Power Collected!: " + getAdvancementNameFormattedFromAdvancement(advancement), "Type " + ChatColor.GREEN + "/odyssey powers" + ChatColor.RESET + " to see your power abilities!");
+            switch (getAdvancementNameFormattedFromAdvancement(advancement)) {
+                case "All Effects":
+                    powerName = "How Did We Get Here?";
+                    break;
+                case "Kill All Mobs":
+                    powerName = "Monsters Hunted";
+                    break;
+                case "Froglights":
+                    powerName = "WOPC";
+                    break;
+                default:
+                    powerName = getAdvancementNameFormattedFromAdvancement(advancement);
+                    break;
             }
 
             getConfig().set("players." + player.getName() + ".powers." + getAdvancementNameUnformatted(advancement), true);
@@ -525,10 +558,15 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         case "nether/ride_strider_in_overworld_lava":
                             cooldownMessage = feelsLikeHomeClass.getCooldownString(player, feelsLikeHomeClass.cooldowns, "Blazed: ");
                             break;
+                        case "nether/create_beacon":
+                            cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
+                            break;
                     }
                 }
             } else if (getPlayerPowersList(player) != null && localPlugin.getPlayerPowersList(player).size() == 1) {
                 ArrayList<String> powerList = localPlugin.getPlayerPowersList(player);
+
+                player.sendMessage("This code wasn't supposed to run...");
 
                 if (localPlugin.getPlayerPowersList(player).get(0) != null) {
                     switch (localPlugin.getPlayerPowersList(player).get(0)) {
@@ -558,6 +596,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             break;
                         case "nether/ride_strider_in_overworld_lava":
                             cooldownMessage = feelsLikeHomeClass.getCooldownString(player, feelsLikeHomeClass.cooldowns, "Blazed: ");
+                            break;
+                        case "nether/create_beacon":
+                            cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
                             break;
                     }
                 }

@@ -27,7 +27,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     }
 
     public void stealerAction(Player player) {
-        RayTraceResult result = plugin.getServer().getWorld("world").rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection().normalize(), 4.5);
+        RayTraceResult result = plugin.getServer().getWorld("world").rayTraceEntities(player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(2)), player.getEyeLocation().getDirection().normalize(), 45);
 
         ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 1, 20, Particle.DUST, Color.RED);
 

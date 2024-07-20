@@ -40,8 +40,6 @@ public class PowerTwoCommand implements CommandExecutor {
                     }
                 }
 
-                player.sendMessage(String.valueOf(this.plugin.getConfig().getInt("players." + playerName + ".mode")));
-
                 if (!enabledKeys.isEmpty()) {
                     switch (enabledKeys.get(this.plugin.getConfig().getInt("players." + playerName + ".mode"))) {
                         case "adventure/very_very_frightening":
@@ -68,6 +66,9 @@ public class PowerTwoCommand implements CommandExecutor {
                             plugin.hiredHelpClass.action(playerName);
                         case "nether/ride_strider_in_overworld_lava":
                             plugin.feelsLikeHomeClass.action(playerName);
+                            break;
+                        case "nether/create_beacon":
+                            plugin.beaconatorClass.action(playerName);
                             break;
                     }
 
