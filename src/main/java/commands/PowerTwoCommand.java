@@ -70,6 +70,8 @@ public class PowerTwoCommand implements CommandExecutor {
                         case "nether/create_full_beacon":
                             plugin.beaconatorClass.action(playerName);
                             break;
+                        case "husbandry/balanced_diet":
+                            plugin.balancedDietClass.action(playerName);
                     }
 
                     this.plugin.updateCooldownDisplay();

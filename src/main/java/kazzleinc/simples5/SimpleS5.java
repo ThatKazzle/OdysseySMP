@@ -58,6 +58,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public WithOurPowersCombined wopcClass = new WithOurPowersCombined(this);
     public HiredHelp hiredHelpClass = new HiredHelp(this);
     public Beaconator beaconatorClass = new Beaconator(this);
+    public BalancedDiet balancedDietClass = new BalancedDiet(this);
 
     public boolean resetPlayerHealthAttribute = false;
 
@@ -78,6 +79,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(wopcClass, this);
         getServer().getPluginManager().registerEvents(hiredHelpClass, this);
         getServer().getPluginManager().registerEvents(beaconatorClass, this);
+        getServer().getPluginManager().registerEvents(balancedDietClass, this);
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         uneasyAllianceClass.registerInvisListener();
@@ -606,6 +608,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         case "nether/create_full_beacon":
                             cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
                             break;
+                        case "husbandry/balanced_diet":
+                            cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Beaconator: ");
                     }
                 }
             } else {

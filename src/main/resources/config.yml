@@ -12,6 +12,7 @@ defaults:
   froglights: "husbandry/froglights"
   summon_iron_golem: "adventure/summon_iron_golem"
   create_full_beacon: "nether/create_full_beacon"
+  balanced_diet: "husbandry/balanced_diet"
 descriptions:
   very_very_frightening:
     - " "
