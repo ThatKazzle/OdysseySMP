@@ -58,24 +58,31 @@ public class PowerPotionItem {
         if (meta != null) {
             //this.plugin.getServer().broadcastMessage(meta.getPersistentDataContainer().get(powerKey, PersistentDataType.STRING));
             List<String> loreConf;
+            String nameToAdd = "";
+
             switch (meta.getPersistentDataContainer().get(powerKey, PersistentDataType.STRING)) {
                 case "All Effects":
-                    meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "How Did We Get Here?");
+                    nameToAdd = "How Did We Get Here?";
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + "all_effects");
                     break;
                 case "Kill All Mobs":
-                    meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "Monsters Hunted");
+                    nameToAdd = "Monsters Hunted";
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + "kill_all_mobs");
                     break;
                 case "Froglights":
-                    meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + "With Our Powers Combined");
+                    nameToAdd = "With Our Powers Combined";
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + "froglights");
                     break;
+                case "Ride Strider In Overworld Lava":
+                    nameToAdd = "Feels Like Home";
+                    loreConf = this.plugin.getConfig().getStringList("descriptions." + "ride_strider_in_overworld_lava");
                 default:
-                    meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + displayName);
+                    nameToAdd = displayName;
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + this.plugin.getAdvancementNameUnformattedFromFormattedString(ChatColor.stripColor(meta.getDisplayName())));
                     break;
             }
+
+            meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + nameToAdd);
 
             List<String> lore = new ArrayList<>();
 
