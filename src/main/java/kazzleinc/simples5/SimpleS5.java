@@ -404,6 +404,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 case "Ride Strider In Overworld Lava":
                     powerName = "Feels Like Home";
                     break;
+                case "Balanced Diet":
+                    powerName = "Balanced Diet";
                 default:
                     powerName = getAdvancementNameFormattedFromAdvancement(advancement);
                     break;
@@ -430,6 +432,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 case "Ride Strider In Overworld Lava":
                     powerName = "Feels Like Home";
                     break;
+                case "Balanced Diet":
+                    powerName = "Balanced Diet";
                 default:
                     powerName = getAdvancementNameFormattedFromAdvancement(advancement);
                     break;
@@ -571,6 +575,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         case "nether/create_full_beacon":
                             cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
                             break;
+                        case "husbandry/balanced_diet":
+                            cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
                     }
                 }
             } else if (getPlayerPowersList(player) != null && localPlugin.getPlayerPowersList(player).size() == 1) {
@@ -609,7 +615,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
                             break;
                         case "husbandry/balanced_diet":
-                            cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Beaconator: ");
+                            cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
                     }
                 }
             } else {

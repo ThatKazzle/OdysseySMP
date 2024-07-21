@@ -32,7 +32,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
             player.addPotionEffect(satEffect);
 
             for (Player playerCheck : plugin.getServer().getOnlinePlayers()) {
-                if (playerCheck.getLocation().distance(player.getLocation()) <= 25) {
+                if (playerCheck != player && playerCheck.getLocation().distance(player.getLocation()) <= 25) {
                     playerCheck.addPotionEffect(hungerEffect);
 
                     playerCheck.sendMessage(ChatColor.RED + player.getName() + " has given you " + ChatColor.AQUA + "Hunger" + ChatColor.RED + "!");

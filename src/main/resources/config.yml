@@ -69,4 +69,7 @@ descriptions:
     - "1. §lOdyssey Stealer§r§b: Steal a players currently enabled power for 2 minutes."
   summon_iron_golem:
     - "§bAbilities:"
-    - "1. §lHired Help: §r§b: Summon an iron golem that fights for you for 20 seconds."
+    - "1. §lHired Help§r§b: Summon an iron golem that fights for you for 20 seconds."
+  balanced_diet:
+    - "§bAbilities:"
+    - "1. §lStored Energy§r§b: Gives you Saturation II for 15 seconds and "
