@@ -12,6 +12,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -50,7 +51,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
                 plugin.getServer().getWorld("world").playSound(player.getLocation(), Sound.ENTITY_BLAZE_SHOOT, 1.f, 1.f);
                 player.sendMessage(ChatColor.RED + "You are ANGWY!");
 
-                ParticleUtils.createParticleRing(player.getLocation(), 4, 5, Particle.DUST, Color.fromRGB(255, 174, 66));
+                ParticleUtils.createParticleRing(player.getLocation().add(new Vector(0, 0.1, 0)), 4, 5, Particle.DUST, Color.fromRGB(255, 174, 66));
 
                 plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                     player.setVisualFire(false);
