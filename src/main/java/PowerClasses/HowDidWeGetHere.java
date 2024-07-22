@@ -45,7 +45,12 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
                 if (RandomUtils.getRandomIntInRange(0, 20) > 19) {
                     PotionEffectType potion = getRandomElement(potionTypes);
 
-                    hitPlayer.addPotionEffect(new PotionEffect(potion, 20 * 10, 1, false, true));
+                    if (potion == PotionEffectType.HUNGER) {
+                        hitPlayer.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 20 * 10, 3, false, true));
+                    } else {
+                        hitPlayer.addPotionEffect(new PotionEffect(potion, 20 * 10, 1, false, true));
+                    }
+
 
                     hitPlayer.playSound(hitPlayer, Sound.BLOCK_ANVIL_BREAK, 1.f, 1.f);
                     hitPlayer.sendMessage(ChatColor.AQUA + damager.getName() + ChatColor.GREEN + " has given you " + ChatColor.YELLOW + plugin.titleCaseString(potion.getName().replace("_", " ").toLowerCase()) + ChatColor.GREEN + "!");

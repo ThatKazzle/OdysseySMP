@@ -16,7 +16,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
 
 
     PotionEffect satEffect = new PotionEffect(PotionEffectType.SATURATION, 30 * 20, 1, false, false);
-    PotionEffect hungerEffect = new PotionEffect(PotionEffectType.HUNGER, 10 * 20, 1, false, false);
+    PotionEffect hungerEffect = new PotionEffect(PotionEffectType.HUNGER, 10 * 20, 3, false, false);
 
     public BalancedDiet(SimpleS5 plugin) {
         super(plugin);
