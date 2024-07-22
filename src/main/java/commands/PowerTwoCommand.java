@@ -72,6 +72,7 @@ public class PowerTwoCommand implements CommandExecutor {
                             break;
                         case "husbandry/balanced_diet":
                             plugin.balancedDietClass.action(playerName);
+                            break;
                     }
 
                     this.plugin.updateCooldownDisplay();

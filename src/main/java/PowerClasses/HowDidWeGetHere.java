@@ -46,7 +46,7 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
                     PotionEffectType potion = getRandomElement(potionTypes);
 
                     if (potion == PotionEffectType.HUNGER) {
-                        hitPlayer.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 20 * 10, 3, false, true));
+                        hitPlayer.addPotionEffect(new PotionEffect(PotionEffectType.HUNGER, 20 * 10, 59, false, true));
                     } else {
                         hitPlayer.addPotionEffect(new PotionEffect(potion, 20 * 10, 1, false, true));
                     }

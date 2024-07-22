@@ -577,6 +577,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             break;
                         case "husbandry/balanced_diet":
                             cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
+                            break;
                     }
                 }
             } else if (getPlayerPowersList(player) != null && localPlugin.getPlayerPowersList(player).size() == 1) {
@@ -616,6 +617,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             break;
                         case "husbandry/balanced_diet":
                             cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
+                            break;
                     }
                 }
             } else {
