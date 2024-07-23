@@ -78,7 +78,7 @@ public class PowerPotionItem {
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + "ride_strider_in_overworld_lava");
                 default:
                     nameToAdd = displayName;
-                    loreConf = this.plugin.getConfig().getStringList("descriptions." + this.plugin.getAdvancementNameUnformattedFromFormattedString(ChatColor.stripColor(meta.getDisplayName())));
+                    loreConf = this.plugin.getConfig().getStringList("descriptions." + this.plugin.getAdvancementNameUnformattedFromFormattedString(meta.getPersistentDataContainer().get(powerKey, PersistentDataType.STRING)));
                     break;
             }
 

@@ -54,7 +54,7 @@ public abstract class ParentPowerClass {
 
             return ChatColor.RED + formatCooldownTime(timeLeft);
         } else {
-            return ChatColor.GREEN + "Ready!";
+            return "" + ChatColor.GREEN + ChatColor.BOLD + "Ready!";
         }
     }
 
@@ -68,11 +68,11 @@ public abstract class ParentPowerClass {
         long seconds = totalSeconds % 60;
 
         if (totalSeconds <= 0) {
-            return "Ready!";
+            return "" + ChatColor.GREEN + ChatColor.BOLD + "Ready!";
         } else if (minutes > 0) {
-            return minutes + "m " + seconds + "s";
+            return "" + ChatColor.RED + minutes + "m " + seconds + "s";
         } else {
-            return seconds + "s";
+            return "" + ChatColor.RED + seconds + "s";
         }
     }
 }
