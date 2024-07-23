@@ -6,7 +6,9 @@ import org.bukkit.ChatColor;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
@@ -15,6 +17,8 @@ import java.util.UUID;
 
 public class HiredHelp extends ParentPowerClass implements Listener {
     public final HashMap<UUID, Long> cooldowns = new HashMap<>();
+
+    private Player lastDamagedPlayer;
 
     SimpleS5 plugin;
 
@@ -35,7 +39,14 @@ public class HiredHelp extends ParentPowerClass implements Listener {
             IronGolem golem = (IronGolem) player.getWorld().spawnEntity(player.getLocation(), EntityType.IRON_GOLEM);
 
             golem.setAggressive(true);
-            golem.setTarget(findClosestPlayer(player));
+
+            if (lastDamagedPlayer != null) {
+                golem.setTarget(lastDamagedPlayer);
+            } else {
+                golem.setTarget(findClosestPlayer(player));
+            }
+
+
             golem.setCustomName(ChatColor.AQUA + player.getName() + ChatColor.LIGHT_PURPLE + "'s Iron Golem");
 
             golem.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, Integer.MAX_VALUE, 5, false, true));
@@ -45,6 +56,19 @@ public class HiredHelp extends ParentPowerClass implements Listener {
         }
     }
 
+    @EventHandler
+    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+
+        if (!(event.getDamager() instanceof Player)) return;
+        Player damager = (Player) event.getDamager();
+
+        if (!(event.getEntity() instanceof Player)) return;
+        Player defender = (Player) event.getEntity();
+
+        if (plugin.getConfig().getBoolean("players." + damager + ".powers." + "adventure/summon_iron_golem")) {
+            lastDamagedPlayer = defender;
+        }
+    }
     public Player findClosestPlayer(Player targetPlayer) {
         Player closestPlayer = null;
         double closestDistance = Double.MAX_VALUE;
