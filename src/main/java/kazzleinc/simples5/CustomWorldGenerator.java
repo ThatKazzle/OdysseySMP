@@ -19,6 +19,8 @@ public class CustomWorldGenerator extends ChunkGenerator {
         return chunkData; // Return an empty chunk (void)
     }
 
+
+    //custom world gen
     public static void createVoidWorld(JavaPlugin plugin, String worldName) {
         WorldCreator worldCreator = new WorldCreator(worldName);
         worldCreator.environment(World.Environment.NORMAL);
