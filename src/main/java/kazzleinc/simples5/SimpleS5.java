@@ -10,6 +10,7 @@ import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.configuration.ConfigurationSection;
+import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -35,9 +36,7 @@ import java.io.DataOutputStream;
 import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.Objects;
+import java.util.*;
 
 public final class SimpleS5 extends JavaPlugin implements Listener {
 
@@ -386,8 +385,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         String powerName;
 
         if (isAtPowerLimit) {
-
-
             switch (getAdvancementNameFormattedFromAdvancement(advancement)) {
                 case "All Effects":
                     powerName = "How Did We Get Here?";
@@ -633,6 +630,34 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         bd = bd.setScale(decimalPlaces, RoundingMode.HALF_UP);
         return bd.doubleValue();
     }
+
+    public Map<String, Boolean> getAllPowers(FileConfiguration config) {
+        Map<String, Boolean> powersMap = new HashMap<>();
+
+        // Get the "players" section
+        ConfigurationSection playersSection = config.getConfigurationSection("players");
+        if (playersSection == null) {
+            return powersMap; // Return empty map if "players" section is not found
+        }
+
+        // Get all player keys
+        Set<String> playerKeys = playersSection.getKeys(false);
+        for (String playerKey : playerKeys) {
+            // Get the "powers" section for each player
+            ConfigurationSection powersSection = playersSection.getConfigurationSection(playerKey + ".powers");
+            if (powersSection != null) {
+                // Get all power keys and their values
+                Set<String> powerKeys = powersSection.getKeys(false);
+                for (String powerKey : powerKeys) {
+                    boolean value = powersSection.getBoolean(powerKey);
+                    powersMap.put(playerKey + "/" + powerKey, value); // Add to map with player key as prefix
+                }
+            }
+        }
+
+        return powersMap;
+    }
+
 
 
 }

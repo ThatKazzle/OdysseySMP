@@ -11,6 +11,9 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
+
+import static org.apache.logging.log4j.LogManager.getLogger;
 
 public class PowerTwoCommand implements CommandExecutor {
     SimpleS5 plugin;

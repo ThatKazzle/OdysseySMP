@@ -10,8 +10,8 @@ commands:
     description: "Reloads the server config.yml."
     usage: "/reloadconfig"
   odyssey:
-    description: "All things odyssey-plugin related."
-    usage: "/odyssey <withdraw|powers>"
+    description: "All things Odyssey related."
+    usage: "/odyssey <withdraw|description|powers>"
     aliases:
       - "od"
   power1:
