@@ -5,6 +5,7 @@ import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -16,9 +17,11 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.*;
+import java.util.function.Predicate;
 
 import static kazzleinc.simples5.SimpleS5.roundDecimalNumber;
 
@@ -57,13 +60,26 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
         super(plugin);
     }
 
-    public HashMap<UUID, Long> getCooldownList() {
-        return sphereCooldowns;
-    }
-
     @Override
     public void action(String playerName) {
-        monstersHuntedAction(playerName);
+        if (Bukkit.getPlayer(playerName).isSneaking()) {
+            monstersHuntedAction(playerName);
+        } else {
+            blackHoleAction(playerName);
+        }
+
+    }
+
+    @EventHandler
+    public void onPlayerConsumeEvent(PlayerItemConsumeEvent event) {
+        Player player = event.getPlayer();
+        for (Location loc : sphereCenterLocations.values()) {
+            if (loc.distance(player.getLocation()) <= sphereRadius) {
+                if (event.getItem().getType().equals(Material.CHORUS_FRUIT)) {
+                    event.setCancelled(true);
+                }
+            }
+        }
     }
 
     private void monstersHuntedAction(String playerName) {
@@ -102,16 +118,17 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerConsumeEvent(PlayerItemConsumeEvent event) {
-        Player player = event.getPlayer();
-        for (Location loc : sphereCenterLocations.values()) {
-            if (loc.distance(player.getLocation()) <= sphereRadius) {
-                if (event.getItem().getType().equals(Material.CHORUS_FRUIT)) {
-                    event.setCancelled(true);
-                }
-            }
+    private void blackHoleAction(String playerName) {
+        Player player = Bukkit.getPlayer(playerName);
+
+        RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 10, entity -> entity != player);
+
+        if (result != null) {
+            player.sendMessage("Hit location is " + result.getHitPosition());
+
+            player.getWorld().spawnParticle(Particle.FLAME, result.getHitPosition().toLocation(player.getWorld()), 1);
         }
+
     }
 
     public void createSphere(Location center, int radius, Material replacementMaterial, boolean isReplacing) {
