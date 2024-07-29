@@ -30,6 +30,7 @@ import static kazzleinc.simples5.SimpleS5.roundDecimalNumber;
 public class MonstersHunted extends ParentPowerClass implements Listener {
 
     public HashMap<UUID, Long> sphereCooldowns = new HashMap<>();
+    public HashMap<UUID, Long> blackHoleCooldowns = new HashMap<>();
 
     private HashMap<Location, BlockState> blockDataHashMap = new HashMap<>();
 
@@ -84,6 +85,11 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
         }
     }
 
+    @Override
+    public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Black Hole: " + getCooldownTimeLeft(player.getUniqueId(), blackHoleCooldowns);
+    }
+
     private void monstersHuntedAction(String playerName) {
         Player player = this.plugin.getServer().getPlayer(playerName);
 
@@ -124,35 +130,44 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
         Player player = Bukkit.getPlayer(playerName);
 
         if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "adventure/kill_all_mobs")) {
-            RayTraceResult result = player.getWorld().rayTraceBlocks(player.getEyeLocation(), player.getEyeLocation().getDirection(), 10, FluidCollisionMode.NEVER, true);
+            if (!isOnCooldown(player.getUniqueId(), blackHoleCooldowns)) {
+                setCooldown(player.getUniqueId(), blackHoleCooldowns, 120);
+                RayTraceResult result = player.getWorld().rayTraceBlocks(player.getEyeLocation(), player.getEyeLocation().getDirection(), 10, FluidCollisionMode.NEVER, true);
 
-            if (result != null) {
-                player.getWorld().spawnParticle(Particle.DUST, result.getHitPosition().toLocation(player.getWorld()), 1, new Particle.DustOptions(Color.RED, 1));
+                if (result != null) {
+                    player.getWorld().spawnParticle(Particle.DUST, result.getHitPosition().toLocation(player.getWorld()), 1, new Particle.DustOptions(Color.RED, 1));
 
-                BukkitTask particleRunner = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        ParticleUtils.createParticleSphere(result.getHitPosition().toLocation(player.getWorld()), 2, 15, Particle.DUST, Color.BLACK, 2);
-                        ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 4, 20, Particle.DUST, Color.fromRGB(255, 179, 0), 2);
-                    }
-                }.runTaskTimer(plugin, 0, 5);
+                    BukkitTask particleRunner = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            ParticleUtils.createParticleSphere(result.getHitPosition().toLocation(player.getWorld()), 2, 15, Particle.DUST, Color.BLACK, 2);
+                            ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 4, 20, Particle.DUST, Color.fromRGB(255, 179, 0), 2);
+                        }
+                    }.runTaskTimer(plugin, 0, 5);
 
-                BukkitTask puller = new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        player.getWorld().getNearbyEntities()
-                    }
-                }.runTaskTimer(plugin, 0, 1);
+                    BukkitTask puller = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            for (Player player : SimpleS5.getPlayersInRange(result.getHitPosition().toLocation(player.getWorld()), 10)) {
+                                Vector direction = result.getHitPosition().subtract(player.getLocation().toVector()).normalize();
 
-                new BukkitRunnable() {
-                    @Override
-                    public void run() {
-                        particleRunner.cancel();
-                        puller.cancel;
-                    }
-                }.runTaskLater(plugin, 60);
+                                player.setVelocity(player.getVelocity().add(direction.multiply(0.05)));
+                            }
+                        }
+                    }.runTaskTimer(plugin, 0, 0);
+
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            particleRunner.cancel();
+                            puller.cancel();
+                        }
+                    }.runTaskLater(plugin, 20 * 5);
+                } else {
+                    player.sendMessage(ChatColor.RED + "Nothing to spawn on.");
+                }
             } else {
-                player.sendMessage(ChatColor.RED + "Nothing to spawn on.");
+                cantUsePowerMessage(player, blackHoleCooldowns, "Black Hole");
             }
         }
     }
