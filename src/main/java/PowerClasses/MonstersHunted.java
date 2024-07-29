@@ -1,6 +1,8 @@
 package PowerClasses;
 
+import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
+import net.bytebuddy.implementation.bind.annotation.Super;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -62,7 +64,7 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
 
     @Override
     public void action(String playerName) {
-        if (Bukkit.getPlayer(playerName).isSneaking()) {
+        if (!Bukkit.getPlayer(playerName).isSneaking()) {
             monstersHuntedAction(playerName);
         } else {
             blackHoleAction(playerName);
@@ -121,14 +123,38 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
     private void blackHoleAction(String playerName) {
         Player player = Bukkit.getPlayer(playerName);
 
-        RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 10, entity -> entity != player);
+        if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "adventure/kill_all_mobs")) {
+            RayTraceResult result = player.getWorld().rayTraceBlocks(player.getEyeLocation(), player.getEyeLocation().getDirection(), 10, FluidCollisionMode.NEVER, true);
 
-        if (result != null) {
-            player.sendMessage("Hit location is " + result.getHitPosition());
+            if (result != null) {
+                player.getWorld().spawnParticle(Particle.DUST, result.getHitPosition().toLocation(player.getWorld()), 1, new Particle.DustOptions(Color.RED, 1));
 
-            player.getWorld().spawnParticle(Particle.FLAME, result.getHitPosition().toLocation(player.getWorld()), 1);
+                BukkitTask particleRunner = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        ParticleUtils.createParticleSphere(result.getHitPosition().toLocation(player.getWorld()), 2, 15, Particle.DUST, Color.BLACK, 2);
+                        ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 4, 20, Particle.DUST, Color.fromRGB(255, 179, 0), 2);
+                    }
+                }.runTaskTimer(plugin, 0, 5);
+
+                BukkitTask puller = new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        player.getWorld().getNearbyEntities()
+                    }
+                }.runTaskTimer(plugin, 0, 1);
+
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        particleRunner.cancel();
+                        puller.cancel;
+                    }
+                }.runTaskLater(plugin, 60);
+            } else {
+                player.sendMessage(ChatColor.RED + "Nothing to spawn on.");
+            }
         }
-
     }
 
     public void createSphere(Location center, int radius, Material replacementMaterial, boolean isReplacing) {

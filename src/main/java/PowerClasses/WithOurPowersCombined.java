@@ -31,7 +31,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
         if (result.getHitEntity() == null) return;
 
-        ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 1, 20, Particle.DUST, Color.RED);
+        ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 1, 20, Particle.DUST, Color.RED, 1);
 
         //checks to make sure everything lines up right
         if (result.getHitEntity() == null) return;

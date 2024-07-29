@@ -4,8 +4,6 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
-import org.bukkit.plugin.Plugin;
-import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class ParticleUtils {
@@ -19,7 +17,7 @@ public class ParticleUtils {
      * @param particle The type of particle to generate.
      * @param color The color of the particle (only applies if particle is REDSTONE).
      */
-    public static void createParticleRing(Location center, double radius, int density, Particle particle, Color color) {
+    public static void createParticleRing(Location center, double radius, int density, Particle particle, Color color, int size) {
         // Get the world from the location
         World world = center.getWorld();
 
@@ -29,7 +27,7 @@ public class ParticleUtils {
         // Create DustOptions for the particle if needed
         Particle.DustOptions dustOptions = null;
         if (particle == Particle.DUST) {
-            dustOptions = new Particle.DustOptions(color, 1);
+            dustOptions = new Particle.DustOptions(color, size);
         }
 
         // Generate particles in a circle
@@ -177,15 +175,16 @@ public class ParticleUtils {
     /**
      * Creates a sphere of particles at a specified location.
      *
-     * @param center The center location of the sphere.
-     * @param radius The radius of the sphere.
-     * @param density The density of particles on the surface of the sphere.
+     * @param center   The center location of the sphere.
+     * @param radius   The radius of the sphere.
+     * @param density  The density of particles on the surface of the sphere.
      * @param particle The type of particle to generate.
-     * @param color The color of the particle (only applies if particle is DUST).
+     * @param color    The color of the particle (only applies if particle is DUST).
+     * @param i
      */
-    public static void createParticleSphere(Location center, double radius, int density, Particle particle, Color color) {
+    public static void createParticleSphere(Location center, double radius, int density, Particle particle, Color color, int size) {
         World world = center.getWorld();
-        Particle.DustOptions dustOptions = new Particle.DustOptions(color, 1);
+        Particle.DustOptions dustOptions = new Particle.DustOptions(color, size);
 
         double phiStep = Math.PI / density;
         double thetaStep = 2 * Math.PI / density;
