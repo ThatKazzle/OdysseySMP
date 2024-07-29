@@ -142,16 +142,24 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
                         public void run() {
                             ParticleUtils.createParticleSphere(result.getHitPosition().toLocation(player.getWorld()), 2, 15, Particle.DUST, Color.BLACK, 2);
                             ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 4, 20, Particle.DUST, Color.fromRGB(255, 179, 0), 2);
+                            for (Player playerCheck : SimpleS5.getPlayersInRange(result.getHitPosition().toLocation(player.getWorld()), 10)) {
+                                if (player != playerCheck) {
+                                    playerCheck.setHealth(player.getHealth() - 1);
+                                    playerCheck.damage(0.0001);
+                                }
+                            }
                         }
                     }.runTaskTimer(plugin, 0, 5);
 
                     BukkitTask puller = new BukkitRunnable() {
                         @Override
                         public void run() {
-                            for (Player player : SimpleS5.getPlayersInRange(result.getHitPosition().toLocation(player.getWorld()), 10)) {
-                                Vector direction = result.getHitPosition().subtract(player.getLocation().toVector()).normalize();
+                            for (Player playerCheck : SimpleS5.getPlayersInRange(result.getHitPosition().toLocation(player.getWorld()), 10)) {
+                                Vector direction = result.getHitPosition().subtract(playerCheck.getLocation().toVector()).normalize();
 
-                                player.setVelocity(player.getVelocity().add(direction.multiply(0.05)));
+                                if (playerCheck != player) {
+                                    playerCheck.setVelocity(playerCheck.getVelocity().add(direction.multiply(0.05)));
+                                }
                             }
                         }
                     }.runTaskTimer(plugin, 0, 0);
