@@ -31,6 +31,8 @@ public class resetCooldownCommand implements CommandExecutor {
             }
 
             if (cmdSender.isOp()) {
+                //plugin.modifyHashMapsInSubclasses(cmdSender.getUniqueId());
+
                 resetAllCooldowns(cmdSender);
                 plugin.updateCooldownDisplay();
             }
@@ -40,6 +42,7 @@ public class resetCooldownCommand implements CommandExecutor {
             } else {
                 if (args.length == 1) {
                     if (cmdSender.isOp()) {
+                        //plugin.modifyHashMapsInSubclasses(player2.getUniqueId());
                         resetAllCooldowns(player2);
                         plugin.updateCooldownDisplay();
                     } else {

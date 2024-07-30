@@ -30,10 +30,13 @@ import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import kazzleinc.simples5.ParticleUtils;
+import org.reflections.Reflections;
+import org.reflections.scanners.SubTypesScanner;
 
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
+import java.lang.reflect.Field;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -658,6 +661,29 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         return powersMap;
     }
 
+    /**
+     * Gets all players within a specified radius from a given location.
+     *
+     * @param center The center location.
+     * @param radius The radius to search within.
+     * @return A list of players within the radius.
+     */
+    public static List<Player> getPlayersInRange(Location center, double radius) {
+        List<Player> playersInRange = new ArrayList<>();
+        double radiusSquared = radius * radius; // Use squared distance for efficiency
 
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            if (player.getWorld().equals(center.getWorld())) {
+                // Compare squared distances to avoid expensive square root calculations
+                if (center.distance(player.getLocation()) < radius) {
 
+                    //player.sendMessage("distance: " + center.distance(player.getLocation()) + " radius: " + radius);
+
+                    playersInRange.add(player);
+                }
+            }
+        }
+
+        return playersInRange;
+    }
 }
