@@ -124,7 +124,8 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
                             double freezeDiv = (double) freeze / 100;
                             player.sendMessage(String.valueOf(freezeDiv));
 
-                            ParticleUtils.createParticleRing(getInterpolatedLocation(hitPlayer.getLocation(), hitPlayer.getEyeLocation(), freezeDiv), 1.5, 40, Particle.DUST, Color.WHITE, 1);
+                            ParticleUtils.createParticleRing(getInterpolatedLocation(hitPlayer.getLocation(), hitPlayer.getEyeLocation(), freezeDiv), 1.5, 30, Particle.DUST, Color.WHITE, 1);
+                            ParticleUtils.createParticleRing(getInterpolatedLocation(hitPlayer.getLocation(), hitPlayer.getEyeLocation(), 1 - freezeDiv), 1.5, 30, Particle.DUST, Color.WHITE, 1);
                         }
                     }.runTaskTimer(plugin, 0, 1);
 
