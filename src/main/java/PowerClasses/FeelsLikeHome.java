@@ -63,6 +63,8 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
         }
     }
 
+    //make 15% chance to hit player with fire
+
     @EventHandler
     public void onPlayerMoveEvent(PlayerMoveEvent event) {
         Player player = event.getPlayer();;

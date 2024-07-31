@@ -3,13 +3,22 @@ package PowerClasses;
 import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketEvent;
+import com.destroystokyo.paper.event.player.PlayerJumpEvent;
+import it.unimi.dsi.fastutil.Hash;
+import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Sound;
+import org.bukkit.*;
+import org.bukkit.block.data.type.Bed;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
+import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Vector;
 
 import java.util.HashMap;
 import java.util.HashSet;
@@ -19,7 +28,11 @@ import java.util.UUID;
 public class UneasyAlliance extends ParentPowerClass implements Listener {
 
     private final Set<UUID> invisiblePlayers = new HashSet<>();
+
     public final HashMap<UUID, Long> cooldowns = new HashMap<>();
+    public final HashMap<UUID, Long> freezeCooldowns = new HashMap<>();
+
+    public final HashMap<UUID, Boolean> isFrozen = new HashMap<>();
 
     public UneasyAlliance(SimpleS5 plugin) {
         super(plugin);
@@ -28,6 +41,39 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
     @Override
     public void action(String playerName) {
         Player player = plugin.getServer().getPlayer(playerName);
+
+        if (!player.isSneaking()) {
+            invisAction(player);
+        } else {
+            freezeAction(player);
+        }
+
+    }
+
+    @EventHandler
+    public void onPlayerJumpEvent(PlayerJumpEvent event) {
+        Player player = event.getPlayer();
+
+        if (isFrozen.containsKey(player.getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerMoveEvent(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+
+        if (isFrozen.containsKey(player.getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @Override
+    public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Freeze Ray: " + getCooldownTimeLeft(player.getUniqueId(), freezeCooldowns);
+    }
+
+    private void invisAction(Player player) {
         if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "nether/uneasy_alliance")) {
             if (isOnCooldown(player.getUniqueId(), cooldowns)) {
                 cantUsePowerMessage(player, cooldowns, "Invisibility");
@@ -41,7 +87,63 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
                 setCooldown(player.getUniqueId(), cooldowns, 5 * 60);
             }
         }
+    }
 
+    private void freezeAction(Player player) {
+        if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "nether/uneasy_alliance")) {
+            if (!isOnCooldown(player.getUniqueId(), freezeCooldowns)) {
+
+                RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
+
+                if (result != null && result.getHitEntity() instanceof Player) {
+                    setCooldown(player.getUniqueId(), freezeCooldowns, 60);
+
+                    Player hitPlayer = (Player) result.getHitEntity();
+
+                    player.sendMessage(ChatColor.AQUA + "You hit " + ChatColor.GOLD + hitPlayer.getName());
+
+                    isFrozen.put(hitPlayer.getUniqueId(), true);
+                    hitPlayer.setAllowFlight(true);
+
+                    BukkitTask soundRunner = new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            //ParticleUtils.createParticleRing(hitPlayer.getEyeLocation(), 1.5, 40, Particle.DUST, Color.WHITE, 1);
+                            hitPlayer.getWorld().playSound(hitPlayer.getLocation(), Sound.ENTITY_PLAYER_HURT_FREEZE, 1.f, 1.f);
+
+                            hitPlayer.damage(1);
+                        }
+                    }.runTaskTimer(plugin, 0, 20);
+
+                    BukkitTask particleRunner = new BukkitRunnable() {
+                        int freeze = 0;
+                        @Override
+                        public void run() {
+
+                            freeze += 1;
+                            double freezeDiv = (double) freeze / 1000;
+                            player.sendMessage(String.valueOf(freeze));
+
+                            ParticleUtils.createParticleRing(getInterpolatedLocation(hitPlayer.getLocation(), hitPlayer.getEyeLocation(), freezeDiv), 1.5, 40, Particle.DUST, Color.WHITE, 1);
+                        }
+                    }.runTaskTimer(plugin, 0, 1);
+
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            player.sendMessage("unfroze " + hitPlayer.getName());
+                            isFrozen.remove(hitPlayer.getUniqueId());
+                            hitPlayer.setAllowFlight(true);
+                            soundRunner.cancel();
+                            particleRunner.cancel();
+                            this.cancel();
+                        }
+                    }.runTaskLater(plugin, 20 * 5);
+                } else {
+                    player.sendMessage(ChatColor.RED + "No players were hit.");
+                }
+            }
+        }
     }
 
     public void registerInvisListener() {
@@ -89,5 +191,22 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
 
     public boolean isInvisible(Player player) {
         return invisiblePlayers.contains(player.getUniqueId());
+    }
+
+    public Location getInterpolatedLocation(Location start, Location end, double t) {
+        if (t < 0.0 || t > 1.0) {
+            throw new IllegalArgumentException("t must be between 0 and 1");
+        }
+
+        double x = lerp(start.getX(), end.getX(), t);
+        double y = lerp(start.getY(), end.getY(), t);
+        double z = lerp(start.getZ(), end.getZ(), t);
+
+        // Return the new Location object with interpolated coordinates
+        return new Location(start.getWorld(), x, y, z);
+    }
+
+    private double lerp(double start, double end, double t) {
+        return (1 - t) * start + t * end;
     }
 }

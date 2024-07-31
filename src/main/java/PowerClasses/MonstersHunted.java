@@ -144,8 +144,9 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
                             ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 4, 20, Particle.DUST, Color.fromRGB(255, 179, 0), 2);
                             for (Player playerCheck : SimpleS5.getPlayersInRange(result.getHitPosition().toLocation(player.getWorld()), 10)) {
                                 if (player != playerCheck) {
-                                    playerCheck.setHealth(player.getHealth() - 1);
-                                    playerCheck.damage(0.0001);
+                                    playerCheck.setHealth(playerCheck.getHealth() - 1);
+                                    playerCheck.setSaturation(0);
+                                    playerCheck.damage(0.1);
                                 }
                             }
                         }
