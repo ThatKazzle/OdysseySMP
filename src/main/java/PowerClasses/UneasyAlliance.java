@@ -133,7 +133,7 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
                         public void run() {
                             player.sendMessage("unfroze " + hitPlayer.getName());
                             isFrozen.remove(hitPlayer.getUniqueId());
-                            hitPlayer.setAllowFlight(true);
+                            hitPlayer.setAllowFlight(false);
                             soundRunner.cancel();
                             particleRunner.cancel();
                             this.cancel();
