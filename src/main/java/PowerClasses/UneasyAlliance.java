@@ -111,6 +111,7 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
                             //ParticleUtils.createParticleRing(hitPlayer.getEyeLocation(), 1.5, 40, Particle.DUST, Color.WHITE, 1);
                             hitPlayer.getWorld().playSound(hitPlayer.getLocation(), Sound.ENTITY_PLAYER_HURT_FREEZE, 1.f, 1.f);
 
+                            hitPlayer.setSaturation(0);
                             hitPlayer.damage(1);
                         }
                     }.runTaskTimer(plugin, 0, 20);
