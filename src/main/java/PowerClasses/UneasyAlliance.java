@@ -112,7 +112,8 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
                             hitPlayer.getWorld().playSound(hitPlayer.getLocation(), Sound.ENTITY_PLAYER_HURT_FREEZE, 1.f, 1.f);
 
                             hitPlayer.setSaturation(0);
-                            hitPlayer.damage(1);
+                            hitPlayer.damage(0.1);
+                            hitPlayer.setHealth(hitPlayer.getHealth() - 1);
                         }
                     }.runTaskTimer(plugin, 0, 20);
 
@@ -123,7 +124,7 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
 
                             freeze += 1;
                             double freezeDiv = (double) freeze / 100;
-                            player.sendMessage(String.valueOf(freezeDiv));
+                            //player.sendMessage(String.valueOf(freezeDiv));
 
                             ParticleUtils.createParticleRing(getInterpolatedLocation(hitPlayer.getLocation(), hitPlayer.getEyeLocation(), freezeDiv), 1.5, 30, Particle.DUST, Color.WHITE, 1);
                             ParticleUtils.createParticleRing(getInterpolatedLocation(hitPlayer.getLocation(), hitPlayer.getEyeLocation(), 1 - freezeDiv), 1.5, 30, Particle.DUST, Color.WHITE, 1);
