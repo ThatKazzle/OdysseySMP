@@ -151,7 +151,7 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
                                     mappedDamage = plugin.mapValue(damageToDo, 0, 10, 0.75, 0.1);
 
                                     if (playerCheck.getHealth() - mappedDamage < 0) {
-                                        player.setHealth(0);
+                                        playerCheck.setHealth(0);
                                     } else {
                                         playerCheck.setHealth(playerCheck.getHealth() - mappedDamage);
                                     }
