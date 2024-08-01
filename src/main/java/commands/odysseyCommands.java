@@ -134,10 +134,6 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
             this.plugin.removePlayerAdvancement(player, plugin.getAdvancementKeyFromFormattedString(powerName));
             this.plugin.getConfig().set("players." + player.getName() + ".powers." +  plugin.getAdvancementKeyFromFormattedString(powerName), false);
 
-            if (clickedItem.getItemMeta().getDisplayName().equals("Complete Catalogue")) {
-                this.plugin.catalogueClass.removeCataloguePower(player);
-            }
-
             this.plugin.saveConfig();
 
             giveItem(player, clickedItem);

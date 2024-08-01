@@ -100,8 +100,6 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
 
                     Player hitPlayer = (Player) result.getHitEntity();
 
-                    player.sendMessage(ChatColor.AQUA + "You hit " + ChatColor.GOLD + hitPlayer.getName());
-
                     isFrozen.put(hitPlayer.getUniqueId(), true);
                     hitPlayer.setAllowFlight(true);
 
@@ -185,7 +183,7 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
         }
 
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.5f);
-        player.sendActionBar(ChatColor.GREEN + "You are now " + ChatColor.RED + "completely invisible" + ChatColor.GREEN + ".");
+        plugin.sendJukeboxMessage(player, ChatColor.GREEN + "You are now " + ChatColor.RED + "completely invisible" + ChatColor.GREEN + ".");
     }
 
     public void makePlayerVisible(Player player) {
@@ -194,7 +192,7 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
             onlinePlayer.showPlayer(plugin, player);
         }
         player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.7f);
-        player.sendActionBar(ChatColor.GREEN + "You are no longer " + ChatColor.RED + "completely invisible" + ChatColor.GREEN + ".");
+        plugin.sendJukeboxMessage(player, ChatColor.GREEN + "You are no longer " + ChatColor.RED + "completely invisible" + ChatColor.GREEN + ".");
     }
 
     public boolean isInvisible(Player player) {

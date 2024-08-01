@@ -1,29 +1,29 @@
 package PowerClasses;
 
 import kazzleinc.simples5.SimpleS5;
+import org.bukkit.Bukkit;
+import org.bukkit.Effect;
 import org.bukkit.Material;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
-import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 
-import java.lang.reflect.Constructor;
-import java.lang.reflect.Method;
-import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
+import java.util.List;
 import java.util.UUID;
 
 public class CompleteCatalogue extends ParentPowerClass implements Listener {
 
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
+    public HashMap<UUID, Long> clearEffectsCooldown = new HashMap<>();
+
+    List<PotionEffectType> negPotionTypes = Arrays.asList(PotionEffectType.BLINDNESS, PotionEffectType.SLOWNESS, PotionEffectType.WEAKNESS, PotionEffectType.WITHER, PotionEffectType.NAUSEA, PotionEffectType.HUNGER, PotionEffectType.DARKNESS, PotionEffectType.MINING_FATIGUE, PotionEffectType.SLOW_FALLING);
 
     SimpleS5 plugin;
     public CompleteCatalogue(SimpleS5 plugin) {
@@ -33,17 +33,19 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
 
     @Override
     public void action(String playerName) {
-
+        clearEffectsAction(Bukkit.getPlayer(playerName));
     }
 
-    public void giveCataloguePower(Player player) {
-//        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(24);
-//        player.addPotionEffect(new PotionEffect(PotionEffectType.LUCK, Integer.MAX_VALUE, 0, true, true));
-    }
-
-    public void removeCataloguePower(Player player) {
-//        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
-//        player.removePotionEffect(PotionEffectType.LUCK);
+    public void clearEffectsAction(Player player) {
+        if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue")) {
+            if (!isOnCooldown(player.getUniqueId(), clearEffectsCooldown)) {
+                for (PotionEffect effect : player.getActivePotionEffects()) {
+                    if (negPotionTypes.contains(effect.getType())) player.removePotionEffect(effect.getType());
+                    player.sendMessage("Removed negative potion effects!");
+                    player.playEffect(player.getLocation(), Effect.RECORD_PLAY, 10);
+                }
+            }
+        }
     }
 
     @EventHandler
@@ -54,34 +56,8 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
             if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue") && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 event.setCancelled(true);
             }
-
-//            if (player.getHealth() - event.getFinalDamage() <= 0 && plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue")) {
-//                event.setCancelled(true);
-//
-//                applyTotemEffects(player);
-//                playTotemAnimation(player);
-//
-//                player.getWorld().playSound(player.getLocation(), Sound.ITEM_TOTEM_USE, 1.0f, 1.0f);
-//                player.getWorld().spawnParticle(Particle.TOTEM, player.getLocation(), 30);
-//            }
         }
     }
-
-//    @EventHandler
-//    public void onPlayerDeath(PlayerDeathEvent event) {
-//        // Restore the player's health and cancel the death
-//        new BukkitRunnable() {
-//            @Override
-//            public void run() {
-//                if (event.getEntity().isDead()) {
-//                    // Prevent the player from dying
-//                    event.getEntity().setHealth(event.getEntity().getMaxHealth());
-//                    event.getEntity().spigot().respawn();
-//                    event.getEntity().sendMessage("You were saved from death!");
-//                }
-//            }
-//        }.runTaskLater(this.plugin, 1L); // Schedule to run 1 tick later to ensure the player is still alive
-//    }
 
     @EventHandler
     public void onPlayerDamage(EntityDamageEvent event) {
@@ -109,28 +85,6 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
 
                 }
             }
-        }
-    }
-
-    private void playTotemAnimation(Player player) {
-        try {
-            // Get the Player Connection
-            Object nmsPlayer = player.getClass().getMethod("getHandle").invoke(player);
-            Object playerConnection = nmsPlayer.getClass().getField("b").get(nmsPlayer);
-
-            // Get the PacketPlayOutEntityStatus packet
-            Class<?> packetClass = Class.forName("net.minecraft.network.protocol.game.PacketPlayOutEntityStatus");
-            Constructor<?> packetConstructor = packetClass.getConstructor(Class.forName("net.minecraft.world.entity.Entity"), byte.class);
-
-            // Create the packet
-            Object packet = packetConstructor.newInstance(nmsPlayer, (byte) 35);
-
-            // Send the packet to the player
-            Method sendPacketMethod = playerConnection.getClass().getMethod("a", Class.forName("net.minecraft.network.protocol.Packet"));
-            sendPacketMethod.invoke(playerConnection, packet);
-
-        } catch (Exception e) {
-            e.printStackTrace();
         }
     }
 

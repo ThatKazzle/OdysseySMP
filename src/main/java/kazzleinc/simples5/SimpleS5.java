@@ -1,8 +1,13 @@
 package kazzleinc.simples5;
 
 import PowerClasses.*;
+import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
+import com.comphenix.protocol.events.PacketAdapter;
+import com.comphenix.protocol.events.PacketContainer;
+import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import commands.*;
 import io.papermc.paper.advancement.AdvancementDisplay;
 import org.bukkit.*;
@@ -37,6 +42,7 @@ import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
 import java.lang.reflect.Field;
+import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -112,13 +118,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 //fixing the bug with the catalogue not removing the power
                 for (Player player : Bukkit.getOnlinePlayers()) {
                     if (getPlayerPowersList(player) != null) {
-                        if (!getPlayerPowersList(player).contains("husbandry/complete_catalogue")) {
-                            catalogueClass.removeCataloguePower(player);
-                        }
 
-                        if (!getPlayerPowersList(player).contains("nether/ride_strider_in_overworld_lava")) {
-                            feelsLikeHomeClass.removeFireResistance(player);
-                        }
                     }
 
 
@@ -198,10 +198,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getPlayer();
         for (String keys : getConfig().getConfigurationSection("players." + player.getName() + ".powers").getKeys(false)) {
-            if (keys.equals("complete_catalogue")) {
-                catalogueClass.removeCataloguePower(player);
-                resetPlayerHealthAttribute = true;
-            }
 
             if (keys.equals("ride_strider_in_overworld_lava")) {
                 feelsLikeHomeClass.removeFireResistance(player);
@@ -442,9 +438,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             player.sendTitle("New Power Collected!: " + powerName, "type " + ChatColor.GREEN + "\"/od powers\" for details.");
 
             getConfig().set("players." + player.getName() + ".powers." + getAdvancementNameUnformatted(advancement), true);
-            if (advancement.getKey().getKey().equals("husbandry/complete_catalogue")) {
-                catalogueClass.giveCataloguePower(player);
-            }
         }
 
         saveConfig();
@@ -698,4 +691,23 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         // Scale the normalized value to the output range
         return outMin + (normalizedValue * (outMax - outMin));
     }
+
+    public void sendJukeboxMessage(Player player, String message) {
+        // Create a wrapped chat component with the custom text
+        WrappedChatComponent chatComponent = WrappedChatComponent.fromText(message);
+
+        // Create the packet to send the message
+        PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.CHAT);
+
+        // Write the chat component to the packet
+        packet.getChatComponents().write(0, chatComponent);
+
+        // Set the message position to below the action bar
+        packet.getBytes().write(0, (byte) 2); // 2 is the position for the record/play text area
+
+        // Send the packet to the specified player
+        protocolManager.sendServerPacket(player, packet);
+    }
+
+
 }
