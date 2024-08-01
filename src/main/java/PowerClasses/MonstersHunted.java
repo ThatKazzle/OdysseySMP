@@ -140,13 +140,26 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
                     BukkitTask particleRunner = new BukkitRunnable() {
                         @Override
                         public void run() {
+                            double damageToDo;
+                            double mappedDamage;
+
                             ParticleUtils.createParticleSphere(result.getHitPosition().toLocation(player.getWorld()), 2, 15, Particle.DUST, Color.BLACK, 2);
                             ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 4, 20, Particle.DUST, Color.fromRGB(255, 179, 0), 2);
                             for (Player playerCheck : SimpleS5.getPlayersInRange(result.getHitPosition().toLocation(player.getWorld()), 10)) {
-                                if (player != playerCheck) {
-                                    playerCheck.setHealth(playerCheck.getHealth() - 1);
+                                if (player != playerCheck && !playerCheck.isDead()) {
+
+                                    damageToDo = playerCheck.getLocation().distance(result.getHitPosition().toLocation(playerCheck.getWorld()));
+
+                                    mappedDamage = plugin.mapValue(damageToDo, 0, 10, 0.1, 0.75);
+
+                                    if (playerCheck.getHealth() - mappedDamage < 0) {
+                                        player.setHealth(0);
+                                    } else {
+                                        playerCheck.setHealth(playerCheck.getHealth() - mappedDamage);
+                                    }
+
                                     playerCheck.setSaturation(0);
-                                    playerCheck.damage(0.1);
+                                    playerCheck.damage(0.01);
                                 }
                             }
                         }

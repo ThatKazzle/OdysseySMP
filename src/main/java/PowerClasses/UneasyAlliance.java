@@ -112,8 +112,13 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
                             hitPlayer.getWorld().playSound(hitPlayer.getLocation(), Sound.ENTITY_PLAYER_HURT_FREEZE, 1.f, 1.f);
 
                             hitPlayer.setSaturation(0);
-                            hitPlayer.damage(0.1);
-                            hitPlayer.setHealth(hitPlayer.getHealth() - 1);
+                            hitPlayer.damage(0.000001);
+
+                            if (hitPlayer.getHealth() - 0.75 < 0) {
+                                hitPlayer.setHealth(0);
+                            } else {
+                                hitPlayer.setHealth(hitPlayer.getHealth());
+                            }
                         }
                     }.runTaskTimer(plugin, 0, 20);
 

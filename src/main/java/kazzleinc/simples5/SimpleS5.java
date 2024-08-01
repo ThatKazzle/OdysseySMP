@@ -686,4 +686,16 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
         return playersInRange;
     }
+
+    public double mapValue(double value, double inMin, double inMax, double outMin, double outMax) {
+        if (inMin == inMax) {
+            throw new IllegalArgumentException("inMin and inMax cannot be the same value");
+        }
+
+        // Normalize the input value within the input range
+        double normalizedValue = (value - inMin) / (inMax - inMin);
+
+        // Scale the normalized value to the output range
+        return outMin + (normalizedValue * (outMax - outMin));
+    }
 }
