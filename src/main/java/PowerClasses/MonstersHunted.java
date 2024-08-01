@@ -150,7 +150,9 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
 
                                     damageToDo = playerCheck.getLocation().distance(result.getHitPosition().toLocation(playerCheck.getWorld()));
 
-                                    mappedDamage = plugin.mapValue(damageToDo, 0, 10, 0.1, 0.75);
+                                    mappedDamage = plugin.mapValue(damageToDo, 0, 10, 0.75, 0.1);
+
+                                    player.sendMessage("damage to do: (distance) " + damageToDo + ", mapped damage " + mappedDamage);
 
                                     if (playerCheck.getHealth() - mappedDamage < 0) {
                                         player.setHealth(0);
