@@ -4,6 +4,7 @@ import kazzleinc.simples5.SimpleS5;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -45,20 +46,26 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
     public void effectStealerAction(Player player) {
         if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue")) {
             if (!isOnCooldown(player.getUniqueId(), effectStealerCooldown)) {
-                setCooldown(player.getUniqueId(), effectStealerCooldown, 120);
 
                 RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
 
                 if (result != null && result.getHitEntity() != null && result.getHitEntity() instanceof Player) {
+                    setCooldown(player.getUniqueId(), effectStealerCooldown, 120);
                     Player hitPlayer = (Player) result.getHitEntity();
 
                     if (!hitPlayer.getActivePotionEffects().isEmpty()) {
                         for (PotionEffect effect : hitPlayer.getActivePotionEffects()) {
                             player.addPotionEffect(effect);
+                            hitPlayer.removePotionEffect(effect.getType());
                         }
+                        hitPlayer.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1.f, 1.f);
+
                         player.sendMessage(ChatColor.AQUA + "You stole " + ChatColor.GREEN + hitPlayer.getName() + "'s " + ChatColor.AQUA + "powers.");
                         player.sendMessage(ChatColor.GREEN + player.getName() + ChatColor.AQUA + " stole your powers.");
                     }
+                } else {
+                    player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
+                    player.sendMessage("You didn't hit a player.");
                 }
             }
         }
