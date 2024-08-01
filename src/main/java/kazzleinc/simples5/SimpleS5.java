@@ -7,7 +7,9 @@ import com.comphenix.protocol.ProtocolManager;
 import com.comphenix.protocol.events.PacketAdapter;
 import com.comphenix.protocol.events.PacketContainer;
 import com.comphenix.protocol.events.PacketEvent;
+import com.comphenix.protocol.wrappers.WrappedAttribute;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
+import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import commands.*;
 import io.papermc.paper.advancement.AdvancementDisplay;
 import org.bukkit.*;
@@ -691,23 +693,4 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         // Scale the normalized value to the output range
         return outMin + (normalizedValue * (outMax - outMin));
     }
-
-    public void sendJukeboxMessage(Player player, String message) {
-        // Create a wrapped chat component with the custom text
-        WrappedChatComponent chatComponent = WrappedChatComponent.fromText(message);
-
-        // Create the packet to send the message
-        PacketContainer packet = protocolManager.createPacket(PacketType.Play.Server.CHAT);
-
-        // Write the chat component to the packet
-        packet.getChatComponents().write(0, chatComponent);
-
-        // Set the message position to below the action bar
-        packet.getBytes().write(0, (byte) 2); // 2 is the position for the record/play text area
-
-        // Send the packet to the specified player
-        protocolManager.sendServerPacket(player, packet);
-    }
-
-
 }

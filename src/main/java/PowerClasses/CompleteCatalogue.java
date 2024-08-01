@@ -2,7 +2,7 @@ package PowerClasses;
 
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.Bukkit;
-import org.bukkit.Effect;
+import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
@@ -12,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.RayTraceResult;
 
 import java.util.Arrays;
 import java.util.HashMap;
@@ -21,7 +22,7 @@ import java.util.UUID;
 public class CompleteCatalogue extends ParentPowerClass implements Listener {
 
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
-    public HashMap<UUID, Long> clearEffectsCooldown = new HashMap<>();
+    public HashMap<UUID, Long> effectStealerCooldown = new HashMap<>();
 
     List<PotionEffectType> negPotionTypes = Arrays.asList(PotionEffectType.BLINDNESS, PotionEffectType.SLOWNESS, PotionEffectType.WEAKNESS, PotionEffectType.WITHER, PotionEffectType.NAUSEA, PotionEffectType.HUNGER, PotionEffectType.DARKNESS, PotionEffectType.MINING_FATIGUE, PotionEffectType.SLOW_FALLING);
 
@@ -33,16 +34,31 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
 
     @Override
     public void action(String playerName) {
-        clearEffectsAction(Bukkit.getPlayer(playerName));
+        effectStealerAction(Bukkit.getPlayer(playerName));
     }
 
-    public void clearEffectsAction(Player player) {
+    @Override
+    public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Potion Stealer: " + getCooldownTimeLeft(player.getUniqueId(), effectStealerCooldown);
+    }
+
+    public void effectStealerAction(Player player) {
         if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue")) {
-            if (!isOnCooldown(player.getUniqueId(), clearEffectsCooldown)) {
-                for (PotionEffect effect : player.getActivePotionEffects()) {
-                    if (negPotionTypes.contains(effect.getType())) player.removePotionEffect(effect.getType());
-                    player.sendMessage("Removed negative potion effects!");
-                    player.playEffect(player.getLocation(), Effect.RECORD_PLAY, 10);
+            if (!isOnCooldown(player.getUniqueId(), effectStealerCooldown)) {
+                setCooldown(player.getUniqueId(), effectStealerCooldown, 120);
+
+                RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
+
+                if (result != null && result.getHitEntity() != null && result.getHitEntity() instanceof Player) {
+                    Player hitPlayer = (Player) result.getHitEntity();
+
+                    if (!hitPlayer.getActivePotionEffects().isEmpty()) {
+                        for (PotionEffect effect : hitPlayer.getActivePotionEffects()) {
+                            player.addPotionEffect(effect);
+                        }
+                        player.sendMessage(ChatColor.AQUA + "You stole " + ChatColor.GREEN + hitPlayer.getName() + "'s " + ChatColor.AQUA + "powers.");
+                        player.sendMessage(ChatColor.GREEN + player.getName() + ChatColor.AQUA + " stole your powers.");
+                    }
                 }
             }
         }
