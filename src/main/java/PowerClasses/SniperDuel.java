@@ -50,13 +50,15 @@ public class SniperDuel extends ParentPowerClass implements Listener {
 
                 StringBuilder displayableList = new StringBuilder();
                 for (Player playerCheck : this.plugin.getServer().getOnlinePlayers()) {
-                    if (playerCheck != player && player.getLocation().distance(playerCheck.getLocation()) <= 50) {
-                        affectedPlayers.add(playerCheck);
-                        applyEffects(playerCheck);
-                        PotionEffect strength = new PotionEffect(PotionEffectType.STRENGTH, 200, 1, false, false, true);
-                        player.addPotionEffect(strength);
+                    if (player.getWorld() == playerCheck.getWorld()) {
+                        if (playerCheck != player && player.getLocation().distance(playerCheck.getLocation()) <= 50) {
+                            affectedPlayers.add(playerCheck);
+                            applyEffects(playerCheck);
+                            PotionEffect strength = new PotionEffect(PotionEffectType.STRENGTH, 200, 1, false, false, true);
+                            player.addPotionEffect(strength);
 
-                        displayableList.append(ChatColor.AQUA + playerCheck.getName()).append(ChatColor.GREEN + ", ");
+                            displayableList.append(ChatColor.AQUA + playerCheck.getName()).append(ChatColor.GREEN + ", ");
+                        }
                     }
                 }
 
@@ -69,7 +71,7 @@ public class SniperDuel extends ParentPowerClass implements Listener {
                         displayableList.insert(displayableList.length() - affectedPlayers.getLast().getName().length(), ChatColor.GREEN + " and " + ChatColor.AQUA);
                     }
 
-                    player.sendActionBar(ChatColor.GREEN + "affected " + displayableList + "!");
+                    player.sendActionBar(ChatColor.GREEN + "affected " + displayableList.toString() + "!");
                 } else {
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
 
