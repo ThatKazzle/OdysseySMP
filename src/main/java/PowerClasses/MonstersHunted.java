@@ -147,12 +147,8 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
                             ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 4, 20, Particle.DUST, Color.fromRGB(255, 179, 0), 2);
                             for (Player playerCheck : SimpleS5.getPlayersInRange(result.getHitPosition().toLocation(player.getWorld()), 10)) {
                                 if (player != playerCheck && !playerCheck.isDead()) {
-
                                     damageToDo = playerCheck.getLocation().distance(result.getHitPosition().toLocation(playerCheck.getWorld()));
-
                                     mappedDamage = plugin.mapValue(damageToDo, 0, 10, 0.75, 0.1);
-
-                                    player.sendMessage("damage to do: (distance) " + damageToDo + ", mapped damage " + mappedDamage);
 
                                     if (playerCheck.getHealth() - mappedDamage < 0) {
                                         player.setHealth(0);
