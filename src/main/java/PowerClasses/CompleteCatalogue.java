@@ -61,7 +61,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
                         hitPlayer.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1.f, 1.f);
 
                         player.sendMessage(ChatColor.AQUA + "You stole " + ChatColor.GREEN + hitPlayer.getName() + "'s " + ChatColor.AQUA + "powers.");
-                        player.sendMessage(ChatColor.GREEN + player.getName() + ChatColor.AQUA + " stole your powers.");
+                        hitPlayer.sendMessage(ChatColor.GREEN + player.getName() + ChatColor.AQUA + " stole your powers.");
                     }
                 } else {
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
