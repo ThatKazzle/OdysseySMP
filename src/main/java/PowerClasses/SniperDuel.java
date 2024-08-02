@@ -46,7 +46,8 @@ public class SniperDuel extends ParentPowerClass implements Listener {
 
                 double timeLeft = roundDecimalNumber((cooldowns.get(player.getUniqueId()) - System.currentTimeMillis()), 1) / 1000;
             } else if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
-                //setCooldown(player.getUniqueId(), cooldowns, 60);
+                PotionEffect strength = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 1, false, false, true);
+                player.addPotionEffect(strength);
 
                 StringBuilder displayableList = new StringBuilder();
                 for (Player playerCheck : this.plugin.getServer().getOnlinePlayers()) {
@@ -54,8 +55,6 @@ public class SniperDuel extends ParentPowerClass implements Listener {
                         if (playerCheck != player && player.getLocation().distance(playerCheck.getLocation()) <= 50) {
                             affectedPlayers.add(playerCheck);
                             applyEffects(playerCheck);
-                            PotionEffect strength = new PotionEffect(PotionEffectType.STRENGTH, 200, 1, false, false, true);
-                            player.addPotionEffect(strength);
 
                             displayableList.append(ChatColor.AQUA + playerCheck.getName()).append(ChatColor.GREEN + ", ");
                         }
@@ -85,43 +84,44 @@ public class SniperDuel extends ParentPowerClass implements Listener {
         }
     }
 
-    @EventHandler
-    public void onShootBowEvent(EntityShootBowEvent event) {
-        if (!(event.getEntity() instanceof Player)) {
-            return;
-        }
-
-        Player shooter = (Player) event.getEntity();
-        if (!(event.getProjectile() instanceof Arrow)) {
-            return;
-        }
-
-        if (!isOnCooldown(shooter.getUniqueId(), cooldowns)) {
-            return;
-        }
-
-        Arrow arrow = (Arrow) event.getProjectile();
-        Player target = getTargetedPlayer((Player) event.getEntity(), 1000);
-
-        if (target != null) {
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    if (arrow.isDead() || target.isDead() || !arrow.isValid() || !target.isValid()) {
-                        this.cancel();
-                        return;
-                    }
-
-                    Vector toTarget = target.getEyeLocation().toVector().subtract(arrow.getLocation().toVector());
-                    Vector direction = arrow.getVelocity().clone().normalize();
-
-                    Vector newDirection = direction.multiply(0.6).add(toTarget.normalize().multiply(0.4)).normalize();
-
-                    arrow.setVelocity(newDirection.multiply(arrow.getVelocity().length()));
-                }
-            }.runTaskTimer(plugin, 0L, 1L);
-        }
-    }
+//    @EventHandler
+//    public void onShootBowEvent(EntityShootBowEvent event) {
+//
+//        if (!(event.getEntity() instanceof Player)) {
+//            return;
+//        }
+//
+//        Player shooter = (Player) event.getEntity();
+//        if (!(event.getProjectile() instanceof Arrow)) {
+//            return;
+//        }
+//
+//        if (!isOnCooldown(shooter.getUniqueId(), cooldowns)) {
+//            return;
+//        }
+//
+//        Arrow arrow = (Arrow) event.getProjectile();
+//        Player target = getTargetedPlayer((Player) event.getEntity(), 1000);
+//
+//        if (target != null) {
+//            new BukkitRunnable() {
+//                @Override
+//                public void run() {
+//                    if (arrow.isDead() || target.isDead() || !arrow.isValid() || !target.isValid()) {
+//                        this.cancel();
+//                        return;
+//                    }
+//
+//                    Vector toTarget = target.getEyeLocation().toVector().subtract(arrow.getLocation().toVector());
+//                    Vector direction = arrow.getVelocity().clone().normalize();
+//
+//                    Vector newDirection = direction.multiply(0.6).add(toTarget.normalize().multiply(0.4)).normalize();
+//
+//                    arrow.setVelocity(newDirection.multiply(arrow.getVelocity().length()));
+//                }
+//            }.runTaskTimer(plugin, 0L, 1L);
+//        }
+//    }
 
     private Player getNearestPlayer(Player shooter) {
         Player nearestPlayer = null;
