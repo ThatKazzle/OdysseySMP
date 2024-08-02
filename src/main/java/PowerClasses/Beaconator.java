@@ -42,7 +42,7 @@ public class Beaconator extends ParentPowerClass implements Listener {
             player.sendMessage(ChatColor.GREEN + "You gained " + ChatColor.AQUA + plugin.titleCaseString(addRandomPotionEffects(player).getName().toLowerCase()));
         }
 
-        ItemStack item = new ItemStack(Material.SHULKER_SHELL);
+        ItemStack item = new ItemStack(Material.AMETHYST_SHARD);
         ItemMeta meta = item.getItemMeta();
         meta.setCustomModelData(1);
         meta.setDisplayName(ChatColor.GOLD + "Odyssey Shard");

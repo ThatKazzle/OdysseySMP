@@ -359,59 +359,36 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         }
         String powerName;
 
-        if (isAtPowerLimit) {
-            switch (getAdvancementNameFormattedFromAdvancement(advancement)) {
-                case "All Effects":
-                    powerName = "How Did We Get Here?";
-                    break;
-                case "Kill All Mobs":
-                    powerName = "Monsters Hunted";
-                    break;
-                case "Froglights":
-                    powerName = "WOPC";
-                    break;
-                case "Create Full Beacon":
-                    powerName = "Beaconator";
-                    break;
-                case "Ride Strider In Overworld Lava":
-                    powerName = "Feels Like Home";
-                    break;
-                case "Dragon Egg":
-                    powerName = "The Next Generation";
-                    break;
-                default:
-                    powerName = getAdvancementNameFormattedFromAdvancement(advancement);
-                    break;
-            }
+        switch (getAdvancementNameFormattedFromAdvancement(advancement)) {
+            case "All Effects":
+                powerName = "How Did We Get Here?";
+                break;
+            case "Kill All Mobs":
+                powerName = "Monsters Hunted";
+                break;
+            case "Froglights":
+                powerName = "WOPC";
+                break;
+            case "Create Full Beacon":
+                powerName = "Beaconator";
+                break;
+            case "Ride Strider In Overworld Lava":
+                powerName = "Feels Like Home";
+                break;
+            case "Dragon Egg":
+                powerName = "The Next Generation";
+                break;
+            default:
+                powerName = getAdvancementNameFormattedFromAdvancement(advancement);
+                break;
+        }
 
+        if (isAtPowerLimit) {
             player.sendTitle("New Power Collected!: " + powerName, ChatColor.RED + "But it has been dropped, you have 2 powers!");
 
             player.getWorld().dropItem(player.getLocation(), new PowerPotionItem(this, getAdvancementNameFormattedFromAdvancement(advancement), powerPotionKey).getItemStack());
 
         } else {
-            switch (getAdvancementNameFormattedFromAdvancement(advancement)) {
-                case "All Effects":
-                    powerName = "How Did We Get Here?";
-                    break;
-                case "Kill All Mobs":
-                    powerName = "Monsters Hunted";
-                    break;
-                case "Froglights":
-                    powerName = "WOPC";
-                    break;
-                case "Create Full Beacon":
-                    powerName = "Beaconator";
-                    break;
-                case "Ride Strider In Overworld Lava":
-                    powerName = "Feels Like Home";
-                    break;
-                case "Balanced Diet":
-                    powerName = "Balanced Diet";
-                default:
-                    powerName = getAdvancementNameFormattedFromAdvancement(advancement);
-                    break;
-            }
-
             player.sendTitle("New Power Collected!: " + powerName, "type " + ChatColor.GREEN + "\"/od powers\" for details.");
 
             getConfig().set("players." + player.getName() + ".powers." + getAdvancementNameUnformatted(advancement), true);
