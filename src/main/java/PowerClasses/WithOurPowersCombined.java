@@ -75,7 +75,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
                         player.sendMessage(ChatColor.GREEN + "you lost your stolen power, and it has been given back to them.");
                         targetPlayer.sendMessage(ChatColor.GREEN + "You have been given your power back.");
-                    }, 20 * 120);
+                    }, 20 * (60 * 5));
                 } else {
                     player.sendMessage(ChatColor.RED + "You didn't hit a player!");
                 }

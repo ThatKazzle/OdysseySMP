@@ -115,7 +115,7 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
                             if (hitPlayer.getHealth() - 0.75 < 0) {
                                 hitPlayer.setHealth(0);
                             } else {
-                                hitPlayer.setHealth(hitPlayer.getHealth());
+                                hitPlayer.setHealth(hitPlayer.getHealth() - 0.75);
                             }
                         }
                     }.runTaskTimer(plugin, 0, 20);

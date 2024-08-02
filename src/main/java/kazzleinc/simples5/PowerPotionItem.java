@@ -76,6 +76,11 @@ public class PowerPotionItem {
                 case "Ride Strider In Overworld Lava":
                     nameToAdd = "Feels Like Home";
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + "ride_strider_in_overworld_lava");
+                    break;
+                case "Dragon Egg":
+                    nameToAdd = "The Next Generation";
+                    loreConf = this.plugin.getConfig().getStringList("descriptions." + "dragon_egg");
+                    break;
                 default:
                     nameToAdd = displayName;
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + this.plugin.getAdvancementNameUnformattedFromFormattedString(meta.getPersistentDataContainer().get(powerKey, PersistentDataType.STRING)));
@@ -85,6 +90,7 @@ public class PowerPotionItem {
             meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + nameToAdd);
 
             List<String> lore = new ArrayList<>();
+            lore.add(ChatColor.GOLD + "This Odyssey has: ");
 
             for (String line : loreConf) {
                 lore.add("§r§b" + line);

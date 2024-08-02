@@ -76,6 +76,12 @@ public class PowerTwoCommand implements CommandExecutor {
                         case "husbandry/balanced_diet":
                             plugin.balancedDietClass.action(playerName);
                             break;
+                        case "end/dragon_egg":
+                            plugin.nextGenerationClass.action(playerName);
+                            break;
+                        default:
+                            plugin.getLogger().warning("Power Use was called on player [" + playerName + "], but the power doesn't exist, the player doesn't have a power, or the power isn't initialized in the config.");
+                            break;
                     }
 
                     this.plugin.updateCooldownDisplay();

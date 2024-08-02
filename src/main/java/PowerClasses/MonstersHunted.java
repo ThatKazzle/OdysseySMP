@@ -131,10 +131,10 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
 
         if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "adventure/kill_all_mobs")) {
             if (!isOnCooldown(player.getUniqueId(), blackHoleCooldowns)) {
-                setCooldown(player.getUniqueId(), blackHoleCooldowns, 120);
                 RayTraceResult result = player.getWorld().rayTraceBlocks(player.getEyeLocation(), player.getEyeLocation().getDirection(), 10, FluidCollisionMode.NEVER, true);
 
                 if (result != null) {
+                    setCooldown(player.getUniqueId(), blackHoleCooldowns, 60 * 3);
                     player.getWorld().spawnParticle(Particle.DUST, result.getHitPosition().toLocation(player.getWorld()), 1, new Particle.DustOptions(Color.RED, 1));
 
                     BukkitTask particleRunner = new BukkitRunnable() {
@@ -148,7 +148,7 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
                             for (Player playerCheck : SimpleS5.getPlayersInRange(result.getHitPosition().toLocation(player.getWorld()), 10)) {
                                 if (player != playerCheck && !playerCheck.isDead()) {
                                     damageToDo = playerCheck.getLocation().distance(result.getHitPosition().toLocation(playerCheck.getWorld()));
-                                    mappedDamage = plugin.mapValue(damageToDo, 0, 10, 0.75, 0.1);
+                                    mappedDamage = plugin.mapValue(damageToDo, 0, 10, 0.67, 0.1);
 
                                     if (playerCheck.getHealth() - mappedDamage < 0) {
                                         playerCheck.setHealth(0);

@@ -50,7 +50,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
                 RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
 
                 if (result != null && result.getHitEntity() != null && result.getHitEntity() instanceof Player) {
-                    setCooldown(player.getUniqueId(), effectStealerCooldown, 120);
+                    setCooldown(player.getUniqueId(), effectStealerCooldown, 60 * 5);
                     Player hitPlayer = (Player) result.getHitEntity();
 
                     if (!hitPlayer.getActivePotionEffects().isEmpty()) {

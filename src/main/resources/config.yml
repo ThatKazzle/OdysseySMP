@@ -13,23 +13,29 @@ defaults:
   summon_iron_golem: "adventure/summon_iron_golem"
   create_full_beacon: "nether/create_full_beacon"
   balanced_diet: "husbandry/balanced_diet"
+  dragon_egg: "end/dragon_egg"
 descriptions:
   very_very_frightening:
     - " "
     - "§bAbilities:"
     - " "
     - "1. §lDash ability§r§b: Dash every 10 seconds."
+    - "2. §lZeus Bolt§r§b: a lightning strike gives you Strength II and Speed II for 10 seconds."
   complete_catalogue:
     - " "
+    - "§bAbilites:"
+    - "1. §lPower Stealer§r§b: Steal all of a targeted players status effects, positive"
+    - "or negative."
+    - " "
     - "§bPassives:"
-    - "1. Luck I"
-    - "2. No fall damage"
-    - "3. 2 permanent hearts (until you lose the power)"
+    - "1. §lRechargeable Totem§r§b: You have an extra life, but maybe not 9 extra."
+    - "2. No fall damage."
   all_effects:
     - " "
     - "§bAbilities:"
     - "1. §lDisable ability§r§b: Every 30s, disable a player's"
     - "   item for 3 seconds by shift-right clicking on a them."
+    - " "
     - "§bPassives:"
     - "1. §lPoison-Tipped Sword§r§b: A 1 in 20 chance to effect a player with a negative effect,"
     - "either Blindness, Wither, Weakness, or Slowness I."
@@ -48,8 +54,10 @@ descriptions:
   kill_all_mobs:
     - " "
     - "§bAbilities:"
-    - "1. §lDomain Expansion (ig)§r§b: A 14 block wide ice orb surrounds you for 5 seconds."
+    - "1. §lDomain Expansion §r§b: A 14 block wide ice orb surrounds you for 5 seconds."
     - "   - You are given Resistance I while inside of the orb."
+    - "2. §lBlack Hole§r§b: You summon a black hole that does a minimum of 0.1 hearts "
+    - "   and a maximum of 0.67 hearts per second for 5 seconds until it dissipates."
   sniper_duel:
     - " "
     - "§bAbilities:"
@@ -59,17 +67,19 @@ descriptions:
   uneasy_alliance:
     - " "
     - "§bAbilities:"
-    - "1. §lInvisibility§r§b: Make yourself COMPLETELY invisible for 15 seconds."
+    - "1. §lInvisibility§r§b: Make yourself COMPLETELY invisible for 20 seconds."
+    - "2. §lFreeze Ray§r§b: Freeze a player for 5 seconds, doing 0.75 hearts every second."
   ride_strider_in_overworld_lava:
     - " "
     - "§bAbilities:"
-    - "1. §lBlazed§r§b: a lightning strike gives you Strength II for 10 seconds."
+    - "1. §lBlazed§r§b: The Blazes bless you with 15 seconds of Strength II and Regeneration II."
   froglights:
     - "§bAbilities:"
-    - "1. §lOdyssey Stealer§r§b: Steal a players currently enabled power for 2 minutes."
+    - "1. §lOdyssey Stealer§r§b: Steal a players currently enabled power for 5 minutes."
   summon_iron_golem:
     - "§bAbilities:"
     - "1. §lHired Help§r§b: Summon an iron golem that fights for you for 20 seconds."
   balanced_diet:
     - "§bAbilities:"
-    - "1. §lStored Energy§r§b: Gives you Saturation II for 15 seconds and "
+    - "1. §lStored Energy§r§b: Gives you Saturation II for 20 seconds and Hunger 60 to all players in"
+    - "   a 25 block radius."

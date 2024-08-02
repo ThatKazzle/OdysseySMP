@@ -69,6 +69,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public HiredHelp hiredHelpClass = new HiredHelp(this);
     public Beaconator beaconatorClass = new Beaconator(this);
     public BalancedDiet balancedDietClass = new BalancedDiet(this);
+    public TheNextGeneration nextGenerationClass = new TheNextGeneration(this);
 
     public boolean resetPlayerHealthAttribute = false;
 
@@ -90,6 +91,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(hiredHelpClass, this);
         getServer().getPluginManager().registerEvents(beaconatorClass, this);
         getServer().getPluginManager().registerEvents(balancedDietClass, this);
+        getServer().getPluginManager().registerEvents(nextGenerationClass, this);
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         uneasyAllianceClass.registerInvisListener();
@@ -107,9 +109,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getCommand("power2").setExecutor(new PowerTwoCommand(this));
 
         getServer().getMessenger().registerIncomingPluginChannel(this, "odysseyclientside:power_channel", new modPacketListener(this));
-        getServer().getMessenger().registerOutgoingPluginChannel(this, "odysseyclientside:power_channel_rec");
+        //getServer().getMessenger().registerOutgoingPluginChannel(this, "odysseyclientside:power_channel_rec");
 
-        CustomWorldGenerator.createVoidWorld(this, "void_world");
+        //CustomWorldGenerator.createVoidWorld(this, "void_world");
 
         secondsTask = new BukkitRunnable() {
             @Override
@@ -119,11 +121,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                 //fixing the bug with the catalogue not removing the power
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (getPlayerPowersList(player) != null) {
-
-                    }
-
-
                     if (getPlayerPowersList(player) != null && getPlayerPowersList(player).size() == 1) {
                         localPlugin.getConfig().set("players." + player.getName() + ".mode", 0);
                     }
@@ -134,29 +131,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 }
             }
         }.runTaskTimer(this, 0, 20);
-
-        final int[] rotation = {0};
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                rotation[0] += 4;
-                for (Player player : Bukkit.getOnlinePlayers()) {
-                    //ParticleUtils.createParticleDodecahedron(player.getEyeLocation(), 4, 30, Particle.DUST, Color.PURPLE);
-                }
-            }
-        }.runTaskTimer(this, 0, 0);
-
-        //fixes the config thing so that things can work without deleting the config
-        if (getConfig().getConfigurationSection("defaults") != Objects.requireNonNull(getConfig().getDefaults()).getConfigurationSection("defaults")) {
-            for (String keys : getConfig().getConfigurationSection("defaults").getKeys(false)) {
-                if (!getConfig().getDefaults().isSet(keys)) {
-                    getConfig().set(keys, getConfig().getDefaults().get("defaults.") + keys);
-                    saveConfig();
-                }
-            }
-        }
-
     }
 
     @Override
@@ -402,8 +376,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 case "Ride Strider In Overworld Lava":
                     powerName = "Feels Like Home";
                     break;
-                case "Balanced Diet":
-                    powerName = "Balanced Diet";
+                case "Dragon Egg":
+                    powerName = "The Next Generation";
+                    break;
                 default:
                     powerName = getAdvancementNameFormattedFromAdvancement(advancement);
                     break;
@@ -573,6 +548,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         case "husbandry/balanced_diet":
                             cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
                             break;
+                        case "end/dragon_egg":
+                            cooldownMessage = balancedDietClass.getCooldownString(player, nextGenerationClass.cooldowns, "Ground Pound: ");
+                            break;
                     }
                 }
             } else if (getPlayerPowersList(player) != null && localPlugin.getPlayerPowersList(player).size() == 1) {
@@ -612,6 +590,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             break;
                         case "husbandry/balanced_diet":
                             cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
+                            break;
+                        case "end/dragon_egg":
+                            cooldownMessage = balancedDietClass.getCooldownString(player, nextGenerationClass.cooldowns, "Ground Pound: ");
                             break;
                     }
                 }
