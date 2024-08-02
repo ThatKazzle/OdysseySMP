@@ -3,6 +3,7 @@ package PowerClasses;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -61,7 +62,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
 
                 fallDamageIgnoreList.remove(damagedPlayer);
 
-                damagedPlayer.playEffect(damagedPlayer.getLocation(), Effect.SMASH_ATTACK, 30);
+                damagedPlayer.getWorld().playSound(damagedPlayer.getLocation(), Sound.ITEM_MACE_SMASH_GROUND_HEAVY, 1.f, 1.f);
 
                 for (Player checkPlayer : Bukkit.getOnlinePlayers()) {
                     if (checkPlayer.getWorld() == damagedPlayer.getWorld()) {
