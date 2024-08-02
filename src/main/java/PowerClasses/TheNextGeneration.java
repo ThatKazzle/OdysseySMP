@@ -5,6 +5,7 @@ import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -50,15 +51,17 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
         }
     }
 
-    @EventHandler
+    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
     public void OnEntityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
             Player damagedPlayer = ((Player) event.getEntity());
 
-            if (fallDamageIgnoreList.contains(damagedPlayer)) {
+            if (fallDamageIgnoreList.contains(damagedPlayer) && plugin.getConfig().getBoolean("players." + damagedPlayer.getName() + ".powers." + "end/dragon_egg")) {
                 event.setCancelled(true);
 
                 fallDamageIgnoreList.remove(damagedPlayer);
+
+                damagedPlayer.playEffect(damagedPlayer.getLocation(), Effect.SMASH_ATTACK, 30);
 
                 for (Player checkPlayer : Bukkit.getOnlinePlayers()) {
                     if (checkPlayer.getWorld() == damagedPlayer.getWorld()) {
