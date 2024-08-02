@@ -2,9 +2,12 @@ package PowerClasses;
 
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.ChatColor;
+import org.bukkit.Material;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
+import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.checkerframework.checker.units.qual.A;
@@ -38,6 +41,14 @@ public class Beaconator extends ParentPowerClass implements Listener {
 
             player.sendMessage(ChatColor.GREEN + "You gained " + ChatColor.AQUA + plugin.titleCaseString(addRandomPotionEffects(player).getName().toLowerCase()));
         }
+
+        ItemStack item = new ItemStack(Material.SHULKER_SHELL);
+        ItemMeta meta = item.getItemMeta();
+        meta.setCustomModelData(1);
+        meta.setDisplayName(ChatColor.GOLD + "Odyssey Shard");
+        item.setItemMeta(meta);
+
+        player.getInventory().addItem(item);
     }
 
     public PotionEffectType addRandomPotionEffects(Player player) {
