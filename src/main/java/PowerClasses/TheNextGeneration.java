@@ -4,6 +4,7 @@ import kazzleinc.simples5.SimpleS5;
 import org.bukkit.Bukkit;
 import org.bukkit.Effect;
 import org.bukkit.Sound;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -52,7 +53,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST, ignoreCancelled = true)
+    @EventHandler(priority = EventPriority.HIGHEST)
     public void OnEntityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
             Player damagedPlayer = ((Player) event.getEntity());
@@ -62,22 +63,53 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
 
                 fallDamageIgnoreList.remove(damagedPlayer);
 
-                damagedPlayer.getWorld().playSound(damagedPlayer.getLocation(), Sound.ITEM_MACE_SMASH_GROUND_HEAVY, 1.f, 1.f);
+                damagedPlayer.getWorld().playSound(damagedPlayer.getLocation(), Sound.ITEM_MACE_SMASH_GROUND, 1.f, 1.f);
+                damagedPlayer.getWorld().playEffect(damagedPlayer.getLocation(), Effect.SMASH_ATTACK, 100);
 
                 for (Player checkPlayer : Bukkit.getOnlinePlayers()) {
                     if (checkPlayer.getWorld() == damagedPlayer.getWorld()) {
                         if (checkPlayer.getLocation().distance(damagedPlayer.getLocation()) < 7) {
-                            Vector dir = checkPlayer.getLocation().toVector().subtract(damagedPlayer.getLocation().toVector()).normalize();
+                            if (checkPlayer != damagedPlayer) {
+                                Vector dir = checkPlayer.getLocation().toVector().subtract(damagedPlayer.getLocation().toVector()).normalize();
 
-                            dir.setY(0);
-                            dir.multiply(0.5);
-                            dir.add(new Vector(0, 1, 0));
+                                dir.setY(0);
+                                dir.multiply(0.5);
+                                dir.add(new Vector(0, 1, 0));
 
-                            checkPlayer.setVelocity(dir);
-                            checkPlayer.setHealth(checkPlayer.getHealth() - 4 < 0 ? 0 : checkPlayer.getHealth() - 4);
+                                checkPlayer.sendMessage(dir.toString());
+
+                                checkPlayer.setVelocity(dir);
+                                checkPlayer.damage(0.0001);
+
+                                if (checkPlayer.getHealth() - 8 <= 0) {
+                                    checkPlayer.setHealth(0);
+                                } else {
+                                    checkPlayer.setHealth(checkPlayer.getHealth() - 8);
+                                }
+
+
+                            }
                         }
                     }
                 }
+
+                for (Entity thing : damagedPlayer.getNearbyEntities(7, 2, 7)) {
+                    if (!(thing instanceof Player)) {
+
+
+                        Vector dir = thing.getLocation().toVector().subtract(damagedPlayer.getLocation().toVector()).normalize();
+
+                        dir.setY(0);
+                        dir.multiply(0.5);
+                        dir.add(new Vector(0, 1, 0));
+
+                        thing.sendMessage(dir.toString());
+
+                        thing.setVelocity(dir);
+                    }
+                }
+
+                damagedPlayer.setVelocity(new Vector(0, 0.5, 0));
             }
         }
     }

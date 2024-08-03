@@ -94,6 +94,9 @@ public class resetCooldownCommand implements CommandExecutor {
                             break;
                         case "nether/create_beacon":
                             plugin.beaconatorClass.cooldowns.replace(player.getUniqueId(), 0L);
+                            break;
+                        case "end/dragon_egg":
+                            plugin.nextGenerationClass.cooldowns.replace(player.getUniqueId(), 0L);
                     }
                 }
             }
