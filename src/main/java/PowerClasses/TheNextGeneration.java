@@ -102,13 +102,20 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
 
     @EventHandler(priority = EventPriority.HIGHEST)
     public void OnEntityDamageEvent(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+        if (event.getEntity() instanceof Player) {
             Player damagedPlayer = ((Player) event.getEntity());
+            if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+                if (fallDamageIgnoreList.contains(damagedPlayer) && plugin.getConfig().getBoolean("players." + damagedPlayer.getName() + ".powers." + "end/dragon_egg")) {
+                    event.setCancelled(true);
 
-            if (fallDamageIgnoreList.contains(damagedPlayer) && plugin.getConfig().getBoolean("players." + damagedPlayer.getName() + ".powers." + "end/dragon_egg")) {
-                event.setCancelled(true);
+                    fallDamageIgnoreList.remove(damagedPlayer);
+                }
+            }
 
-                fallDamageIgnoreList.remove(damagedPlayer);
+            if (event.getCause() == EntityDamageEvent.DamageCause.DRAGON_BREATH) {
+                if (plugin.getConfig().getBoolean("players." + damagedPlayer.getName() + ".powers." + "end/dragon_egg")) {
+                    event.setCancelled(true);
+                }
             }
         }
     }
