@@ -67,8 +67,8 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
                                                     Vector dir = checkPlayer.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
 
                                                     dir.setY(0);
-                                                    dir.multiply(0.5);
-                                                    dir.add(new Vector(0, 1, 0));
+                                                    dir.multiply(0.7);
+                                                    dir.add(new Vector(0, 0.3, 0));
 
                                                     checkPlayer.sendMessage(dir.toString());
 
@@ -119,9 +119,9 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
 
         // Configure the AreaEffectCloud
         cloud.setDuration(200); // Duration in ticks (10 seconds)
-        cloud.setRadius(6.0F); // Radius of the cloud
+        cloud.setRadius(16.0F); // Radius of the cloud
         cloud.setParticle(Particle.DRAGON_BREATH); // Particle effect
-        cloud.setBasePotionType(PotionType.HARMING);
+        cloud.setBasePotionType(PotionType.STRONG_HARMING);
         cloud.setWaitTime(0); // Time before the cloud starts applying effects
         cloud.setRadiusPerTick(0); // No radius change over time
 
