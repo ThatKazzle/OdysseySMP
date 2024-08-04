@@ -112,7 +112,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
                 }
             }
 
-            if (event.getCause() == EntityDamageEvent.DamageCause.MAGIC && event.getEntity().getType() == EntityType.AREA_EFFECT_CLOUD) {
+            if (event.getCause() == EntityDamageEvent.DamageCause.MAGIC && event.getDamageSource().getCausingEntity().getType() == EntityType.AREA_EFFECT_CLOUD) {
                 if (plugin.getConfig().getBoolean("players." + damagedPlayer.getName() + ".powers." + "end/dragon_egg")) {
                     event.setCancelled(true);
                 }
