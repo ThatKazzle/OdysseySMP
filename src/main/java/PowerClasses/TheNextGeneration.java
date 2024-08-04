@@ -86,6 +86,8 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
                                         }
                                     }
 
+                                    summonDragonBreathCloud(player.getLocation());
+
                                     player.setVelocity(new Vector(0, 0.5, 0));
 
                                     this.cancel();
