@@ -9,6 +9,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -111,9 +112,15 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
                     fallDamageIgnoreList.remove(damagedPlayer);
                 }
             }
+        }
+    }
 
-            if (event.getCause() == EntityDamageEvent.DamageCause.MAGIC && event.getDamageSource().getCausingEntity().getType() == EntityType.AREA_EFFECT_CLOUD) {
-                if (plugin.getConfig().getBoolean("players." + damagedPlayer.getName() + ".powers." + "end/dragon_egg")) {
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getDamager() instanceof AreaEffectCloud) {
+            if (event.getEntity() instanceof Player) {
+                Player player = (Player) event.getEntity();
+                if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "end/dragon_egg")) {
                     event.setCancelled(true);
                 }
             }
