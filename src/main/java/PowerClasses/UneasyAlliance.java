@@ -12,6 +12,7 @@ import org.bukkit.block.data.type.Bed;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -64,6 +65,14 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
         Player player = event.getPlayer();
 
         if (isFrozen.containsKey(player.getUniqueId())) {
+            event.setCancelled(true);
+        }
+    }
+
+    @EventHandler
+    public void onPlayerConsumeEvent(PlayerItemConsumeEvent event) {
+        Player player = event.getPlayer();
+        if (isFrozen.containsKey(player.getUniqueId()) && event.getItem().getType() == Material.CHORUS_FRUIT) {
             event.setCancelled(true);
         }
     }

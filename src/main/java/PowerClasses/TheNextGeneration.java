@@ -74,10 +74,10 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
 
                                                     checkPlayer.setVelocity(dir);
 
-                                                    if (checkPlayer.getHealth() - 6 <= 0) {
+                                                    if (checkPlayer.getHealth() - 7 <= 0) {
                                                         checkPlayer.setHealth(0);
                                                     } else {
-                                                        checkPlayer.setHealth(checkPlayer.getHealth() - 6);
+                                                        checkPlayer.setHealth(checkPlayer.getHealth() - 7);
                                                     }
 
                                                     checkPlayer.damage(0.0001);
@@ -119,7 +119,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
 
         // Configure the AreaEffectCloud
         cloud.setDuration(200); // Duration in ticks (10 seconds)
-        cloud.setRadius(3.0F); // Radius of the cloud
+        cloud.setRadius(6.0F); // Radius of the cloud
         cloud.setParticle(Particle.DRAGON_BREATH); // Particle effect
         cloud.setBasePotionType(PotionType.HARMING);
         cloud.setWaitTime(0); // Time before the cloud starts applying effects
