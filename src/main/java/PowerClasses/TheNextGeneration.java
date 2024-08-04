@@ -47,70 +47,106 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
                     @Override
                     public void run() {
                         player.setVelocity(new Vector(0, -3, 0));
+
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+                                if (player.getVelocity().getY() >= 0) {
+                                    player.getWorld().playSound(player.getLocation(), Sound.ITEM_MACE_SMASH_GROUND, 1.f, 1.f);
+                                    player.getWorld().playEffect(player.getLocation(), Effect.SMASH_ATTACK, 100);
+
+                                    for (Player checkPlayer : Bukkit.getOnlinePlayers()) {
+                                        if (checkPlayer.getWorld() == player.getWorld()) {
+                                            if (checkPlayer.getLocation().distance(player.getLocation()) < 7) {
+                                                if (checkPlayer != player) {
+                                                    Vector dir = checkPlayer.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
+
+                                                    dir.setY(0);
+                                                    dir.multiply(0.5);
+                                                    dir.add(new Vector(0, 1, 0));
+
+                                                    checkPlayer.sendMessage(dir.toString());
+
+                                                    checkPlayer.setVelocity(dir);
+
+                                                    if (checkPlayer.getHealth() - 8 <= 0) {
+                                                        checkPlayer.setHealth(0);
+                                                    } else {
+                                                        checkPlayer.setHealth(checkPlayer.getHealth() - 8);
+                                                    }
+
+                                                    checkPlayer.damage(0.0001);
+                                                }
+                                            }
+                                        }
+                                    }
+                                }
+                            }
+                        }.runTaskTimer(plugin, 0, 1);
                     }
                 }.runTaskLater(plugin, 20);
             }
         }
     }
 
-    @EventHandler(priority = EventPriority.HIGHEST)
-    public void OnEntityDamageEvent(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
-            Player damagedPlayer = ((Player) event.getEntity());
-
-            if (fallDamageIgnoreList.contains(damagedPlayer) && plugin.getConfig().getBoolean("players." + damagedPlayer.getName() + ".powers." + "end/dragon_egg")) {
-                event.setCancelled(true);
-
-                fallDamageIgnoreList.remove(damagedPlayer);
-
-                damagedPlayer.getWorld().playSound(damagedPlayer.getLocation(), Sound.ITEM_MACE_SMASH_GROUND, 1.f, 1.f);
-                damagedPlayer.getWorld().playEffect(damagedPlayer.getLocation(), Effect.SMASH_ATTACK, 100);
-
-                for (Player checkPlayer : Bukkit.getOnlinePlayers()) {
-                    if (checkPlayer.getWorld() == damagedPlayer.getWorld()) {
-                        if (checkPlayer.getLocation().distance(damagedPlayer.getLocation()) < 7) {
-                            if (checkPlayer != damagedPlayer) {
-                                Vector dir = checkPlayer.getLocation().toVector().subtract(damagedPlayer.getLocation().toVector()).normalize();
-
-                                dir.setY(0);
-                                dir.multiply(0.5);
-                                dir.add(new Vector(0, 1, 0));
-
-                                checkPlayer.sendMessage(dir.toString());
-
-                                checkPlayer.setVelocity(dir);
-                                checkPlayer.damage(0.0001);
-
-                                if (checkPlayer.getHealth() - 8 <= 0) {
-                                    checkPlayer.setHealth(0);
-                                } else {
-                                    checkPlayer.setHealth(checkPlayer.getHealth() - 8);
-                                }
-
-
-                            }
-                        }
-                    }
-                }
-
-                for (Entity thing : damagedPlayer.getNearbyEntities(7, 2, 7)) {
-                    if (!(thing instanceof Player)) {
-
-
-                        Vector dir = thing.getLocation().toVector().subtract(damagedPlayer.getLocation().toVector()).normalize();
-
-                        dir.setY(0);
-                        dir.multiply(0.5);
-                        dir.add(new Vector(0, 1, 0));
-
-                        thing.sendMessage(dir.toString());
-
-                        thing.setVelocity(dir);
-                    }
-                }
-
-                damagedPlayer.setVelocity(new Vector(0, 0.5, 0));
-            }
-        }
-    }
+//    @EventHandler(priority = EventPriority.HIGHEST)
+//    public void OnEntityDamageEvent(EntityDamageEvent event) {
+//        if (event.getEntity() instanceof Player && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+//            Player damagedPlayer = ((Player) event.getEntity());
+//
+//            if (fallDamageIgnoreList.contains(damagedPlayer) && plugin.getConfig().getBoolean("players." + damagedPlayer.getName() + ".powers." + "end/dragon_egg")) {
+//                event.setCancelled(true);
+//
+//                fallDamageIgnoreList.remove(damagedPlayer);
+//
+//                damagedPlayer.getWorld().playSound(damagedPlayer.getLocation(), Sound.ITEM_MACE_SMASH_GROUND, 1.f, 1.f);
+//                damagedPlayer.getWorld().playEffect(damagedPlayer.getLocation(), Effect.SMASH_ATTACK, 100);
+//
+//                for (Player checkPlayer : Bukkit.getOnlinePlayers()) {
+//                    if (checkPlayer.getWorld() == damagedPlayer.getWorld()) {
+//                        if (checkPlayer.getLocation().distance(damagedPlayer.getLocation()) < 7) {
+//                            if (checkPlayer != damagedPlayer) {
+//                                Vector dir = checkPlayer.getLocation().toVector().subtract(damagedPlayer.getLocation().toVector()).normalize();
+//
+//                                dir.setY(0);
+//                                dir.multiply(0.5);
+//                                dir.add(new Vector(0, 1, 0));
+//
+//                                checkPlayer.sendMessage(dir.toString());
+//
+//                                checkPlayer.setVelocity(dir);
+//                                checkPlayer.damage(0.0001);
+//
+//                                if (checkPlayer.getHealth() - 8 <= 0) {
+//                                    checkPlayer.setHealth(0);
+//                                } else {
+//                                    checkPlayer.setHealth(checkPlayer.getHealth() - 8);
+//                                }
+//
+//
+//                            }
+//                        }
+//                    }
+//                }
+//
+//                for (Entity thing : damagedPlayer.getNearbyEntities(7, 2, 7)) {
+//                    if (!(thing instanceof Player)) {
+//
+//
+//                        Vector dir = thing.getLocation().toVector().subtract(damagedPlayer.getLocation().toVector()).normalize();
+//
+//                        dir.setY(0);
+//                        dir.multiply(0.5);
+//                        dir.add(new Vector(0, 1, 0));
+//
+//                        thing.sendMessage(dir.toString());
+//
+//                        thing.setVelocity(dir);
+//                    }
+//                }
+//
+//                damagedPlayer.setVelocity(new Vector(0, 0.5, 0));
+//            }
+//        }
+//    }
 }
