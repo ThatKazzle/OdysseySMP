@@ -25,6 +25,10 @@ public abstract class ParentPowerClass {
         return map.containsKey(playerId) && map.get(playerId) > System.currentTimeMillis();
     }
 
+    public boolean hasPower(Player player, String powerKey) {
+        return plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + powerKey);
+    }
+
 
     /**
      * Sets a cooldown on a list, making it easier to do multiple powers.

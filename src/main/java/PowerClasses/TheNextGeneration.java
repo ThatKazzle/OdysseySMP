@@ -22,6 +22,7 @@ import java.util.UUID;
 
 public class TheNextGeneration extends ParentPowerClass implements Listener {
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
+    public HashMap<UUID, Long> elytraCooldowns = new HashMap<>();
 
     public List<Player> fallDamageIgnoreList = new ArrayList<>();
 
@@ -33,7 +34,42 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
     public void action(String playerName) {
         Player player = Bukkit.getPlayer(playerName);
 
-        groundPoundAction(player);
+        if (!player.isSneaking()) {
+            groundPoundAction(player);
+        } else {
+            elytraFlightAction(player);
+        }
+    }
+
+    @Override
+    public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Elytra Launch: " + getCooldownTimeLeft(player.getUniqueId(), elytraCooldowns);
+    }
+
+    public void elytraFlightAction(Player player) {
+        if (hasPower(player, "end/dragon_egg")) {
+            if (!isOnCooldown(player.getUniqueId(), elytraCooldowns)) {
+
+                Vector direction = player.getLocation().getDirection().normalize();
+                Vector finalDir = direction.multiply(1.5).add(new Vector(0, 0.5, 0));
+
+                player.setVelocity(finalDir);
+
+                new BukkitRunnable() {
+                    @Override
+                    public void run() {
+                        player.setGliding(true);
+
+                        new BukkitRunnable() {
+                            @Override
+                            public void run() {
+//                                player.setGliding(false);
+                            }
+                        }.runTaskLater(plugin, 20 * 5);
+                    }
+                }.runTaskLater(plugin, 20);
+            }
+        }
     }
 
     public void groundPoundAction(Player player) {

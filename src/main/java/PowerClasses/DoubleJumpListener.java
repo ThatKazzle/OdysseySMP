@@ -6,6 +6,8 @@ import kazzleinc.simples5.SimpleS5;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
+import org.bukkit.entity.WindCharge;
 import org.bukkit.event.Listener;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
@@ -70,6 +72,8 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
                 cantUsePowerMessage(player, cooldowns, "Dash");
             } else if (!player.isOnGround() && !player.isInWater() && !isOnCooldown(player.getUniqueId(), cooldowns)) {
                 Vector direction = player.getLocation().getDirection().normalize();
+
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1.f, 1.f);
                 player.setVelocity(direction.multiply(1.5));
 
                 //ParticleUtils.createParticleRing(player.getLocation(), 1, 200, Particle.DUST, Color.PURPLE);
