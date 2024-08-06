@@ -53,8 +53,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
         if (hasPower(player, "end/dragon_egg")) {
             if (!isOnCooldown(player.getUniqueId(), elytraCooldowns)) {
 
-                Vector direction = player.getEyeLocation().getDirection().normalize();
-                Vector finalDir = direction.setY(0).multiply(1.5).add(new Vector(0, 1, 0));
+                Vector finalDir = player.getVelocity().add(new Vector(0, 1, 0));
 
                 player.setVelocity(finalDir);
 
@@ -116,10 +115,10 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
 
                                                     checkPlayer.setVelocity(dir);
 
-                                                    if (checkPlayer.getHealth() - 7 <= 0) {
+                                                    if (checkPlayer.getHealth() - 9 <= 0) {
                                                         checkPlayer.setHealth(0);
                                                     } else {
-                                                        checkPlayer.setHealth(checkPlayer.getHealth() - 7);
+                                                        checkPlayer.setHealth(checkPlayer.getHealth() - 9);
                                                     }
 
                                                     checkPlayer.damage(0.0001);
@@ -162,6 +161,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
             Player player = (Player) event.getEntity();
             if (!event.isGliding() && glidingPlayers.contains(player.getUniqueId())) {
                 event.setCancelled(true);
+                glidingPlayers.remove(player.getUniqueId());
             }
         }
     }
