@@ -11,6 +11,7 @@ import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.EntityToggleGlideEvent;
 import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -23,6 +24,8 @@ import java.util.UUID;
 public class TheNextGeneration extends ParentPowerClass implements Listener {
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
     public HashMap<UUID, Long> elytraCooldowns = new HashMap<>();
+
+    public List<UUID> glidingPlayers = new ArrayList<>();
 
     public List<Player> fallDamageIgnoreList = new ArrayList<>();
 
@@ -50,20 +53,22 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
         if (hasPower(player, "end/dragon_egg")) {
             if (!isOnCooldown(player.getUniqueId(), elytraCooldowns)) {
 
-                Vector direction = player.getLocation().getDirection().normalize();
-                Vector finalDir = direction.multiply(1.5).add(new Vector(0, 0.5, 0));
+                Vector direction = player.getEyeLocation().getDirection().normalize();
+                Vector finalDir = direction.setY(0).multiply(1.5).add(new Vector(0, 1, 0));
 
                 player.setVelocity(finalDir);
 
                 new BukkitRunnable() {
                     @Override
                     public void run() {
+                        glidingPlayers.add(player.getUniqueId());
                         player.setGliding(true);
 
                         new BukkitRunnable() {
                             @Override
                             public void run() {
-//                                player.setGliding(false);
+                                glidingPlayers.remove(player.getUniqueId());
+                                player.setGliding(false);
                             }
                         }.runTaskLater(plugin, 20 * 5);
                     }
@@ -147,6 +152,16 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
 
                     fallDamageIgnoreList.remove(damagedPlayer);
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityToggleGlideEvent(EntityToggleGlideEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player player = (Player) event.getEntity();
+            if (event.isGliding() && glidingPlayers.contains(player.getUniqueId())) {
+                event.setCancelled(true);
             }
         }
     }

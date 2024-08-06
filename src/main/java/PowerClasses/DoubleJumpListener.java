@@ -55,10 +55,6 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
 
     }
 
-    public HashMap<UUID, Long> getCooldownList() {
-        return cooldowns;
-    }
-
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
         return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Zeus Bolt: " + getCooldownTimeLeft(player.getUniqueId(), zeusCooldowns);
