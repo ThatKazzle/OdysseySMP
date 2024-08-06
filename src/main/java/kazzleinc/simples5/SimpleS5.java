@@ -569,7 +569,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
                             break;
                         case "end/dragon_egg":
-                            cooldownMessage = balancedDietClass.getCooldownString(player, nextGenerationClass.cooldowns, "Ground Pound: ");
+                            cooldownMessage = nextGenerationClass.getCooldownString(player, nextGenerationClass.cooldowns, "Ground Pound: ");
                             break;
                     }
                 }

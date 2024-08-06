@@ -160,7 +160,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
     public void onEntityToggleGlideEvent(EntityToggleGlideEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (event.isGliding() && glidingPlayers.contains(player.getUniqueId())) {
+            if (!event.isGliding() && glidingPlayers.contains(player.getUniqueId())) {
                 event.setCancelled(true);
             }
         }
