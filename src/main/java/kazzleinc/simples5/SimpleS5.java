@@ -483,16 +483,16 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public void updateCooldownDisplay() {
         String cooldownMessage = "";
         for (Player player : getServer().getOnlinePlayers()) {
-            ArrayList<String> powerList = getPlayerPowersList(player);
             if (localPlugin.playerIsAtPowerLimit(player) && getPlayerPowersList(player) != null) {
+                ArrayList<String> powerList = getPlayerPowersList(player);
                 int playerMode = (Integer) getConfig().get("players." + player.getName() + ".mode", -1);
 
                 if (playerMode != -1 && powerList.get(playerMode) != null) {
-                    switchOnPowers(player, powerList.get(playerMode));
+                    cooldownMessage = switchOnPowers(player, powerList.get(playerMode));
                 }
 
             } else if (getPlayerPowersList(player) != null && localPlugin.getPlayerPowersList(player).size() == 1) {
-
+                ArrayList<String> powerList = getPlayerPowersList(player);
                 if (localPlugin.getPlayerPowersList(player).get(0) != null) {
                     cooldownMessage = switchOnPowers(player, powerList.get(0));
                 }
@@ -576,8 +576,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         return outMin + (normalizedValue * (outMax - outMin));
     }
 
-    public String switchOnPowers(Player player, String cooldownMessage) {
-        switch (cooldownMessage) {
+    public String switchOnPowers(Player player, String cooldownKey) {
+        String cooldownMessage = "";
+        switch (cooldownKey) {
             case "adventure/very_very_frightening":
                 cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
                 break;

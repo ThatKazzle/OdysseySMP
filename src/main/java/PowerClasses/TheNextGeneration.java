@@ -54,7 +54,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
             if (!isOnCooldown(player.getUniqueId(), elytraCooldowns)) {
                 setCooldown(player.getUniqueId(), elytraCooldowns, (60 * 3) + 30);
 
-                Vector finalDir = player.getVelocity().add(new Vector(0, 1, 0));
+                Vector finalDir = player.getVelocity().add(new Vector(0, 2, 0));
 
                 player.setVelocity(finalDir);
 
@@ -162,7 +162,20 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
             Player player = (Player) event.getEntity();
             if (!event.isGliding() && glidingPlayers.contains(player.getUniqueId())) {
                 event.setCancelled(true);
-                glidingPlayers.remove(player.getUniqueId());
+
+                new BukkitRunnable() {
+                    Player playerCheck = player;
+                    @Override
+                    public void run() {
+                        if (playerCheck.isOnGround()) {
+                            glidingPlayers.remove(playerCheck.getUniqueId());
+                            playerCheck.setGliding(false);
+
+                            this.cancel();
+                        }
+                    }
+                }.runTaskTimer(plugin, 0, 2);
+                //glidingPlayers.remove(player.getUniqueId());
             }
         }
     }
