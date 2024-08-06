@@ -483,96 +483,20 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public void updateCooldownDisplay() {
         String cooldownMessage = "";
         for (Player player : getServer().getOnlinePlayers()) {
-
+            ArrayList<String> powerList = getPlayerPowersList(player);
             if (localPlugin.playerIsAtPowerLimit(player) && getPlayerPowersList(player) != null) {
-
-                ArrayList<String> powerList = getPlayerPowersList(player);
-
                 int playerMode = (Integer) getConfig().get("players." + player.getName() + ".mode", -1);
 
                 if (playerMode != -1 && powerList.get(playerMode) != null) {
-                    switch (powerList.get(playerMode)) {
-                        case "adventure/very_very_frightening":
-                            cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
-                            break;
-                        case "nether/all_effects":
-                            cooldownMessage = hdwghClass.getCooldownString(player, hdwghClass.rightClickedCooldowns, "Item Disable: ");
-                            break;
-                        case "husbandry/complete_catalogue":
-                            cooldownMessage = catalogueClass.getCooldownString(player, catalogueClass.cooldowns, "Rechargeable Totem: ");
-                            break;
-                        case "adventure/kill_all_mobs":
-                            cooldownMessage = monstersClass.getCooldownString(player, monstersClass.sphereCooldowns, "Domain Expansion: ");
-                            break;
-                        case "adventure/sniper_duel":
-                            cooldownMessage = sniperDuelClass.getCooldownString(player, sniperDuelClass.cooldowns, "Sniper Vision: ");
-                            break;
-                        case "nether/uneasy_alliance":
-                            cooldownMessage = uneasyAllianceClass.getCooldownString(player, uneasyAllianceClass.cooldowns, "Invisibility: ");
-                            break;
-                        case "husbandry/froglights":
-                            cooldownMessage = wopcClass.getCooldownString(player, wopcClass.cooldowns, "Odyssey Stealer: ");
-                            break;
-                        case "adventure/summon_iron_golem":
-                            cooldownMessage = hiredHelpClass.getCooldownString(player, hiredHelpClass.cooldowns, "Hired Help: ");
-                            break;
-                        case "nether/ride_strider_in_overworld_lava":
-                            cooldownMessage = feelsLikeHomeClass.getCooldownString(player, feelsLikeHomeClass.cooldowns, "Blazed: ");
-                            break;
-                        case "nether/create_full_beacon":
-                            cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
-                            break;
-                        case "husbandry/balanced_diet":
-                            cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
-                            break;
-                        case "end/dragon_egg":
-                            cooldownMessage = balancedDietClass.getCooldownString(player, nextGenerationClass.cooldowns, "Ground Pound: ");
-                            break;
-                    }
+                    switchOnPowers(player, powerList.get(playerMode));
                 }
+
             } else if (getPlayerPowersList(player) != null && localPlugin.getPlayerPowersList(player).size() == 1) {
-                ArrayList<String> powerList = localPlugin.getPlayerPowersList(player);
 
                 if (localPlugin.getPlayerPowersList(player).get(0) != null) {
-                    switch (localPlugin.getPlayerPowersList(player).get(0)) {
-                        case "adventure/very_very_frightening":
-                            cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
-                            break;
-                        case "nether/all_effects":
-                            cooldownMessage = hdwghClass.getCooldownString(player, hdwghClass.rightClickedCooldowns, "Item Disable: ");
-                            break;
-                        case "husbandry/complete_catalogue":
-                            cooldownMessage = catalogueClass.getCooldownString(player, catalogueClass.cooldowns, "Rechargeable Totem: ");
-                            break;
-                        case "adventure/kill_all_mobs":
-                            cooldownMessage = monstersClass.getCooldownString(player, monstersClass.sphereCooldowns, "Domain Expansion: ");
-                            break;
-                        case "adventure/sniper_duel":
-                            cooldownMessage = sniperDuelClass.getCooldownString(player, sniperDuelClass.cooldowns, "Sniper Vision: ");
-                            break;
-                        case "nether/uneasy_alliance":
-                            cooldownMessage = uneasyAllianceClass.getCooldownString(player, uneasyAllianceClass.cooldowns, "Invisibility: ");
-                            break;
-                        case "husbandry/froglights":
-                            cooldownMessage = wopcClass.getCooldownString(player, wopcClass.cooldowns, "Odyssey Stealer: ");
-                            break;
-                        case "adventure/summon_iron_golem":
-                            cooldownMessage = hiredHelpClass.getCooldownString(player, hiredHelpClass.cooldowns, "Hired Help: ");
-                            break;
-                        case "nether/ride_strider_in_overworld_lava":
-                            cooldownMessage = feelsLikeHomeClass.getCooldownString(player, feelsLikeHomeClass.cooldowns, "Blazed: ");
-                            break;
-                        case "nether/create_full_beacon":
-                            cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
-                            break;
-                        case "husbandry/balanced_diet":
-                            cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
-                            break;
-                        case "end/dragon_egg":
-                            cooldownMessage = nextGenerationClass.getCooldownString(player, nextGenerationClass.cooldowns, "Ground Pound: ");
-                            break;
-                    }
+                    cooldownMessage = switchOnPowers(player, powerList.get(0));
                 }
+
             } else {
                 cooldownMessage = "";
             }
@@ -650,5 +574,48 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
         // Scale the normalized value to the output range
         return outMin + (normalizedValue * (outMax - outMin));
+    }
+
+    public String switchOnPowers(Player player, String cooldownMessage) {
+        switch (cooldownMessage) {
+            case "adventure/very_very_frightening":
+                cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
+                break;
+            case "nether/all_effects":
+                cooldownMessage = hdwghClass.getCooldownString(player, hdwghClass.rightClickedCooldowns, "Item Disable: ");
+                break;
+            case "husbandry/complete_catalogue":
+                cooldownMessage = catalogueClass.getCooldownString(player, catalogueClass.cooldowns, "Rechargeable Totem: ");
+                break;
+            case "adventure/kill_all_mobs":
+                cooldownMessage = monstersClass.getCooldownString(player, monstersClass.sphereCooldowns, "Domain Expansion: ");
+                break;
+            case "adventure/sniper_duel":
+                cooldownMessage = sniperDuelClass.getCooldownString(player, sniperDuelClass.cooldowns, "Sniper Vision: ");
+                break;
+            case "nether/uneasy_alliance":
+                cooldownMessage = uneasyAllianceClass.getCooldownString(player, uneasyAllianceClass.cooldowns, "Invisibility: ");
+                break;
+            case "husbandry/froglights":
+                cooldownMessage = wopcClass.getCooldownString(player, wopcClass.cooldowns, "Odyssey Stealer: ");
+                break;
+            case "adventure/summon_iron_golem":
+                cooldownMessage = hiredHelpClass.getCooldownString(player, hiredHelpClass.cooldowns, "Hired Help: ");
+                break;
+            case "nether/ride_strider_in_overworld_lava":
+                cooldownMessage = feelsLikeHomeClass.getCooldownString(player, feelsLikeHomeClass.cooldowns, "Blazed: ");
+                break;
+            case "nether/create_full_beacon":
+                cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
+                break;
+            case "husbandry/balanced_diet":
+                cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
+                break;
+            case "end/dragon_egg":
+                cooldownMessage = nextGenerationClass.getCooldownString(player, nextGenerationClass.cooldowns, "Ground Pound: ");
+                break;
+        }
+
+        return cooldownMessage;
     }
 }
