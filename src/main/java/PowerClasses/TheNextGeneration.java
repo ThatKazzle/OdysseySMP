@@ -52,6 +52,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
     public void elytraFlightAction(Player player) {
         if (hasPower(player, "end/dragon_egg")) {
             if (!isOnCooldown(player.getUniqueId(), elytraCooldowns)) {
+                setCooldown(player.getUniqueId(), elytraCooldowns, (60 * 3) + 30);
 
                 Vector finalDir = player.getVelocity().add(new Vector(0, 1, 0));
 
