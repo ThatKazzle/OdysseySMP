@@ -138,7 +138,8 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                     player.setHealth(playerHealth);
                     player.setSaturation(playerSat);
                     player.setSaturatedRegenRate(satRegenRate);
-                    player.setVelocity(playerVelocity);
+
+                    player.teleport(hitPlayer);
 
                     trimUtils.copyArmorTrims(hitPlayer, player);
 
