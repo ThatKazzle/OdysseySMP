@@ -26,7 +26,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
     public void action(String playerName) {
         Player player = plugin.getServer().getPlayer(playerName);
 
-        if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/balanced_diet") && !isOnCooldown(player.getUniqueId(), cooldowns)) {
+        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/balanced_diet") && !isOnCooldown(player.getUniqueId(), cooldowns)) {
             setCooldown(player.getUniqueId(), cooldowns, 60 * 3);
 
             player.addPotionEffect(satEffect);
@@ -35,7 +35,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
                 if (playerCheck != player && playerCheck.getLocation().distance(player.getLocation()) <= 25) {
                     playerCheck.addPotionEffect(hungerEffect);
 
-                    playerCheck.sendMessage(ChatColor.RED + player.getName() + " has given you " + ChatColor.AQUA + "Hunger" + ChatColor.RED + "!");
+                    playerCheck.sendMessage(ChatColor.RED + plugin.provider.getInfo(player).getName() + " has given you " + ChatColor.AQUA + "Hunger" + ChatColor.RED + "!");
                 }
             }
         } else if (isOnCooldown(player.getUniqueId(), cooldowns)) {

@@ -78,7 +78,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
     }
 
     public void groundPoundAction(Player player) {
-        if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "end/dragon_egg")) {
+        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "end/dragon_egg")) {
             if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
                 setCooldown(player.getUniqueId(), cooldowns, 60 * 2);
 
@@ -185,7 +185,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
         if (event.getDamager() instanceof AreaEffectCloud) {
             if (event.getEntity() instanceof Player) {
                 Player player = (Player) event.getEntity();
-                if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "end/dragon_egg")) {
+                if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "end/dragon_egg")) {
                     event.setCancelled(true);
                 }
             }

@@ -76,7 +76,7 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
         if (event.getRightClicked() instanceof Player) {
             Player player = event.getPlayer();
             Player clickedPlayer = (Player) event.getRightClicked();
-            if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "nether/all_effects") && event.getHand() == EquipmentSlot.HAND && clickedPlayer.getInventory().getItemInMainHand().getType() != Material.AIR) {
+            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "nether/all_effects") && event.getHand() == EquipmentSlot.HAND && clickedPlayer.getInventory().getItemInMainHand().getType() != Material.AIR) {
                 if (isOnCooldown(player.getUniqueId(), rightClickedCooldowns)) {
                     cantUsePowerMessage(player, rightClickedCooldowns, "Item Disable");
                 } else if (player.isSneaking() && !isOnCooldown(player.getUniqueId(), rightClickedCooldowns)) {

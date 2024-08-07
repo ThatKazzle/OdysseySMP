@@ -24,16 +24,16 @@ public class powerOneCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
-            String playerName = player.getName();
+            String playerName = plugin.provider.getInfo(player).getName();
 
-            if (this.plugin.getConfig().getConfigurationSection("players." + player.getName() + ".powers") != null) {
+            if (this.plugin.getConfig().getConfigurationSection("players." + plugin.provider.getInfo(player).getName() + ".powers") != null) {
                 if (!enabledKeys.isEmpty()) {
                     enabledKeys.clear();
                 }
 
-                for (String keys : this.plugin.getConfig().getConfigurationSection("players." + player.getName() + ".powers").getKeys(false)) {
+                for (String keys : this.plugin.getConfig().getConfigurationSection("players." + plugin.provider.getInfo(player).getName() + ".powers").getKeys(false)) {
                     String key = keys;
-                    Boolean value = this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + key);
+                    Boolean value = this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + key);
 
                     if (value) {
                         enabledKeys.add(key);

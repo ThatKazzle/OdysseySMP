@@ -42,7 +42,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
     }
 
     public void effectStealerAction(Player player) {
-        if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue")) {
+        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/complete_catalogue")) {
             if (!isOnCooldown(player.getUniqueId(), effectStealerCooldown)) {
 
                 RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
@@ -59,7 +59,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
                         hitPlayer.getWorld().playSound(player.getLocation(), Sound.ENTITY_GENERIC_DRINK, 1.f, 1.f);
 
                         player.sendMessage(ChatColor.AQUA + "You stole " + ChatColor.GREEN + hitPlayer.getName() + "'s " + ChatColor.AQUA + "potions.");
-                        hitPlayer.sendMessage(ChatColor.GREEN + player.getName() + ChatColor.AQUA + " stole your potions.");
+                        hitPlayer.sendMessage(ChatColor.GREEN + plugin.provider.getInfo(player).getName() + ChatColor.AQUA + " stole your potions.");
                     }
                 } else {
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
@@ -74,7 +74,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue") && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/complete_catalogue") && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 event.setCancelled(true);
             }
         }
@@ -85,7 +85,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/complete_catalogue") && !isOnCooldown(player.getUniqueId(), cooldowns)) {
+            if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/complete_catalogue") && !isOnCooldown(player.getUniqueId(), cooldowns)) {
                 if (player.getHealth() - event.getFinalDamage() <= 0 && player.getInventory().getItemInOffHand().getType() != Material.TOTEM_OF_UNDYING) {
                     setCooldown(player.getUniqueId(), cooldowns, 10 * 60);
 

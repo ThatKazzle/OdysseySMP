@@ -95,7 +95,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
                 player.sendMessage(ChatColor.LIGHT_PURPLE + "You now share damage with " + ChatColor.BOLD + hitPlayer.getName());
 
                 hitPlayer.playSound(hitPlayer.getLocation(), Sound.BLOCK_AMETHYST_BLOCK_PLACE, 1.f, 1.f);
-                hitPlayer.sendMessage(ChatColor.LIGHT_PURPLE + "You now share damage with " + ChatColor.BOLD + player.getName());
+                hitPlayer.sendMessage(ChatColor.LIGHT_PURPLE + "You now share damage with " + ChatColor.BOLD + plugin.provider.getInfo(player).getName());
 
                 //particle stuff
                 BukkitTask particleTask = new BukkitRunnable() {
@@ -134,7 +134,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
     @EventHandler
     public void onPlayerMoveEvent(PlayerMoveEvent event) {
         Player player = event.getPlayer();;
-        if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "ride_strider_in_overworld_lava")) {
+        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "ride_strider_in_overworld_lava")) {
             player.addPotionEffect(fireResPot);
         }
     }

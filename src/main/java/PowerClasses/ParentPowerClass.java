@@ -26,7 +26,7 @@ public abstract class ParentPowerClass {
     }
 
     public boolean hasPower(Player player, String powerKey) {
-        return plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + powerKey);
+        return plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + powerKey);
     }
 
 

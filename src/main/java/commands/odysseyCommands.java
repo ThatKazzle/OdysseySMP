@@ -96,9 +96,9 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         Inventory gui = Bukkit.createInventory(null, 9, "Choose an effect to withdraw:");
 
         FileConfiguration config = plugin.getConfig();
-        for (String keys : this.plugin.getConfig().getConfigurationSection("players." + player.getName() + ".powers").getKeys(false)) {
+        for (String keys : this.plugin.getConfig().getConfigurationSection("players." + plugin.provider.getInfo(player).getName() + ".powers").getKeys(false)) {
             String key = keys;
-            Boolean value = this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + keys);
+            Boolean value = this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + keys);
             if (value) {
                 ItemStack item = new PowerPotionItem(this.plugin, this.plugin.getAdvancementNameFormattedFromUnformattedString(keys), this.plugin.powerPotionKey).getItemStack();
 

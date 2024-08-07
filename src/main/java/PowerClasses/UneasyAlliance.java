@@ -83,7 +83,7 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
     }
 
     private void invisAction(Player player) {
-        if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "nether/uneasy_alliance")) {
+        if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "nether/uneasy_alliance")) {
             if (isOnCooldown(player.getUniqueId(), cooldowns)) {
                 cantUsePowerMessage(player, cooldowns, "Invisibility");
             } else if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
@@ -99,7 +99,7 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
     }
 
     private void freezeAction(Player player) {
-        if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "nether/uneasy_alliance")) {
+        if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "nether/uneasy_alliance")) {
             if (!isOnCooldown(player.getUniqueId(), freezeCooldowns)) {
 
                 RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);

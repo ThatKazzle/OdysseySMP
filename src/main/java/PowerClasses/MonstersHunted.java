@@ -93,7 +93,7 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
     private void monstersHuntedAction(String playerName) {
         Player player = this.plugin.getServer().getPlayer(playerName);
 
-        if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "adventure/kill_all_mobs")) {
+        if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "adventure/kill_all_mobs")) {
             if (isOnCooldown(player.getUniqueId(), sphereCooldowns)) {
                 cantUsePowerMessage(player, sphereCooldowns, "Ice Cage");
             } else if (!isOnCooldown(player.getUniqueId(), sphereCooldowns)) {
@@ -129,7 +129,7 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
     private void blackHoleAction(String playerName) {
         Player player = Bukkit.getPlayer(playerName);
 
-        if (this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "adventure/kill_all_mobs")) {
+        if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "adventure/kill_all_mobs")) {
             if (!isOnCooldown(player.getUniqueId(), blackHoleCooldowns)) {
                 RayTraceResult result = player.getWorld().rayTraceBlocks(player.getEyeLocation(), player.getEyeLocation().getDirection(), 10, FluidCollisionMode.NEVER, true);
 

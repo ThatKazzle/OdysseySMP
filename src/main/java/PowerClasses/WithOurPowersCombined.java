@@ -61,7 +61,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
         Player targetPlayer = ((Player) result.getHitEntity());
 
-        if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/froglights")) {
+        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights")) {
             if (isOnCooldown(player.getUniqueId(), cooldowns)) {
                 cantUsePowerMessage(player, cooldowns, "Odyssey Stealer");
             } else if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
@@ -78,17 +78,17 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                         return;
                     }
 
-                    plugin.getConfig().set("players." + player.getName() + ".powers." + "husbandry/froglights", false);
+                    plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights", false);
                     plugin.getConfig().set("players." + targetPlayer.getName() + ".powers." + targetPlayerEnabledKey, false);
 
-                    plugin.getConfig().set("players." + player.getName() + ".powers." + targetPlayerEnabledKey, true);
+                    plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + targetPlayerEnabledKey, true);
 
                     player.sendMessage(ChatColor.RED + "You stole " + ChatColor.AQUA + targetPlayerEnabledKey + ChatColor.RED + " from " + ChatColor.AQUA + targetPlayer.getName() + "!");
-                    targetPlayer.sendMessage(ChatColor.AQUA + player.getName() + ChatColor.RED + " stole " + ChatColor.AQUA + targetPlayerEnabledKey + "!");
+                    targetPlayer.sendMessage(ChatColor.AQUA + plugin.provider.getInfo(player).getName() + ChatColor.RED + " stole " + ChatColor.AQUA + targetPlayerEnabledKey + "!");
 
                     plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                        plugin.getConfig().set("players." + player.getName() + ".powers." + targetPlayerEnabledKey, false);
-                        plugin.getConfig().set("players." + player.getName() + ".powers." + "husbandry/froglights", true);
+                        plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + targetPlayerEnabledKey, false);
+                        plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights", true);
 
                         plugin.getConfig().set("players." + targetPlayer.getName() + ".powers." + targetPlayerEnabledKey, true);
 
@@ -105,7 +105,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     PotionEffect invisPot = new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 10, 0, false, false, false);
 
     public void mimicAction(Player player) {
-        if (plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + "husbandry/froglights")) {
+        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights")) {
             if (!isOnCooldown(player.getUniqueId(), mimicCooldowns)) {
                 RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
 
