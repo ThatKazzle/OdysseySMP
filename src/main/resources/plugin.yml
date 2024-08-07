@@ -23,3 +23,5 @@ commands:
     description: "resets the cooldowns of your enabled powers."
     aliases:
       - "rc"
+  skin:
+    usage: "baller"

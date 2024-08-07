@@ -4,6 +4,7 @@ import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
 import org.bukkit.World;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
 public class ParticleUtils {
@@ -180,7 +181,6 @@ public class ParticleUtils {
      * @param density  The density of particles on the surface of the sphere.
      * @param particle The type of particle to generate.
      * @param color    The color of the particle (only applies if particle is DUST).
-     * @param i
      */
     public static void createParticleSphere(Location center, double radius, int density, Particle particle, Color color, int size) {
         World world = center.getWorld();
@@ -235,6 +235,27 @@ public class ParticleUtils {
                 Location particleLocation = center.clone().add(rotatedX, y, rotatedZ);
                 world.spawnParticle(particle, particleLocation, 1, dustOptions);
             }
+        }
+    }
+
+    public static void createParticleLine(Location start, Location end, int density, Particle.DustOptions dustOptions) {
+        if (!start.getWorld().equals(end.getWorld())) {
+            throw new IllegalArgumentException("Start and end locations must be in the same world.");
+        }
+
+        World world = start.getWorld();
+        Vector startVector = start.toVector();
+        Vector endVector = end.toVector();
+        Vector direction = endVector.clone().subtract(startVector);
+        double length = direction.length();
+        direction.normalize();
+
+        double interval = length / density;
+        Vector step = direction.multiply(interval);
+
+        for (int i = 0; i <= density; i++) {
+            Vector currentPosition = startVector.clone().add(step.clone().multiply(i));
+            world.spawnParticle(Particle.DUST, currentPosition.toLocation(world), 1, dustOptions);
         }
     }
 }

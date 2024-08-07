@@ -1,5 +1,7 @@
 package PowerClasses;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
+import com.destroystokyo.paper.profile.ProfileProperty;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -10,6 +12,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
+import org.bukkit.scheduler.BukkitRunnable;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.*;
@@ -32,7 +35,21 @@ public class Beaconator extends ParentPowerClass implements Listener {
 
     @Override
     public void action(String playerName) {
-        Player player = (Player) plugin.getServer().getPlayer(playerName);
+        Player player = plugin.getServer().getPlayer(playerName);
+
+        randomEffectAction(player);
+
+        player.setNoPhysics(true);
+
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                player.setNoPhysics(false);
+            }
+        }.runTaskLater(plugin, 100);
+    }
+
+    public void randomEffectAction(Player player) {
         if (isOnCooldown(player.getUniqueId(), cooldowns)) {
             cantUsePowerMessage(player, cooldowns, "Beaconator");
         } else if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
