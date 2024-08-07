@@ -11,6 +11,8 @@ import com.comphenix.protocol.wrappers.WrappedAttribute;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import commands.*;
+import dev.iiahmed.disguise.DisguiseManager;
+import dev.iiahmed.disguise.DisguiseProvider;
 import io.papermc.paper.advancement.AdvancementDisplay;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
@@ -72,6 +74,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public BalancedDiet balancedDietClass = new BalancedDiet(this);
     public TheNextGeneration nextGenerationClass = new TheNextGeneration(this);
 
+    public final DisguiseProvider provider = DisguiseManager.getProvider();
+
     public boolean resetPlayerHealthAttribute = false;
 
     public BukkitTask secondsTask = null;
@@ -132,6 +136,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 }
             }
         }.runTaskTimer(this, 0, 20);
+
+        boolean allowEntities = getConfig().getBoolean("allow-entity-disguises");
+        DisguiseManager.initialize(this, allowEntities);
+        provider.allowOverrideChat(true);
     }
 
     @Override

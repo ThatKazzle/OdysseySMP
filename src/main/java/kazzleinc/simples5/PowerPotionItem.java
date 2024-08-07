@@ -1,6 +1,5 @@
 package kazzleinc.simples5;
 
-import com.sun.tools.javac.jvm.Items;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.NamespacedKey;

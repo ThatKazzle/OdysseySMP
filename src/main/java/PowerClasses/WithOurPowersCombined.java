@@ -1,9 +1,6 @@
 package PowerClasses;
 
-import dev.iiahmed.disguise.Disguise;
-import dev.iiahmed.disguise.DisguiseManager;
-import dev.iiahmed.disguise.DisguiseProvider;
-import dev.iiahmed.disguise.SkinAPI;
+import dev.iiahmed.disguise.*;
 import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.*;
@@ -22,26 +19,27 @@ import org.bukkit.util.Vector;
 import java.util.HashMap;
 import java.util.Objects;
 import java.util.UUID;
+import java.util.regex.Pattern;
 
 public class WithOurPowersCombined extends ParentPowerClass implements Listener {
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
-
     public HashMap<UUID, Long>  mimicCooldowns = new HashMap<>();
 
     public WithOurPowersCombined(SimpleS5 plugin) {
         super(plugin);
-
-        boolean allowEntities = plugin.getConfig().getBoolean("allow-entity-disguises");
-        DisguiseManager.initialize(plugin, allowEntities);
-        provider.allowOverrideChat(true);
     }
 
-    private final DisguiseProvider provider = DisguiseManager.getProvider();
+
 
     @Override
     public void action(String playerName) {
         Player player = plugin.getServer().getPlayer(playerName);
-        stealerAction(player);
+        if (player.isSneaking()) {
+            stealerAction(player);
+        } else {
+            mimicAction(player);
+        }
+
     }
 
     @Override
@@ -115,27 +113,24 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                     setCooldown(player.getUniqueId(), mimicCooldowns, 120);
                     Player hitPlayer = (Player) result.getHitEntity();
 
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            Disguise disguise = Disguise.builder()
-                                    .setName(hitPlayer.getName())
-                                    // you could as well use Disguise.Builder#setSkin(Skin)
-                                    // or even Disguise.Builder#setSkin(uuid)
-                                    // it's recommended to run this async since #setSkin from an online API will block the mainthread
-                                    .setSkin(SkinAPI.MOJANG, hitPlayer.getUniqueId())
-                                    // this will change the player into a zombie for others only
-                                    .build();
-                            provider.disguise(player, disguise);
-                        }
-                    }.runTaskAsynchronously(plugin);
+                    plugin.provider.setNamePattern(Pattern.compile("^[a-zA-Z0-9_.§]{1,16}$"));
+
+                    Disguise disguise = Disguise.builder()
+                            .setName(ChatColor.RESET + hitPlayer.getName())
+                            // you could as well use Disguise.Builder#setSkin(Skin)
+                            // or even Disguise.Builder#setSkin(uuid)
+                            // it's recommended to run this async since #setSkin from an online API will block the mainthread
+                            .setSkin(SkinAPI.MOJANG, hitPlayer.getUniqueId())
+                            // this will change the player into a zombie for others only
+                            .build();
+                    DisguiseResponse response = plugin.provider.disguise(player, disguise);
 
                     new BukkitRunnable() {
                         @Override
                         public void run() {
                             DisguiseManager.getProvider().undisguise(player);
                         }
-                    }.runTaskLater(plugin, 20 * 10);
+                    }.runTaskLater(plugin, 20 * 30);
                 }
             }
         }
