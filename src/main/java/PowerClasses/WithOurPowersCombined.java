@@ -3,12 +3,15 @@ package PowerClasses;
 import dev.iiahmed.disguise.*;
 import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
+import kazzleinc.simples5.TrimUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
+import org.bukkit.inventory.Inventory;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -25,11 +28,11 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
     public HashMap<UUID, Long>  mimicCooldowns = new HashMap<>();
 
+    private TrimUtils trimUtils = new TrimUtils();
+
     public WithOurPowersCombined(SimpleS5 plugin) {
         super(plugin);
     }
-
-
 
     @Override
     public void action(String playerName) {
@@ -113,6 +116,14 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                     setCooldown(player.getUniqueId(), mimicCooldowns, 120);
                     Player hitPlayer = (Player) result.getHitEntity();
 
+                    double playerHealth = player.getHealth();
+                    float playerSat = player.getSaturation();
+                    int satRegenRate = player.getSaturatedRegenRate();
+
+                    Vector playerVelocity = player.getVelocity();
+
+                    int activeSlot = player.getInventory().getHeldItemSlot();
+
                     plugin.provider.setNamePattern(Pattern.compile("^[a-zA-Z0-9_.§]{1,16}$"));
 
                     Disguise disguise = Disguise.builder()
@@ -124,10 +135,18 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                             .build();
                     DisguiseResponse response = plugin.provider.disguise(player, disguise);
 
+                    player.setHealth(playerHealth);
+                    player.setSaturation(playerSat);
+                    player.setSaturatedRegenRate(satRegenRate);
+                    player.setVelocity(playerVelocity);
+
+                    trimUtils.copyArmorTrims(hitPlayer, player);
+
                     new BukkitRunnable() {
                         @Override
                         public void run() {
                             DisguiseManager.getProvider().undisguise(player);
+                            trimUtils.undoCopyArmorTrims(player);
                         }
                     }.runTaskLater(plugin, 20 * 30);
                 }
