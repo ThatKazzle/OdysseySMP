@@ -40,7 +40,10 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
         this.plugin = plugin;
     }
 
-
+    @Override
+    public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Damage Link: " + getCooldownTimeLeft(player.getUniqueId(), damageShareCooldowns);
+    }
 
     @Override
     public void action(String playerName) {
@@ -101,7 +104,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
                 BukkitTask particleTask = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        ParticleUtils.createParticleLine(player.getLocation(), hitPlayer.getLocation(), 5, new Particle.DustOptions(Color.RED, 1));
+                        ParticleUtils.createParticleLine(player.getLocation().add(new Vector(0, 1, 0)), hitPlayer.getLocation().add(new Vector(0, 1, 0)), 5, new Particle.DustOptions(Color.RED, 1));
                     }
                 }.runTaskTimer(plugin, 0, 2);
 
@@ -112,6 +115,9 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
                         particleTask.cancel();
                     }
                 }.runTaskLater(plugin, 20 * 10);
+            } else {
+                player.playSound(player, Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
+                player.sendMessage(ChatColor.RED + "You didn't hit anyone.");
             }
         }
     }

@@ -38,15 +38,6 @@ public class Beaconator extends ParentPowerClass implements Listener {
         Player player = plugin.getServer().getPlayer(playerName);
 
         randomEffectAction(player);
-
-        player.setNoPhysics(true);
-
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                player.setNoPhysics(false);
-            }
-        }.runTaskLater(plugin, 100);
     }
 
     public void randomEffectAction(Player player) {
