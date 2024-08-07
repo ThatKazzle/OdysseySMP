@@ -121,7 +121,6 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                             // or even Disguise.Builder#setSkin(uuid)
                             // it's recommended to run this async since #setSkin from an online API will block the mainthread
                             .setSkin(SkinAPI.MOJANG, hitPlayer.getUniqueId())
-                            // this will change the player into a zombie for others only
                             .build();
                     DisguiseResponse response = plugin.provider.disguise(player, disguise);
 

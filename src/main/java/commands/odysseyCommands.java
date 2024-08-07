@@ -51,7 +51,6 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
             if (args.length == 1 && args[0].equals("withdraw")) {
                 openGUI(player);
-
             } else if (args.length == 2 && args[0].equals("description")) {
                 for (String keys : this.plugin.getConfig().getConfigurationSection("defaults.").getKeys(false)) {
                     String value = this.plugin.getConfig().getString("defaults." + keys);
