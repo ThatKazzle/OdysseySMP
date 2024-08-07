@@ -3,10 +3,7 @@ package PowerClasses;
 import com.comphenix.protocol.PacketType;
 import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
-import org.bukkit.ChatColor;
-import org.bukkit.Color;
-import org.bukkit.Particle;
-import org.bukkit.Sound;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -129,12 +126,10 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
             Player damagedPlayer = (Player) event.getEntity();
 
             if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && sharedDamageMap.containsKey(damagedPlayer.getUniqueId())) {
-                damager.damage(event.getDamage());
+                Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getFinalDamage());
             }
         }
     }
-
-    //make 15% chance to hit player with fire
 
     @EventHandler
     public void onPlayerMoveEvent(PlayerMoveEvent event) {

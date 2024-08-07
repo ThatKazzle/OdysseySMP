@@ -32,6 +32,11 @@
       <option name="url" value="https://repository.jboss.org/nexus/content/repositories/public/" />
     </remote-repository>
     <remote-repository>
+      <option name="id" value="gravemc-repo" />
+      <option name="name" value="gravemc-repo" />
+      <option name="url" value="https://repo.gravemc.net/releases/" />
+    </remote-repository>
+    <remote-repository>
       <option name="id" value="papermc" />
       <option name="name" value="papermc" />
       <option name="url" value="https://repo.papermc.io/repository/maven-public/" />
