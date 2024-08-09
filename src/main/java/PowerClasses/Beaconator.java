@@ -13,6 +13,7 @@ import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 import org.checkerframework.checker.units.qual.A;
 
 import java.util.*;
@@ -122,8 +123,9 @@ public class Beaconator extends ParentPowerClass implements Listener {
                         });
 
                         playerStates.get(playerId).put(currentTime, new PlayerState(player));
-
-                        particleUtils.sendClientDustParticle(player, getPlayerState(playerId, 3000).getRewindLocation(), new Particle.DustOptions(Color.RED, 2f), 1);
+                        if (!isOnCooldown(playerId, rewindCooldwns)) {
+                            particleUtils.sendClientDustParticle(player, getPlayerState(playerId, 3000).getRewindLocation().add(new Vector(0, 1, 0)), new Particle.DustOptions(Color.RED, 2.5f), 1);
+                        }
                     }
 
                 }
