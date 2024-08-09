@@ -2,12 +2,15 @@ package PowerClasses;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.PlayerState;
 import kazzleinc.simples5.SimpleS5;
 import kazzleinc.simples5.SpecialParticleUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.potion.PotionEffect;
@@ -59,11 +62,32 @@ public class Beaconator extends ParentPowerClass implements Listener {
         return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Run it Back: " + getCooldownTimeLeft(player.getUniqueId(), rewindCooldwns);
     }
 
+    @EventHandler
+    public void onPlayerMoveEvent(PlayerMoveEvent event) {
+        Player player = event.getPlayer();
+
+        for (PotionEffect effect : player.getActivePotionEffects()) {
+            PotionEffectType type = effect.getType();
+
+            if (potionTypes.contains(effect.getType())) {
+                if (effect.getAmplifier() == 2) {
+                    if (type == PotionEffectType.SPEED) {
+                        ParticleUtils.createParticleRing(player.getLocation().add(new Vector(0, 0.3, 0)), 1, 100, Particle.DUST, Color.AQUA, 1);
+                    }
+                }
+
+            }
+        }
+    }
+
     public void rewindAction(Player player) {
         PlayerState state = getPlayerState(player.getUniqueId(), 3000);
 
         if (!isOnCooldown(player.getUniqueId(), rewindCooldwns)) {
             setCooldown(player.getUniqueId(), rewindCooldwns, 60 * 5);
+
+            player.getWorld().spawnParticle(Particle.PORTAL, player.getLocation(), 100, 1, 1, 1, 1);
+
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, 0.5f, 1.f);
             state.apply(player);
         } else {
@@ -82,13 +106,13 @@ public class Beaconator extends ParentPowerClass implements Listener {
         }
     }
 
-
-
     public PotionEffectType addRandomPotionEffects(Player player) {
         PotionEffectType randomElement = getRandomElement(potionTypes);
 
         if (randomElement == PotionEffectType.STRENGTH) {
             player.addPotionEffect(new PotionEffect(randomElement, 20 * 20, 1, false, false, true));
+
+
         } else {
             player.addPotionEffect(new PotionEffect(randomElement, 20 * 20, 2, false, false, true));
         }
