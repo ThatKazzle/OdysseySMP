@@ -94,7 +94,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(feelsLikeHomeClass, this);
         getServer().getPluginManager().registerEvents(wopcClass, this);
         getServer().getPluginManager().registerEvents(hiredHelpClass, this);
+
         getServer().getPluginManager().registerEvents(beaconatorClass, this);
+        beaconatorClass.startTrackingPlayerStates();
+
         getServer().getPluginManager().registerEvents(balancedDietClass, this);
         getServer().getPluginManager().registerEvents(nextGenerationClass, this);
 
@@ -140,6 +143,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         boolean allowEntities = getConfig().getBoolean("allow-entity-disguises");
         DisguiseManager.initialize(this, allowEntities);
         provider.allowOverrideChat(true);
+
+        //the rewind player thing
     }
 
     @Override

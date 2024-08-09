@@ -2,6 +2,7 @@ package PowerClasses;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
+import kazzleinc.simples5.PlayerState;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
@@ -20,6 +21,10 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Beaconator extends ParentPowerClass implements Listener {
     public final HashMap<UUID, Long> cooldowns = new HashMap<>();
+    public final HashMap<UUID, Long> rewindCooldwns = new HashMap<>();
+    private final Map<UUID, LinkedHashMap<Long, PlayerState>> playerStates = new HashMap<>();
+
+    private static final int BUFFER_SIZE = 60;
 
     private final List<PotionEffectType> potionTypes = Arrays.asList(PotionEffectType.SPEED, PotionEffectType.REGENERATION, PotionEffectType.HASTE);
 
@@ -36,8 +41,25 @@ public class Beaconator extends ParentPowerClass implements Listener {
     @Override
     public void action(String playerName) {
         Player player = plugin.getServer().getPlayer(playerName);
+        if (hasPower(player, "nether/create_full_beacon")) {
+            if (player.isSneaking()) {
+                rewindAction(player);
+            } else {
+                randomEffectAction(player);
+            }
+        }
+    }
 
-        randomEffectAction(player);
+    public void rewindAction(Player player) {
+        PlayerState state = getPlayerState(player.getUniqueId(), 3000);
+
+        if (!isOnCooldown(player.getUniqueId(), rewindCooldwns)) {
+            setCooldown(player.getUniqueId(), rewindCooldwns, 60 * 5);
+
+            state.apply(player);
+        } else {
+
+        }
     }
 
     public void randomEffectAction(Player player) {
@@ -59,6 +81,8 @@ public class Beaconator extends ParentPowerClass implements Listener {
         player.getInventory().addItem(item);
     }
 
+
+
     public PotionEffectType addRandomPotionEffects(Player player) {
         PotionEffectType randomElement = getRandomElement(potionTypes);
 
@@ -75,7 +99,44 @@ public class Beaconator extends ParentPowerClass implements Listener {
         return list.get(randomIndex);
     }
 
-    public String formatPotionName() {
-        return "balls";
+    public void startTrackingPlayerStates() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                long currentTime = System.currentTimeMillis();
+                for (Player player : plugin.getServer().getOnlinePlayers()) {
+                    if (hasPower(player, "nether/create_full_beacon")) {
+                        UUID playerId = player.getUniqueId();
+                        playerStates.putIfAbsent(playerId, new LinkedHashMap<Long, PlayerState>(BUFFER_SIZE + 1, 1, false) {
+                            protected boolean removeEldestEntry(Map.Entry<Long, PlayerState> eldest) {
+                                return size() > BUFFER_SIZE;
+                            }
+                        });
+
+                        playerStates.get(playerId).put(currentTime, new PlayerState(player));
+                    }
+
+                }
+            }
+        }.runTaskTimer(plugin, 1, 1); // Runs every tick (50ms)
+    }
+
+    public PlayerState getPlayerState(UUID playerId, long timeAgoInMillis) {
+        LinkedHashMap<Long, PlayerState> states = playerStates.get(playerId);
+        if (states == null) return null;
+
+        long targetTime = System.currentTimeMillis() - timeAgoInMillis;
+        PlayerState closestState = null;
+        long closestTimeDiff = Long.MAX_VALUE;
+
+        for (Map.Entry<Long, PlayerState> entry : states.entrySet()) {
+            long timeDiff = Math.abs(entry.getKey() - targetTime);
+            if (timeDiff < closestTimeDiff) {
+                closestTimeDiff = timeDiff;
+                closestState = entry.getValue();
+            }
+        }
+
+        return closestState;
     }
 }
