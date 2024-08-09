@@ -15,7 +15,7 @@ public class PowerStealerPlaceholder extends ParentPowerClass {
 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
-        return "" + ChatColor.RED + ChatColor.MAGIC + "asdf " + ChatColor.RESET + ChatColor.RED + "Unusable for " + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.RESET + ChatColor.MAGIC + " asdf";
+        return "" + ChatColor.RED + ChatColor.MAGIC + "asdf " + ChatColor.RESET + ChatColor.RED + "Unusable for " + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.RESET + ChatColor.RED + ChatColor.MAGIC + " asdf";
     }
 
 
