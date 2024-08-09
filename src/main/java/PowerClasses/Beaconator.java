@@ -46,7 +46,7 @@ public class Beaconator extends ParentPowerClass implements Listener {
     public void action(String playerName) {
         Player player = plugin.getServer().getPlayer(playerName);
         if (hasPower(player, "nether/create_full_beacon")) {
-            if (player.isSneaking()) {
+            if (!player.isSneaking()) {
                 rewindAction(player);
             } else {
                 randomEffectAction(player);
