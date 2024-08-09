@@ -149,7 +149,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                             DisguiseManager.getProvider().undisguise(player);
                             trimUtils.undoCopyArmorTrims(player);
                         }
-                    }.runTaskLater(plugin, 20 * 30);
+                    }.runTaskLater(plugin, 20 * 120);
                 }
             }
         }

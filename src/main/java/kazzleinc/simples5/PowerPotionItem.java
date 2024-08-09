@@ -80,6 +80,10 @@ public class PowerPotionItem {
                     nameToAdd = "The Next Generation";
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + "dragon_egg");
                     break;
+                case "Create Full Beacon":
+                    nameToAdd = "Beaconator";
+                    loreConf = this.plugin.getConfig().getStringList("descriptions." + "create_full_beacon");
+                    break;
                 default:
                     nameToAdd = displayName;
                     loreConf = this.plugin.getConfig().getStringList("descriptions." + this.plugin.getAdvancementNameUnformattedFromFormattedString(meta.getPersistentDataContainer().get(powerKey, PersistentDataType.STRING)));

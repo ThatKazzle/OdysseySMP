@@ -28,7 +28,7 @@ public class Beaconator extends ParentPowerClass implements Listener {
 
     private static final int BUFFER_SIZE = 60;
 
-    private final List<PotionEffectType> potionTypes = Arrays.asList(PotionEffectType.SPEED, PotionEffectType.REGENERATION, PotionEffectType.HASTE);
+    private final List<PotionEffectType> potionTypes = Arrays.asList(PotionEffectType.SPEED, PotionEffectType.REGENERATION, PotionEffectType.HASTE, PotionEffectType.STRENGTH);
 
     public Beaconator(SimpleS5 plugin) {
         super(plugin);
@@ -87,7 +87,11 @@ public class Beaconator extends ParentPowerClass implements Listener {
     public PotionEffectType addRandomPotionEffects(Player player) {
         PotionEffectType randomElement = getRandomElement(potionTypes);
 
-        player.addPotionEffect(new PotionEffect(randomElement, 20 * 20, 1, false, false, true));
+        if (randomElement == PotionEffectType.STRENGTH) {
+            player.addPotionEffect(new PotionEffect(randomElement, 20 * 20, 1, false, false, true));
+        } else {
+            player.addPotionEffect(new PotionEffect(randomElement, 20 * 20, 2, false, false, true));
+        }
 
         return randomElement;
     }
@@ -116,7 +120,7 @@ public class Beaconator extends ParentPowerClass implements Listener {
 
                         playerStates.get(playerId).put(currentTime, new PlayerState(player));
                         if (!isOnCooldown(playerId, rewindCooldwns)) {
-                            particleUtils.sendClientDustParticle(player, getPlayerState(playerId, 3000).getRewindLocation().add(new Vector(0, 1, 0)), new Particle.DustOptions(Color.RED, 2.5f), 1);
+                            particleUtils.sendClientDustParticle(player, getPlayerState(playerId, 3000).getRewindLocation().add(new Vector(0, 0.2, 0)), new Particle.DustOptions(Color.PURPLE, 2.f), 1);
                         }
                     }
 

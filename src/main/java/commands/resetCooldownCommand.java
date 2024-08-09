@@ -92,11 +92,13 @@ public class resetCooldownCommand implements CommandExecutor {
                         case "husbandry/froglights":
                             plugin.wopcClass.cooldowns.replace(player.getUniqueId(), 0L);
                             break;
-                        case "nether/create_beacon":
+                        case "nether/create_full_beacon":
                             plugin.beaconatorClass.cooldowns.replace(player.getUniqueId(), 0L);
+                            plugin.beaconatorClass.rewindCooldwns.replace(player.getUniqueId(), 0L);
                             break;
                         case "end/dragon_egg":
                             plugin.nextGenerationClass.cooldowns.replace(player.getUniqueId(), 0L);
+                            break;
                     }
                 }
             }
