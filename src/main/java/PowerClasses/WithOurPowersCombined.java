@@ -62,7 +62,10 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
         if (!(result.getHitEntity() instanceof Player)) return;
 
-        Player targetPlayer = ((Player) result.getHitEntity());
+        Player beforeConversion = ((Player) result.getHitEntity());
+
+        Player targetPlayer = Bukkit.getPlayer(plugin.provider.getInfo(beforeConversion).getName());
+        String targetPlayerName = plugin.provider.getInfo(beforeConversion).getName();
 
         if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights")) {
             if (isOnCooldown(player.getUniqueId(), cooldowns)) {
@@ -74,26 +77,33 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
                     String targetPlayerEnabledKey;
 
-                    if (plugin.getPlayerPowersList(targetPlayer).get(plugin.getConfig().getInt("players." + targetPlayer.getName() + ".mode")) != null) {
-                        targetPlayerEnabledKey = plugin.getPlayerPowersList(targetPlayer).get(plugin.getConfig().getInt("players." + targetPlayer.getName() + ".mode"));
+                    String targetPlayerFormattedKey;
+
+                    if (plugin.getPlayerPowersList(targetPlayer).get(plugin.getConfig().getInt("players." + targetPlayerName + ".mode")) != null) {
+                        targetPlayerEnabledKey = plugin.getPlayerPowersList(targetPlayer).get(plugin.getConfig().getInt("players." + targetPlayerName + ".mode"));
+
+                        targetPlayerFormattedKey = plugin.getAdvancementNameFormattedFromUnformattedString(targetPlayerEnabledKey);
                     } else {
                         player.sendMessage("That player doesn't have a power you can steal!");
                         return;
                     }
 
                     plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights", false);
-                    plugin.getConfig().set("players." + targetPlayer.getName() + ".powers." + targetPlayerEnabledKey, false);
+                    plugin.getConfig().set("players." + targetPlayerName + ".powers." + targetPlayerEnabledKey, false);
+
+                    plugin.getConfig().set("players." + targetPlayerName + ".powers." + "player/power_stolen", true);
 
                     plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + targetPlayerEnabledKey, true);
 
-                    player.sendMessage(ChatColor.RED + "You stole " + ChatColor.AQUA + targetPlayerEnabledKey + ChatColor.RED + " from " + ChatColor.AQUA + targetPlayer.getName() + "!");
-                    targetPlayer.sendMessage(ChatColor.AQUA + plugin.provider.getInfo(player).getName() + ChatColor.RED + " stole " + ChatColor.AQUA + targetPlayerEnabledKey + "!");
+                    player.sendMessage(ChatColor.RED + "You stole " + ChatColor.AQUA + targetPlayerFormattedKey + ChatColor.RED + " from " + ChatColor.AQUA + targetPlayerName + "!");
+                    targetPlayer.sendMessage(ChatColor.AQUA + plugin.provider.getInfo(player).getName() + ChatColor.RED + " stole " + ChatColor.AQUA + targetPlayerFormattedKey + "!");
 
                     plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                         plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + targetPlayerEnabledKey, false);
                         plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights", true);
 
-                        plugin.getConfig().set("players." + targetPlayer.getName() + ".powers." + targetPlayerEnabledKey, true);
+                        plugin.getConfig().set("players." + targetPlayerName + ".powers." + "player/power_stolen", false);
+                        plugin.getConfig().set("players." + targetPlayerName + ".powers." + targetPlayerEnabledKey, true);
 
                         player.sendMessage(ChatColor.GREEN + "you lost your stolen power, and it has been given back to them.");
                         targetPlayer.sendMessage(ChatColor.GREEN + "You have been given your power back.");

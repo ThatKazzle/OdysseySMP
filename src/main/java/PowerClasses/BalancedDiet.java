@@ -1,6 +1,7 @@
 package PowerClasses;
 
 import kazzleinc.simples5.SimpleS5;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Material;
 import org.bukkit.attribute.Attribute;
@@ -9,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
+import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -71,7 +73,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
 
                 player.sendMessage(ChatColor.RED + "fatass");
 
-                BukkitTask attrRemover = new BukkitRunnable() {
+                new BukkitRunnable() {
                     Player checkPlayer = player;
                     @Override
                     public void run() {
@@ -79,27 +81,27 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
                         AttributeInstance scale = checkPlayer.getAttribute(Attribute.GENERIC_SCALE);
                         AttributeInstance reach = checkPlayer.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE);
 
-                        BukkitTask actualAttrRemover = new BukkitRunnable() {
-                            @Override
-                            public void run() {
-                                if (attackSpeed.getBaseValue() != 4.0) {
-                                    attackSpeed.setBaseValue(4.0);
-                                }
+                        plugin.getLogger().info(ChatColor.GREEN + "attrRemover ran once");
 
-                                if (scale.getBaseValue() != 1.0) {
-                                    scale.setBaseValue(1.0);
-                                }
-
-                                if (reach.getBaseValue() != 3.0) {
-                                    reach.setBaseValue(3.0);
-                                }
-
-                                if (attackSpeed.getBaseValue() == 4.0 && scale.getBaseValue() != 1.0 && reach.getBaseValue() != 3.0) {
-                                    this.cancel();
-                                    checkPlayer.sendMessage("Everything goes back to normal idiot.");
-                                }
+                        if (checkPlayer.isOnline()) {
+                            if (attackSpeed.getBaseValue() != 4.0) {
+                                attackSpeed.setBaseValue(4.0);
+                                plugin.getLogger().info(ChatColor.RED + "Updated attack speed");
                             }
-                        }.runTaskTimer(plugin, 0, 5);
+
+                            if (scale.getBaseValue() != 1.0) {
+                                scale.setBaseValue(1.0);
+                                plugin.getLogger().info(ChatColor.RED + "Updated scale");
+                            }
+
+                            if (reach.getBaseValue() != 3.0) {
+                                reach.setBaseValue(3.0);
+                                plugin.getLogger().info(ChatColor.RED + "Updated reach");
+                            }
+
+                            plugin.getLogger().info("Everything goes back to normal idiot.");
+                            this.cancel();
+                        }
                     }
                 }.runTaskLater(plugin, 15 * 20);
             }

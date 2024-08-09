@@ -18,6 +18,7 @@ import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
 import org.bukkit.attribute.Attribute;
+import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.entity.Entity;
@@ -150,6 +151,30 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     @Override
     public void onDisable() {
         // Plugin shutdown logic
+    }
+
+    @EventHandler
+    public void onPlayerQuitEvent(PlayerQuitEvent event) {
+        Player checkPlayer = event.getPlayer();
+
+        AttributeInstance attackSpeed = checkPlayer.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
+        AttributeInstance scale = checkPlayer.getAttribute(Attribute.GENERIC_SCALE);
+        AttributeInstance reach = checkPlayer.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE);
+
+        //attribute thing, to make sure that the player goes back to normal attributes when they leave
+        if (checkPlayer.isOnline()) {
+            if (attackSpeed.getBaseValue() != 4.0) {
+                attackSpeed.setBaseValue(4.0);
+            }
+
+            if (scale.getBaseValue() != 1.0) {
+                scale.setBaseValue(1.0);
+            }
+
+            if (reach.getBaseValue() != 3.0) {
+                reach.setBaseValue(3.0);
+            }
+        }
     }
 
     public void sendCustomPacket(Player player, String message) {
