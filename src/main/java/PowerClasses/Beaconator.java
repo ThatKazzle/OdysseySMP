@@ -63,10 +63,10 @@ public class Beaconator extends ParentPowerClass implements Listener {
 
         if (!isOnCooldown(player.getUniqueId(), rewindCooldwns)) {
             setCooldown(player.getUniqueId(), rewindCooldwns, 60 * 5);
-
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, 0.5f, 1.f);
             state.apply(player);
         } else {
-
+            cantUsePowerMessage(player, rewindCooldwns, "Run it Back");
         }
     }
 

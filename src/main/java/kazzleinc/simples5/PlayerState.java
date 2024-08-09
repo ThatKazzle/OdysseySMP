@@ -1,6 +1,7 @@
 package kazzleinc.simples5;
 
 import org.bukkit.Location;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 public class PlayerState {
@@ -31,6 +32,8 @@ public class PlayerState {
         newLocation.setYaw(this.yaw);
         newLocation.setPitch(this.pitch);
         player.teleport(newLocation);
+
+        player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDERMAN_TELEPORT, 0.5f, 1.f);
     }
 
     public Location getRewindLocation() {
