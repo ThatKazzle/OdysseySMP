@@ -618,6 +618,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public String switchOnPowers(Player player, String cooldownKey) {
         String cooldownMessage = "";
         switch (cooldownKey) {
+            case "player/power_stolen":
+                cooldownMessage = PowerStealerPlaceholder.getStolenPowerString();
+                break;
             case "adventure/very_very_frightening":
                 cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
                 break;

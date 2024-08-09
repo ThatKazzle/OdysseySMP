@@ -18,6 +18,11 @@ public class PowerStealerPlaceholder extends ParentPowerClass {
         return "" + ChatColor.RED + ChatColor.MAGIC + "asdf " + ChatColor.RESET + ChatColor.RED + "Unuseable Power" + ChatColor.MAGIC + " asdf";
     }
 
+
+    public static String getStolenPowerString() {
+        return "" + ChatColor.RED + ChatColor.MAGIC + "asdf " + ChatColor.RESET + ChatColor.RED + "Unuseable Power" + ChatColor.MAGIC + " asdf";
+    }
+
     @Override
     public void action(String playerName) {
 
