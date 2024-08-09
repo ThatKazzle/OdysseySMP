@@ -139,6 +139,12 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                     if (localPlugin.getConfig().getInt("players." + provider.getInfo(player).getName() + ".mode", -1) == -1) {
                         localPlugin.getConfig().set("players." + provider.getInfo(player).getName() + ".mode", 0);
                     }
+
+                    if (playerAlreadyHasPower(player, "husbandry/complete_catalogue")) {
+                        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(24);
+                    } else {
+                        player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
+                    }
                 }
             }
         }.runTaskTimer(this, 0, 20);
