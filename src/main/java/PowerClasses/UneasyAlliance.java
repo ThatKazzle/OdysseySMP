@@ -105,7 +105,7 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
                 RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
 
                 if (result != null && result.getHitEntity() instanceof Player) {
-                    setCooldown(player.getUniqueId(), freezeCooldowns, 60);
+                    setCooldown(player.getUniqueId(), freezeCooldowns, 120);
 
                     Player hitPlayer = (Player) result.getHitEntity();
 

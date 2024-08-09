@@ -127,7 +127,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                 RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
 
                 if (result != null && result.getHitEntity() != null && result.getHitEntity() instanceof Player) {
-                    setCooldown(player.getUniqueId(), mimicCooldowns, 120);
+                    setCooldown(player.getUniqueId(), mimicCooldowns, (60 * 2) + 30);
                     Player hitPlayer = (Player) result.getHitEntity();
 
                     double playerHealth = player.getHealth();

@@ -120,7 +120,7 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
                 player.playSound(player.getLocation(), Sound.BLOCK_ENCHANTMENT_TABLE_USE, 1.0f, 1.0f);
                 player.sendActionBar(ChatColor.GREEN + "Your item has been " + ChatColor.AQUA + "ENABLED" + ChatColor.GREEN + "!");
             }
-        }.runTaskLater(this.plugin, 60L);
+        }.runTaskLater(this.plugin, 20 * 5);
     }
 
     public static PotionEffectType getRandomElement(List<PotionEffectType> list) {

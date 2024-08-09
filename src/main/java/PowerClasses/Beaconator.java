@@ -72,8 +72,18 @@ public class Beaconator extends ParentPowerClass implements Listener {
             if (potionTypes.contains(effect.getType())) {
                 if (effect.getAmplifier() == 2) {
                     if (type == PotionEffectType.SPEED) {
-                        ParticleUtils.createParticleRing(player.getLocation().add(new Vector(0, 0.3, 0)), 1, 100, Particle.DUST, Color.AQUA, 1);
+                        ParticleUtils.createParticleRing(player.getLocation().add(new Vector(0, 0.3, 0)), 0.7, 10, Particle.DUST, Color.AQUA, 1);
                     }
+
+                    if (type == PotionEffectType.REGENERATION) {
+                        ParticleUtils.createParticleRing(player.getEyeLocation().add(new Vector(0, 0.5, 0)), 0.5, 5, Particle.DUST, Color.fromRGB(255, 0, 255), 1);
+                    }
+
+                    if (type == PotionEffectType.HASTE) {
+                        ParticleUtils.createParticleRing(player.getLocation().add(new Vector(0, 1, 0)), 0.7, 5, Particle.DUST, Color.fromRGB(255, 180, 0), 1);
+                    }
+                } else if (effect.getAmplifier() == 1 && type == PotionEffectType.STRENGTH) {
+                    ParticleUtils.createParticleRing(player.getLocation().add(new Vector(0, 1, 0)), 0.7, 5, Particle.DUST, Color.RED, 1);
                 }
 
             }

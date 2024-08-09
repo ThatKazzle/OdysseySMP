@@ -41,6 +41,11 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
         fattyAction(player);
     }
 
+    @Override
+    public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Juggernaut: " + getCooldownTimeLeft(player.getUniqueId(), carrotCooldowns);
+    }
+
     public void fattyAction(Player player) {
         if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/balanced_diet") && !isOnCooldown(player.getUniqueId(), cooldowns)) {
             setCooldown(player.getUniqueId(), cooldowns, 60 * 3);
@@ -70,8 +75,6 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
                 player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(5.0);
                 player.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1.2);
                 player.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE).setBaseValue(3.5);
-
-                player.sendMessage(ChatColor.RED + "fatass");
 
                 new BukkitRunnable() {
                     Player checkPlayer = player;
