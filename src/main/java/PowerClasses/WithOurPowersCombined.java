@@ -28,6 +28,8 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
     public HashMap<UUID, Long>  mimicCooldowns = new HashMap<>();
 
+    public HashMap<UUID, Long>  playerGetsPowerBackTime = new HashMap<>();
+
     private TrimUtils trimUtils = new TrimUtils();
 
     public WithOurPowersCombined(SimpleS5 plugin) {
@@ -97,6 +99,8 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
                     player.sendMessage(ChatColor.RED + "You stole " + ChatColor.AQUA + targetPlayerFormattedKey + ChatColor.RED + " from " + ChatColor.AQUA + targetPlayerName + "!");
                     targetPlayer.sendMessage(ChatColor.AQUA + plugin.provider.getInfo(player).getName() + ChatColor.RED + " stole " + ChatColor.AQUA + targetPlayerFormattedKey + "!");
+
+                    setCooldown(targetPlayer.getUniqueId(), playerGetsPowerBackTime, 60 * 5);
 
                     plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
                         plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + targetPlayerEnabledKey, false);

@@ -75,6 +75,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public BalancedDiet balancedDietClass = new BalancedDiet(this);
     public TheNextGeneration nextGenerationClass = new TheNextGeneration(this);
 
+    public PowerStealerPlaceholder powerStealerPlaceholder = new PowerStealerPlaceholder(this);
+
     public final DisguiseProvider provider = DisguiseManager.getProvider();
 
     public boolean resetPlayerHealthAttribute = false;
@@ -619,7 +621,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         String cooldownMessage = "";
         switch (cooldownKey) {
             case "player/power_stolen":
-                cooldownMessage = PowerStealerPlaceholder.getStolenPowerString();
+                cooldownMessage = powerStealerPlaceholder.getCooldownString(player, wopcClass.playerGetsPowerBackTime, "");
                 break;
             case "adventure/very_very_frightening":
                 cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
