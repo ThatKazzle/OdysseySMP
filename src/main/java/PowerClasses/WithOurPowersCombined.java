@@ -135,7 +135,6 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                     int satRegenRate = player.getSaturatedRegenRate();
 
                     Vector playerVelocity = player.getVelocity();
-
                     int activeSlot = player.getInventory().getHeldItemSlot();
 
                     plugin.provider.setNamePattern(Pattern.compile("^[a-zA-Z0-9_.§]{1,16}$"));
@@ -152,16 +151,14 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                     player.setHealth(playerHealth);
                     player.setSaturation(playerSat);
                     player.setSaturatedRegenRate(satRegenRate);
+                    player.getInventory().setHeldItemSlot(activeSlot);
 
                     player.teleport(hitPlayer);
-
-                    trimUtils.copyArmorTrims(hitPlayer, player);
 
                     new BukkitRunnable() {
                         @Override
                         public void run() {
                             DisguiseManager.getProvider().undisguise(player);
-                            trimUtils.undoCopyArmorTrims(player);
                         }
                     }.runTaskLater(plugin, 20 * 120);
                 }
