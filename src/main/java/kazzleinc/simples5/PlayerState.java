@@ -32,4 +32,8 @@ public class PlayerState {
         newLocation.setPitch(this.pitch);
         player.teleport(newLocation);
     }
+
+    public Location getRewindLocation() {
+        return this.location;
+    }
 }

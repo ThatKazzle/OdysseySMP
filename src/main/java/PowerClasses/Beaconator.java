@@ -4,9 +4,8 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import com.destroystokyo.paper.profile.ProfileProperty;
 import kazzleinc.simples5.PlayerState;
 import kazzleinc.simples5.SimpleS5;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
-import org.bukkit.Sound;
+import kazzleinc.simples5.SpecialParticleUtils;
+import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.Listener;
 import org.bukkit.inventory.ItemStack;
@@ -24,12 +23,16 @@ public class Beaconator extends ParentPowerClass implements Listener {
     public final HashMap<UUID, Long> rewindCooldwns = new HashMap<>();
     private final Map<UUID, LinkedHashMap<Long, PlayerState>> playerStates = new HashMap<>();
 
+    private SpecialParticleUtils particleUtils;
+
     private static final int BUFFER_SIZE = 60;
 
     private final List<PotionEffectType> potionTypes = Arrays.asList(PotionEffectType.SPEED, PotionEffectType.REGENERATION, PotionEffectType.HASTE);
 
     public Beaconator(SimpleS5 plugin) {
         super(plugin);
+
+        particleUtils = new SpecialParticleUtils(plugin);
     }
 
     //speed 2, regen 2, haste 2
@@ -119,6 +122,8 @@ public class Beaconator extends ParentPowerClass implements Listener {
                         });
 
                         playerStates.get(playerId).put(currentTime, new PlayerState(player));
+
+                        particleUtils.sendClientDustParticle(player, getPlayerState(playerId, 3000).getRewindLocation(), new Particle.DustOptions(Color.RED, 2f), 1);
                     }
 
                 }
