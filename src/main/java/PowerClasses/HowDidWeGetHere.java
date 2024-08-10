@@ -43,7 +43,7 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
             Player hitPlayer = (Player) event.getEntity();
             Player damager = (Player) event.getDamager();
             if (this.plugin.getConfig().getBoolean("players." + damager.getName() + ".powers." + "nether/all_effects")) {
-                damager.getWorld().spawnParticle(Particle.PORTAL, damager.getLocation().add(new Vector(0, 1, 0)), 30);
+                damager.getWorld().spawnParticle(Particle.REVERSE_PORTAL, damager.getLocation().add(new Vector(0, 1, 0)), 30, 5, 5, 5, new Particle.DustOptions(Color.fromRGB(RandomUtils.getRandomIntInRange(0, 255), RandomUtils.getRandomIntInRange(0, 255), RandomUtils.getRandomIntInRange(0, 255)), 2));
 
                 if (RandomUtils.getRandomIntInRange(0, 20) > 19) {
                     PotionEffectType potion = getRandomElement(potionTypes);

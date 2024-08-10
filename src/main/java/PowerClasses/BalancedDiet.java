@@ -10,12 +10,10 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
-import org.bukkit.event.player.PlayerQuitEvent;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
-import org.bukkit.scheduler.BukkitTask;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -24,7 +22,7 @@ import java.util.UUID;
 public class BalancedDiet extends ParentPowerClass implements Listener {
     public final HashMap<UUID, Long> cooldowns = new HashMap<>();
 
-    public final HashMap<UUID, Long> carrotCooldowns = new HashMap<>();
+    public final HashMap<UUID, Long> melonCooldowns = new HashMap<>();
 
     public final ArrayList<UUID> doesSiphon = new ArrayList<>();
 
@@ -44,7 +42,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
-        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Juggernaut: " + getCooldownTimeLeft(player.getUniqueId(), carrotCooldowns);
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Juggernaut: " + getCooldownTimeLeft(player.getUniqueId(), melonCooldowns);
     }
 
     public void fattyAction(Player player) {
@@ -70,8 +68,8 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
         Player player = event.getPlayer();
 
         if (hasPower(player, "husbandry/balanced_diet")) {
-            if (event.getItem().getType() == Material.GLISTERING_MELON_SLICE && !isOnCooldown(player.getUniqueId(), carrotCooldowns)) {
-                setCooldown(player.getUniqueId(), carrotCooldowns, 90);
+            if (event.getItem().getType() == Material.GLISTERING_MELON_SLICE && !isOnCooldown(player.getUniqueId(), melonCooldowns)) {
+                setCooldown(player.getUniqueId(), melonCooldowns, 90);
 
                 player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(5.0);
                 player.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1.2);
