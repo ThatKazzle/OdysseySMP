@@ -140,7 +140,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         localPlugin.getConfig().set("players." + provider.getInfo(player).getName() + ".mode", 0);
                     }
 
-                    if (playerAlreadyHasPower(player, "husbandry/complete_catalogue")) {
+                    if (hasPower(player, "husbandry/complete_catalogue")) {
                         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(24);
                     } else {
                         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
@@ -525,6 +525,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         }
 
 
+    }
+
+    public boolean hasPower(Player player, String powerKey) {
+        return getConfig().getBoolean("players." + provider.getInfo(player).getName() + ".powers." + powerKey);
     }
 
     public void updateCooldownDisplay() {

@@ -126,7 +126,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
             Player damagedPlayer = (Player) event.getEntity();
 
             if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && sharedDamageMap.containsKey(damagedPlayer.getUniqueId())) {
-                Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getFinalDamage());
+                Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getDamage() / 2);
             }
         }
     }
