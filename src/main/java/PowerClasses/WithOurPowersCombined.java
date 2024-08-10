@@ -8,6 +8,7 @@ import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerInteractEntityEvent;
 import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.inventory.Inventory;
@@ -26,6 +27,8 @@ import java.util.regex.Pattern;
 
 public class WithOurPowersCombined extends ParentPowerClass implements Listener {
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
+    public HashMap<UUID, String> playerStoredPower = new HashMap<>();
+
     public HashMap<UUID, Long>  mimicCooldowns = new HashMap<>();
 
     public HashMap<UUID, Long>  playerGetsPowerBackTime = new HashMap<>();
@@ -50,6 +53,17 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
         return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Mimic: " + getCooldownTimeLeft(player.getUniqueId(), mimicCooldowns);
+    }
+
+    @EventHandler
+    public void onPlayerDeathEvent(PlayerDeathEvent event) {
+        Player deadPlayer = event.getPlayer();
+
+        if (hasPower(deadPlayer, "player/power_stolen")) {
+            plugin.getConfig().set("players." + plugin.provider.getInfo(deadPlayer).getName() + ".powers." + "player/power_stolen", false);
+
+            //fix the death thing where if someone dies they keep power when its given back
+        }
     }
 
     public void stealerAction(Player player) {
@@ -93,6 +107,8 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                     plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights", false);
                     plugin.getConfig().set("players." + targetPlayerName + ".powers." + targetPlayerEnabledKey, false);
 
+                    playerStoredPower.put(beforeConversion.getUniqueId(), targetPlayerEnabledKey);
+
                     plugin.getConfig().set("players." + targetPlayerName + ".powers." + "player/power_stolen", true);
 
                     plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + targetPlayerEnabledKey, true);
@@ -108,6 +124,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
                         plugin.getConfig().set("players." + targetPlayerName + ".powers." + "player/power_stolen", false);
                         plugin.getConfig().set("players." + targetPlayerName + ".powers." + targetPlayerEnabledKey, true);
+                        playerStoredPower.remove(beforeConversion.getUniqueId(), targetPlayerEnabledKey);
 
                         player.sendMessage(ChatColor.GREEN + "you lost your stolen power, and it has been given back to them.");
                         targetPlayer.sendMessage(ChatColor.GREEN + "You have been given your power back.");
