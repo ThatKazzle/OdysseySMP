@@ -1,5 +1,6 @@
 package PowerClasses;
 
+import com.destroystokyo.paper.profile.PlayerProfile;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
@@ -65,7 +66,7 @@ public class HiredHelp extends ParentPowerClass implements Listener {
         if (!(event.getEntity() instanceof Player)) return;
         Player defender = (Player) event.getEntity();
 
-        if (plugin.getConfig().getBoolean("players." + damager + ".powers." + "adventure/summon_iron_golem")) {
+        if (hasPower(damager, "adventure/summon_iron_golem")) {
             lastDamagedPlayer = defender;
         }
     }

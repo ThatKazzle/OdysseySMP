@@ -140,7 +140,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         localPlugin.getConfig().set("players." + provider.getInfo(player).getName() + ".mode", 0);
                     }
 
-                    if (hasPower(player, "husbandry/complete_catalogue")) {
+                    if (playerHasPower(player, "husbandry/complete_catalogue")) {
                         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(24);
                     } else {
                         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(20);
@@ -266,7 +266,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.f, 1.f);
 
                         player.sendTitle(ChatColor.RED + "Unable to Equip!", ChatColor.RED + "You have 2 powers!", 10, 60, 10);
-                    } else if (playerAlreadyHasPower(player, itemPowerKey)) {
+                    } else if (playerHasPower(player, itemPowerKey)) {
                             player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.f, 1.f);
 
                             player.sendTitle(ChatColor.RED + "Unable to Equip!", ChatColor.RED + "You already have this power!", 10, 60, 10);
@@ -527,7 +527,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     }
 
-    public boolean hasPower(Player player, String powerKey) {
+    public boolean playerHasPower(Player player, String powerKey) {
         return getConfig().getBoolean("players." + provider.getInfo(player).getName() + ".powers." + powerKey);
     }
 
