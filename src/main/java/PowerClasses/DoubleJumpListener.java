@@ -76,6 +76,19 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
 
                 setCooldown(player.getUniqueId(), cooldowns, cooldownTime);
                 dashed.add(player);
+
+                //the particles, looks super sigga
+                new BukkitRunnable() {
+                    Player checkPlayer = player;
+                    @Override
+                    public void run() {
+                        if (!checkPlayer.isOnGround()) {
+                            checkPlayer.spawnParticle(Particle.DUST, checkPlayer.getLocation().add(new Vector(0, 1, 0)), 1, new Particle.DustOptions(Color.WHITE, 2));
+                        } else {
+                            this.cancel();
+                        }
+                    }
+                }.runTaskTimer(plugin, 0, 5);
             }
         }
     }
