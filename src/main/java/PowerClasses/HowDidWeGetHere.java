@@ -13,6 +13,7 @@ import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.util.Vector;
 
 import java.util.*;
 import java.util.concurrent.ThreadLocalRandom;
@@ -42,6 +43,8 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
             Player hitPlayer = (Player) event.getEntity();
             Player damager = (Player) event.getDamager();
             if (this.plugin.getConfig().getBoolean("players." + damager.getName() + ".powers." + "nether/all_effects")) {
+                damager.getWorld().spawnParticle(Particle.PORTAL, damager.getLocation().add(new Vector(0, 1, 0)), 30);
+
                 if (RandomUtils.getRandomIntInRange(0, 20) > 19) {
                     PotionEffectType potion = getRandomElement(potionTypes);
 

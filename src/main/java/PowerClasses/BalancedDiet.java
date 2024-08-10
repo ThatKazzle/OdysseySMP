@@ -70,7 +70,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
         Player player = event.getPlayer();
 
         if (hasPower(player, "husbandry/balanced_diet")) {
-            if (event.getItem().getType() == Material.GOLDEN_CARROT && !isOnCooldown(player.getUniqueId(), carrotCooldowns)) {
+            if (event.getItem().getType() == Material.GLISTERING_MELON_SLICE && !isOnCooldown(player.getUniqueId(), carrotCooldowns)) {
                 setCooldown(player.getUniqueId(), carrotCooldowns, 90);
 
                 player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(5.0);
@@ -120,7 +120,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
     public void onPlayerInteract(PlayerInteractEvent event) {
         // Check if the player is holding the custom edible item (glistering melon)
         ItemStack item = event.getItem();
-        if (item != null && item.getType() == Material.GLISTERING_MELON_SLICE) {
+        if (item != null && item.getType() == Material.GLISTERING_MELON_SLICE && hasPower(event.getPlayer(), "husbandry/balanced_diet")) {
             event.setCancelled(true);  // Cancel the default interaction
 
             // Simulate eating the item
