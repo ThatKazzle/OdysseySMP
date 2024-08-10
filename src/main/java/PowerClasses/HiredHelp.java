@@ -50,7 +50,7 @@ public class HiredHelp extends ParentPowerClass implements Listener {
 
             golem.setCustomName(ChatColor.AQUA + plugin.provider.getInfo(player).getName() + ChatColor.LIGHT_PURPLE + "'s Iron Golem");
 
-            golem.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, Integer.MAX_VALUE, 0, false, true));
+            //golem.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, Integer.MAX_VALUE, 0, false, true));
             golem.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2, false, true));
 
             plugin.getServer().getScheduler().runTaskLater(plugin, golem::remove, 20 * 20);

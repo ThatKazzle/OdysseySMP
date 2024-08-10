@@ -101,7 +101,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
                 BukkitTask particleTask = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        ParticleUtils.createParticleLine(player.getLocation().add(new Vector(0, 1, 0)), hitPlayer.getLocation().add(new Vector(0, 1, 0)), 5, new Particle.DustOptions(Color.RED, 1));
+                        ParticleUtils.createParticleLine(player.getLocation().add(new Vector(0, 1, 0)), hitPlayer.getLocation().add(new Vector(0, 1, 0)), (int) player.getLocation().distance(hitPlayer.getLocation()) * 3, new Particle.DustOptions(Color.PURPLE, 1));
                     }
                 }.runTaskTimer(plugin, 0, 2);
 
