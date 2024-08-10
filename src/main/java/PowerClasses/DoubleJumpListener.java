@@ -83,12 +83,12 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
                     @Override
                     public void run() {
                         if (!checkPlayer.isOnGround()) {
-                            checkPlayer.spawnParticle(Particle.DUST, checkPlayer.getLocation().add(new Vector(0, 1, 0)), 1, new Particle.DustOptions(Color.WHITE, 2));
+                            checkPlayer.getWorld().spawnParticle(Particle.DUST, checkPlayer.getLocation().add(new Vector(0, 1, 0)), 3, new Particle.DustOptions(Color.WHITE, 3));
                         } else {
                             this.cancel();
                         }
                     }
-                }.runTaskTimer(plugin, 0, 5);
+                }.runTaskTimer(plugin, 0, 0);
             }
         }
     }
