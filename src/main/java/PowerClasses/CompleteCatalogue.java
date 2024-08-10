@@ -1,5 +1,6 @@
 package PowerClasses;
 
+import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -8,6 +9,7 @@ import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
+import org.bukkit.inventory.meta.PotionMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -60,6 +62,8 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
 
                         player.sendMessage(ChatColor.AQUA + "You stole " + ChatColor.GREEN + hitPlayer.getName() + "'s " + ChatColor.AQUA + "potions.");
                         hitPlayer.sendMessage(ChatColor.GREEN + plugin.provider.getInfo(player).getName() + ChatColor.AQUA + " stole your potions.");
+
+                        ParticleUtils.createParticleRandomLine(player.getLocation(), hitPlayer.getLocation(), (int) player.getLocation().distance(hitPlayer.getLocation()) * 3, 2);
                     }
                 } else {
                     player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);

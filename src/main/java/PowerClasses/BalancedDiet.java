@@ -1,16 +1,17 @@
 package PowerClasses;
 
+import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
-import org.bukkit.Bukkit;
-import org.bukkit.ChatColor;
-import org.bukkit.Material;
+import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.event.player.PlayerQuitEvent;
+import org.bukkit.inventory.ItemStack;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -76,6 +77,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
                 player.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1.2);
                 player.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE).setBaseValue(3.5);
 
+                ParticleUtils.createParticleSphere(player.getLocation(), 3, 50, Particle.DUST, Color.ORANGE, 2);
                 new BukkitRunnable() {
                     Player checkPlayer = player;
                     @Override
@@ -85,6 +87,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
                         AttributeInstance reach = checkPlayer.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE);
 
                         plugin.getLogger().info(ChatColor.GREEN + "attrRemover ran once");
+
 
                         if (checkPlayer.isOnline()) {
                             if (attackSpeed.getBaseValue() != 4.0) {
@@ -102,11 +105,40 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
                                 plugin.getLogger().info(ChatColor.RED + "Updated reach");
                             }
 
+                            ParticleUtils.createParticleSphere(checkPlayer.getLocation(), 3, 50, Particle.DUST, Color.ORANGE, 2);
+
                             plugin.getLogger().info("Everything goes back to normal idiot.");
                             this.cancel();
                         }
                     }
                 }.runTaskLater(plugin, 15 * 20);
+            }
+        }
+    }
+
+    @EventHandler
+    public void onPlayerInteract(PlayerInteractEvent event) {
+        // Check if the player is holding the custom edible item (glistering melon)
+        ItemStack item = event.getItem();
+        if (item != null && item.getType() == Material.GLISTERING_MELON_SLICE) {
+            event.setCancelled(true);  // Cancel the default interaction
+
+            // Simulate eating the item
+            PlayerItemConsumeEvent consumeEvent = new PlayerItemConsumeEvent(event.getPlayer(), item);
+            plugin.getServer().getPluginManager().callEvent(consumeEvent);
+
+            if (!consumeEvent.isCancelled()) {
+                // Apply effects to the player (e.g., restore hunger and health)
+                event.getPlayer().setFoodLevel(Math.min(event.getPlayer().getFoodLevel() + 4, 20));  // Restore 4 hunger
+
+                // Remove one glistering melon from the player's hand
+                if (item.getAmount() > 1) {
+                    item.setAmount(item.getAmount() - 1);
+                } else {
+                    event.getPlayer().getInventory().setItemInMainHand(null);  // Clear the item if only one was left
+                }
+
+                event.getPlayer().getWorld().playSound(event.getPlayer().getLocation(), "entity.generic.eat", 1.0f, 1.0f);
             }
         }
     }
