@@ -131,16 +131,21 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         String powerName = clickedItem.getItemMeta().getPersistentDataContainer().get(this.plugin.powerPotionKey, PersistentDataType.STRING);
 
         if (clickedItem.getItemMeta().getPersistentDataContainer().has(this.plugin.powerPotionKey) && clickedItem.getItemMeta().getPersistentDataContainer().has(this.canClickKey) && event.getSlot() <= 1) {
-            this.plugin.removePlayerAdvancement(player, plugin.getAdvancementKeyFromFormattedString(powerName));
-            this.plugin.getConfig().set("players." + player.getName() + ".powers." +  plugin.getAdvancementKeyFromFormattedString(powerName), false);
+            if (Objects.equals(plugin.wopcClass.playerStoredPower.get(plugin.wopcClass.playerStoleFromPlayer.get(player.getUniqueId())), powerName)) {
+                player.sendMessage(ChatColor.RED + "Ye nice try idiot, you cant dupe.");
+            } else {
+                this.plugin.removePlayerAdvancement(player, plugin.getAdvancementKeyFromFormattedString(powerName));
+                this.plugin.getConfig().set("players." + player.getName() + ".powers." +  plugin.getAdvancementKeyFromFormattedString(powerName), false);
 
-            this.plugin.saveConfig();
+                this.plugin.saveConfig();
 
-            giveItem(player, clickedItem);
-            player.closeInventory();
+                giveItem(player, clickedItem);
+                player.closeInventory();
 
-            player.playSound(player.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 1.f, 1.f);
-            player.sendActionBar(ChatColor.GREEN + "Withdrew " + ChatColor.LIGHT_PURPLE + clickedItem.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
+                player.playSound(player.getLocation(), Sound.BLOCK_BEACON_POWER_SELECT, 1.f, 1.f);
+                player.sendActionBar(ChatColor.GREEN + "Withdrew " + ChatColor.LIGHT_PURPLE + clickedItem.getItemMeta().getDisplayName() + ChatColor.GREEN + "!");
+            }
+
         }
 
     }

@@ -29,6 +29,8 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
     public HashMap<UUID, String> playerStoredPower = new HashMap<>();
 
+    public HashMap<UUID, UUID> playerStoleFromPlayer = new HashMap<>();
+
     public HashMap<UUID, Long>  mimicCooldowns = new HashMap<>();
 
     public HashMap<UUID, Long>  playerGetsPowerBackTime = new HashMap<>();
@@ -60,9 +62,24 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
         Player deadPlayer = event.getPlayer();
 
         if (hasPower(deadPlayer, "player/power_stolen")) {
+            event.setCancelled(true);
             plugin.getConfig().set("players." + plugin.provider.getInfo(deadPlayer).getName() + ".powers." + "player/power_stolen", false);
 
-            //fix the death thing where if someone dies they keep power when its given back
+            plugin.getConfig().set("players." + plugin.provider.getInfo(deadPlayer).getName() + ".powers." + playerStoredPower.get(deadPlayer.getUniqueId()), true);
+            deadPlayer.setHealth(0);
+
+            OfflinePlayer otherPlayer = Bukkit.getOfflinePlayer(playerStoleFromPlayer.get(deadPlayer.getUniqueId()));
+
+            String otherPlayerName = otherPlayer.getName();
+
+            plugin.getConfig().set("players." + otherPlayerName + ".powers." + playerStoredPower.get(deadPlayer.getUniqueId()), false);
+            plugin.getConfig().set("players." + otherPlayerName + ".powers." + "husbandry/froglights", true);
+
+            playerStoredPower.remove(deadPlayer.getUniqueId());
+            playerStoleFromPlayer.remove(deadPlayer.getUniqueId());
+
+            deadPlayer.sendMessage(ChatColor.LIGHT_PURPLE + "The power that " + ChatColor.RED + otherPlayerName + ChatColor.LIGHT_PURPLE + " stole has been dropped at your location.");
+            if (otherPlayer.isOnline()) ((Player) otherPlayer).sendMessage(ChatColor.RED + plugin.provider.getInfo(deadPlayer).getName() + ChatColor.LIGHT_PURPLE + " has died, and you have been given WOPC back.");
         }
     }
 
@@ -108,6 +125,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                     plugin.getConfig().set("players." + targetPlayerName + ".powers." + targetPlayerEnabledKey, false);
 
                     playerStoredPower.put(beforeConversion.getUniqueId(), targetPlayerEnabledKey);
+                    playerStoleFromPlayer.put(player.getUniqueId(), beforeConversion.getUniqueId());
 
                     plugin.getConfig().set("players." + targetPlayerName + ".powers." + "player/power_stolen", true);
 
@@ -124,7 +142,8 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
                         plugin.getConfig().set("players." + targetPlayerName + ".powers." + "player/power_stolen", false);
                         plugin.getConfig().set("players." + targetPlayerName + ".powers." + targetPlayerEnabledKey, true);
-                        playerStoredPower.remove(beforeConversion.getUniqueId(), targetPlayerEnabledKey);
+                        playerStoredPower.remove(beforeConversion.getUniqueId());
+                        playerStoleFromPlayer.remove(player.getUniqueId());
 
                         player.sendMessage(ChatColor.GREEN + "you lost your stolen power, and it has been given back to them.");
                         targetPlayer.sendMessage(ChatColor.GREEN + "You have been given your power back.");
