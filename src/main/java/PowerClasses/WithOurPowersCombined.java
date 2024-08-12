@@ -27,11 +27,13 @@ import java.util.regex.Pattern;
 
 public class WithOurPowersCombined extends ParentPowerClass implements Listener {
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
+
+    public HashMap<UUID, Long>  mimicCooldowns = new HashMap<>();
     public HashMap<UUID, String> playerStoredPower = new HashMap<>();
 
     public HashMap<UUID, UUID> playerStoleFromPlayer = new HashMap<>();
 
-    public HashMap<UUID, Long>  mimicCooldowns = new HashMap<>();
+    public HashMap<UUID, Long>  frogCooldowns = new HashMap<>();
 
     public HashMap<UUID, Long>  playerGetsPowerBackTime = new HashMap<>();
 
@@ -44,8 +46,8 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     @Override
     public void action(String playerName) {
         Player player = plugin.getServer().getPlayer(playerName);
-        if (player.isSneaking()) {
-            stealerAction(player);
+        if (!player.isSneaking()) {
+            frogTongueAction(player);
         } else {
             mimicAction(player);
         }
@@ -80,6 +82,35 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
             deadPlayer.sendMessage(ChatColor.LIGHT_PURPLE + "The power that " + ChatColor.RED + otherPlayerName + ChatColor.LIGHT_PURPLE + " stole has been dropped at your location.");
             if (otherPlayer.isOnline()) ((Player) otherPlayer).sendMessage(ChatColor.RED + plugin.provider.getInfo(deadPlayer).getName() + ChatColor.LIGHT_PURPLE + " has died, and you have been given WOPC back.");
+        }
+    }
+
+    public void frogTongueAction(Player player) {
+        RayTraceResult result = plugin.getServer().getWorld("world").rayTraceEntities(player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(1.3)), player.getEyeLocation().getDirection().normalize(), 45);
+
+        if (result.getHitEntity() == null) return;
+
+        ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 1, 20, Particle.DUST, Color.RED, 1);
+
+        //checks to make sure everything lines up right
+        if (result.getHitEntity() == null) return;
+
+        if (!(result.getHitEntity() instanceof Player)) return;
+
+        Player hitPlayer = (Player) result.getHitEntity();
+
+        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights")) {
+            if (!isOnCooldown(player.getUniqueId(), frogCooldowns)) {
+                Vector dir = hitPlayer.getLocation().toVector().subtract(player.getLocation().toVector()).normalize();
+                dir.setY(0);
+
+                dir.multiply(1.5);
+                dir.setY(2);
+
+                hitPlayer.setVelocity(dir);
+
+                setCooldown(player.getUniqueId(), frogCooldowns, 120);
+            }
         }
     }
 
