@@ -2,6 +2,7 @@ package PowerClasses;
 
 import com.comphenix.protocol.PacketType;
 import kazzleinc.simples5.ParticleUtils;
+import kazzleinc.simples5.RandomUtils;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
@@ -127,6 +128,10 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
 
             if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && sharedDamageMap.containsKey(damagedPlayer.getUniqueId())) {
                 Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getDamage() / 2);
+            }
+
+            if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && RandomUtils.getRandomIntInRange(1, 4) == 4) {
+                damagedPlayer.setFireTicks(20 * 5);
             }
         }
     }

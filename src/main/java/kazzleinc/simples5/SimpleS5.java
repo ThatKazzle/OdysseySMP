@@ -627,6 +627,17 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         return outMin + (normalizedValue * (outMax - outMin));
     }
 
+    public static Vector vlerp(Vector start, Vector end, double t) {
+        // Clamp t between 0 and 1
+        t = Math.max(0, Math.min(1, t));
+
+        double x = start.getX() + t * (end.getX() - start.getX());
+        double y = start.getY() + t * (end.getY() - start.getY());
+        double z = start.getZ() + t * (end.getZ() - start.getZ());
+
+        return new Vector(x, y, z);
+    }
+
     public String switchOnPowers(Player player, String cooldownKey) {
         String cooldownMessage = "";
         switch (cooldownKey) {

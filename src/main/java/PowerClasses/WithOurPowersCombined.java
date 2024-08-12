@@ -102,12 +102,23 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
         if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights")) {
             if (!isOnCooldown(player.getUniqueId(), frogCooldowns)) {
                 Vector dir = player.getLocation().toVector().subtract(hitPlayer.getLocation().toVector()).normalize();
-                dir.setY(0);
 
-                dir.multiply(2);
-                dir.setY(2);
+                new BukkitRunnable() {
+                    double i = 0;
 
-                hitPlayer.setVelocity(dir);
+                    Vector origVector = player.getLocation().toVector().clone();
+                    @Override
+                    public void run() {
+                        if (i != 1) {
+                            i += 0.05;
+
+                            hitPlayer.teleport(plugin.vlerp(origVector, player.getLocation().toVector(), i).toLocation(player.getWorld()), PlayerTeleportEvent.TeleportCause.PLUGIN);
+                        } else {
+                            i = 0;
+                            this.cancel();
+                        }
+                    }
+                }.runTaskTimer(plugin, 0, 1);
 
                 setCooldown(player.getUniqueId(), frogCooldowns, 120);
             }
