@@ -24,7 +24,7 @@ descriptions:
   complete_catalogue:
     - " "
     - "§bAbilites:"
-    - "1. §lPower Stealer§r§b: Steal all of a targeted players status effects, positive"
+    - "1. §lPotion Stealer§r§b: Steal all of a targeted players status effects, positive"
     - "or negative."
     - " "
     - "§bPassives:"
@@ -75,8 +75,10 @@ descriptions:
     - "1. §lBlazed§r§b: The Blazes bless you with 15 seconds of Strength II and Regeneration II."
     - "2. §lDamage Link§r§b: the player you choose shares damage with you, so when you take damage,"
     - "   the chosen player does the exact same amount of damage."
+    - " "
     - "§bPassives:"
     - "1. §lFire Aspect§r§b: you have a 25% chance to set someone on fire when attacking."
+    -     (THIS ONLY WORKS WHEN IN BLAZED)
   froglights:
     - " "
     - "§bAbilities:"

@@ -14,6 +14,7 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.inventory.InventoryAction;
 import org.bukkit.event.inventory.InventoryClickEvent;
+import org.bukkit.event.inventory.InventoryCloseEvent;
 import org.bukkit.inventory.Inventory;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
@@ -39,6 +40,8 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         this.plugin = plugin;
 
         canClickKey = new NamespacedKey(plugin, "isInGUI");
+
+        AUTOFILL_ARGS_2.addAll(this.plugin.getConfig().getConfigurationSection("defaults.").getKeys(false));
     }
 
 
@@ -54,12 +57,9 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
             } else if (args.length == 2 && args[0].equals("description")) {
                 for (String keys : this.plugin.getConfig().getConfigurationSection("defaults.").getKeys(false)) {
                     String value = this.plugin.getConfig().getString("defaults." + keys);
-                    AUTOFILL_ARGS_2.add(keys);
 
                     if (args[1].equals(keys)) {
                         sendDescriptionMessage(player, keys);
-                    } else {
-                        player.sendMessage(ChatColor.RED + "Usage: /odyssey description [key of power you want description of]");
                     }
                 }
 
@@ -82,10 +82,6 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         if (args.length == 1) {
             return StringUtil.copyPartialMatches(args[0], AUTOFILL_ARGS_1, new ArrayList<>());
         } else if (args.length == 2 && args[0].equals("powers")) {
-            for (String keys : this.plugin.getConfig().getConfigurationSection("defaults.").getKeys(false)) {
-                String value = this.plugin.getConfig().getString("defaults." + keys);
-                AUTOFILL_ARGS_2.add(keys);
-            }
             return StringUtil.copyPartialMatches(args[1], AUTOFILL_ARGS_2, new ArrayList<>());
         }
 
@@ -150,6 +146,20 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
     }
 
+    @EventHandler
+    public void onInventoryCloseEvent(InventoryCloseEvent event) {
+        if (!event.getView().getTitle().equals("Choose an effect to withdraw:")) return;
+
+        Player player = (Player) event.getPlayer();
+
+        for (ItemStack stack : player.getInventory().getContents()) {
+            assert stack != null;
+            if (stack.getPersistentDataContainer().has(this.canClickKey)) stack.setAmount(0);
+
+            player.sendMessage(ChatColor.RED + "Nice try idiottttt");
+        }
+    }
+
     public void giveItem(Player player, ItemStack item) {
         if (player.getInventory().addItem(item).isEmpty()) {
 
@@ -164,7 +174,6 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         for (String curMessage : plugin.getConfig().getStringList("descriptions." + key)) {
             player.sendMessage(curMessage);
         }
-        AUTOFILL_ARGS_2.clear();
     }
 
     private void sendAllTakenPowersMessage(Player player) {
@@ -243,7 +252,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
         for (Map.Entry<String, Boolean> entry : powerStatus.entrySet()) {
             String status = entry.getValue() ? ChatColor.RED + "Taken" : ChatColor.GREEN + "Not Taken";
-            player.sendMessage(ChatColor.AQUA + entry.getKey() + ": " + status);
+            player.sendMessage(ChatColor.AQUA + plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey()) + ": " + status);
         }
     }
 }

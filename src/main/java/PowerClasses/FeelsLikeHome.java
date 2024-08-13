@@ -5,6 +5,7 @@ import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.RandomUtils;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -129,10 +130,12 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
             if (hasPower(damager, "nether/ride_strider_in_overworld_lava") && RandomUtils.getRandomIntInRange(1, 4) == 4 && damager.isVisualFire()) {
                 damagedPlayer.setFireTicks(20 * 5);
             }
-        } else if (event.getEntity() instanceof Player) {
-            Player damagedPlayer = (Player) event.getEntity();
-            if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && sharedDamageMap.containsKey(damagedPlayer.getUniqueId())) {
-                Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getDamage() / 2);
+        } else {
+            if (event.getEntity() instanceof Player) {
+                Player damagedPlayer = (Player) event.getEntity();
+                if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && sharedDamageMap.containsKey(damagedPlayer.getUniqueId())) {
+                    Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getDamage() / 2);
+                }
             }
         }
     }
