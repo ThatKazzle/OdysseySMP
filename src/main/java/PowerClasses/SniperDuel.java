@@ -173,7 +173,7 @@ public class SniperDuel extends ParentPowerClass implements Listener {
     private void applyEffects(Player player) {
         PotionEffect glowing = new PotionEffect(PotionEffectType.GLOWING, 200, 1, false, false, true);
         PotionEffect weakness = new PotionEffect(PotionEffectType.WEAKNESS, 200, 3, false, false, true);
-        PotionEffect slowness = new PotionEffect(PotionEffectType.SLOWNESS, 200, 0, false, false, true);
+        PotionEffect slowness = new PotionEffect(PotionEffectType.SLOWNESS, 200, 1, false, false, true);
         // Apply all the effects
         player.addPotionEffect(glowing);
         player.addPotionEffect(weakness);
