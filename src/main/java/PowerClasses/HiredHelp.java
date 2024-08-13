@@ -4,6 +4,7 @@ import com.destroystokyo.paper.profile.PlayerProfile;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
+import org.bukkit.attribute.Attribute;
 import org.bukkit.entity.EntityType;
 import org.bukkit.entity.IronGolem;
 import org.bukkit.entity.Player;
@@ -49,7 +50,7 @@ public class HiredHelp extends ParentPowerClass implements Listener {
 
 
             golem.setCustomName(ChatColor.AQUA + plugin.provider.getInfo(player).getName() + ChatColor.LIGHT_PURPLE + "'s Iron Golem");
-
+            golem.getAttribute(Attribute.GENERIC_ATTACK_DAMAGE).setBaseValue(12);
             //golem.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, Integer.MAX_VALUE, 0, false, true));
             golem.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2, false, true));
 

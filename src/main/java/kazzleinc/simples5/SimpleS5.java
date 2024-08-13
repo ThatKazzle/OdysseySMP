@@ -34,6 +34,7 @@ import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
+import org.bukkit.inventory.meta.ShieldMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -279,7 +280,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void  onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
 
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             Player damager = (Player) event.getDamager();
@@ -293,11 +294,11 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
             if (hitPlayer.isBlocking()) {
                 if (damager.getInventory().getItemInMainHand().getType().equals(Material.MACE)) {
-                    hitPlayer.setCooldown(Material.SHIELD, 20*5);
-                    hitPlayer.getWorld().playSound(hitPlayer.getLocation(), Sound.ITEM_SHIELD_BREAK, 1.f, 1.f);
-                    hitPlayer.setShieldBlockingDelay(20 * 5);
                     hitPlayer.clearActiveItem();
+                    hitPlayer.setCooldown(Material.SHIELD, 20 * 5);
+                    hitPlayer.setShieldBlockingDelay(20 * 5);
                     hitPlayer.playEffect(EntityEffect.SHIELD_BREAK);
+                    hitPlayer.getWorld().playSound(hitPlayer.getLocation(), Sound.ITEM_SHIELD_BREAK, 1.f, 1.f);
                 }
             }
         }
