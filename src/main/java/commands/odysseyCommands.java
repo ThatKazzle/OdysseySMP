@@ -116,7 +116,10 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     public void onInventoryClick(InventoryClickEvent event) {
 
         if (!event.getView().getTitle().equals("Choose an effect to withdraw:")) return;
-        if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) return;
+        if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+            event.setCancelled(true);
+            return;
+        }
 
         event.setCancelled(true);
         Player player = (Player) event.getWhoClicked();
@@ -133,6 +136,10 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                 this.plugin.removePlayerAdvancement(player, plugin.getAdvancementKeyFromFormattedString(powerName));
                 this.plugin.getConfig().set("players." + player.getName() + ".powers." +  plugin.getAdvancementKeyFromFormattedString(powerName), false);
 
+                ItemMeta newMeta = clickedItem.getItemMeta();
+                newMeta.getPersistentDataContainer().getKeys().remove(this.canClickKey);
+                clickedItem.setItemMeta(newMeta);
+
                 this.plugin.saveConfig();
 
                 giveItem(player, clickedItem);
@@ -144,20 +151,6 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
         }
 
-    }
-
-    @EventHandler
-    public void onInventoryCloseEvent(InventoryCloseEvent event) {
-        if (!event.getView().getTitle().equals("Choose an effect to withdraw:")) return;
-
-        Player player = (Player) event.getPlayer();
-
-        for (ItemStack stack : player.getInventory().getContents()) {
-            assert stack != null;
-            if (stack.getPersistentDataContainer().has(this.canClickKey)) stack.setAmount(0);
-
-            player.sendMessage(ChatColor.RED + "Nice try idiottttt");
-        }
     }
 
     public void giveItem(Player player, ItemStack item) {
