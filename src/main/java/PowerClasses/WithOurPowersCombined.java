@@ -109,12 +109,11 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                     Vector origVector = player.getLocation().toVector().clone();
                     @Override
                     public void run() {
-                        if (i != 1) {
+                        if (i < 1) {
                             i += 0.05;
 
                             hitPlayer.teleport(plugin.vlerp(origVector, player.getLocation().toVector(), i).toLocation(player.getWorld()), PlayerTeleportEvent.TeleportCause.PLUGIN);
-                        } else {
-                            i = 0;
+                        } else if (i > 1) {
                             this.cancel();
                         }
                     }

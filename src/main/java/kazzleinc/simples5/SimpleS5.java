@@ -118,6 +118,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
         getCommand("power1").setExecutor(new powerOneCommand(this));
         getCommand("power2").setExecutor(new PowerTwoCommand(this));
+        getCommand("toggle-pvp").setExecutor(new PvpToggleCommand(this));
 
         getServer().getMessenger().registerIncomingPluginChannel(this, "odysseyclientside:power_channel", new modPacketListener(this));
         //getServer().getMessenger().registerOutgoingPluginChannel(this, "odysseyclientside:power_channel_rec");
@@ -283,7 +284,11 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             Player damager = (Player) event.getDamager();
             Player hitPlayer = (Player) event.getEntity();
 
-            boolean blocked = event.getDamage(EntityDamageEvent.DamageModifier.BLOCKING) > 0;
+            boolean blocked = event.getFinalDamage() == 0;
+
+            if (getConfig().getBoolean("settings.pvp", false)) {
+                event.setCancelled(true);
+            }
 
             if (blocked && hitPlayer.isBlocking()) {
                 if (damager.getInventory().getItemInMainHand().equals(Material.MACE)) {
@@ -292,6 +297,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                     hitPlayer.playEffect(EntityEffect.SHIELD_BREAK);
                 }
             }
+
+
         }
     }
 
