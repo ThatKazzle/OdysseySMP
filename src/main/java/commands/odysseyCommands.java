@@ -116,7 +116,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     public void onInventoryClick(InventoryClickEvent event) {
 
         if (!event.getView().getTitle().equals("Choose an effect to withdraw:")) return;
-        if (event.getAction().equals(InventoryAction.MOVE_TO_OTHER_INVENTORY)) {
+        if (event.isShiftClick()) {
             event.setCancelled(true);
             return;
         }
@@ -129,7 +129,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
         String powerName = clickedItem.getItemMeta().getPersistentDataContainer().get(this.plugin.powerPotionKey, PersistentDataType.STRING);
 
-        if (clickedItem.getItemMeta().getPersistentDataContainer().has(this.plugin.powerPotionKey) && clickedItem.getItemMeta().getPersistentDataContainer().has(this.canClickKey) && event.getSlot() <= 1) {
+        if (clickedItem.getItemMeta().getPersistentDataContainer().has(this.plugin.powerPotionKey) && clickedItem.getItemMeta().getPersistentDataContainer().has(this.canClickKey) && event.getRawSlot() <= 1 && !event.isShiftClick()) {
             if (Objects.equals(plugin.wopcClass.playerStoredPower.get(plugin.wopcClass.playerStoleFromPlayer.get(player.getUniqueId())), powerName)) {
                 player.sendMessage(ChatColor.RED + "Ye nice try idiot, you cant dupe.");
             } else {
