@@ -116,10 +116,10 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
 
                                                     checkPlayer.setVelocity(dir);
 
-                                                    if (checkPlayer.getHealth() - 9 <= 0) {
+                                                    if (checkPlayer.getHealth() - 8 <= 0) {
                                                         checkPlayer.setHealth(0);
                                                     } else {
-                                                        checkPlayer.setHealth(checkPlayer.getHealth() - 9);
+                                                        checkPlayer.setHealth(checkPlayer.getHealth() - 8);
                                                     }
 
                                                     checkPlayer.damage(0.0001);
@@ -198,12 +198,12 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
 
         // Configure the AreaEffectCloud
         cloud.setDuration(200); // Duration in ticks (10 seconds)
-        cloud.setRadius(16.0F); // Radius of the cloud
+        cloud.setRadius(12.0F); // Radius of the cloud
         cloud.setParticle(Particle.DRAGON_BREATH); // Particle effect
         cloud.setBasePotionType(PotionType.STRONG_HARMING);
         cloud.setWaitTime(0); // Time before the cloud starts applying effects
         cloud.setRadiusPerTick(0); // No radius change over time
-        cloud.setReapplicationDelay(10);
+        cloud.setReapplicationDelay(20);
 
         // Set the custom potion effect to apply damage similar to the dragon's breath
         // You can configure the effect further if needed

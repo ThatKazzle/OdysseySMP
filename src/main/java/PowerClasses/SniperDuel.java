@@ -30,6 +30,7 @@ public class SniperDuel extends ParentPowerClass implements Listener {
 
     private final List<Player> affectedPlayers = new ArrayList<>();
 
+    private final PotionEffect strength = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 1, false, false, true);
     public SniperDuel(SimpleS5 plugin) {
         super(plugin);
 
@@ -46,7 +47,7 @@ public class SniperDuel extends ParentPowerClass implements Listener {
 
                 double timeLeft = roundDecimalNumber((cooldowns.get(player.getUniqueId()) - System.currentTimeMillis()), 1) / 1000;
             } else if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
-                PotionEffect strength = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 1, false, false, true);
+
                 player.addPotionEffect(strength);
 
                 StringBuilder displayableList = new StringBuilder();
@@ -171,11 +172,14 @@ public class SniperDuel extends ParentPowerClass implements Listener {
         return closestPlayer;
     }
 
+    private final PotionEffect glowing = new PotionEffect(PotionEffectType.GLOWING, 200, 1, false, false, true);
+    private final PotionEffect weakness = new PotionEffect(PotionEffectType.WEAKNESS, 200, 3, false, false, true);
+    private final PotionEffect slowness = new PotionEffect(PotionEffectType.SLOWNESS, 200, 0, false, false, true);
+
     private void applyEffects(Player player) {
-        // Apply the glowing effect for 10 seconds (200 ticks)
-        PotionEffect glowing = new PotionEffect(PotionEffectType.GLOWING, 200, 1, false, false, true);
-        PotionEffect weakness = new PotionEffect(PotionEffectType.WEAKNESS, 200, 3, false, false, true);
+        // Apply all the effects
         player.addPotionEffect(glowing);
         player.addPotionEffect(weakness);
+        player.addPotionEffect(slowness);
     }
 }
