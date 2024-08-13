@@ -47,7 +47,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
         if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/complete_catalogue")) {
             if (!isOnCooldown(player.getUniqueId(), effectStealerCooldown)) {
 
-                RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
+                RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 6, entity -> entity != player);
 
                 if (result != null && result.getHitEntity() != null && result.getHitEntity() instanceof Player) {
                     setCooldown(player.getUniqueId(), effectStealerCooldown, 60 * 5);

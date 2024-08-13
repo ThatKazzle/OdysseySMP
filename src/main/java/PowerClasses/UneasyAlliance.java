@@ -102,7 +102,7 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
         if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "nether/uneasy_alliance")) {
             if (!isOnCooldown(player.getUniqueId(), freezeCooldowns)) {
 
-                RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
+                RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 6, entity -> entity != player);
 
                 if (result != null && result.getHitEntity() instanceof Player) {
                     setCooldown(player.getUniqueId(), freezeCooldowns, 120);

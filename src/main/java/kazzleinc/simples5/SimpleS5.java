@@ -291,9 +291,11 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 event.setCancelled(true);
             }
 
-            if (blocked && hitPlayer.isBlocking()) {
-                if (damager.getInventory().getItemInMainHand().equals(Material.MACE)) {
+            if (hitPlayer.isBlocking()) {
+                if (damager.getInventory().getItemInMainHand().getType().equals(Material.MACE)) {
                     hitPlayer.setCooldown(Material.SHIELD, 20*5);
+                    hitPlayer.getWorld().playSound(hitPlayer.getLocation(), Sound.ITEM_SHIELD_BREAK, 1.f, 1.f);
+                    hitPlayer.setShieldBlockingDelay(20 * 5);
                     hitPlayer.clearActiveItem();
                     hitPlayer.playEffect(EntityEffect.SHIELD_BREAK);
                 }

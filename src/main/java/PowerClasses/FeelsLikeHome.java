@@ -83,7 +83,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
 
     public void damageSharingAction(Player player) {
         if (!isOnCooldown(player.getUniqueId(), damageShareCooldowns)) {
-            RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
+            RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 6, entity -> entity != player);
 
             if (result != null && result.getHitEntity() != null && result.getHitEntity() instanceof Player) {
                 setCooldown(player.getUniqueId(), damageShareCooldowns, 60 * 4);
@@ -126,12 +126,13 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
             Player damager = (Player) event.getDamager();
             Player damagedPlayer = (Player) event.getEntity();
 
-            if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && sharedDamageMap.containsKey(damagedPlayer.getUniqueId())) {
-                Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getDamage() / 2);
-            }
-
             if (hasPower(damager, "nether/ride_strider_in_overworld_lava") && RandomUtils.getRandomIntInRange(1, 4) == 4 && damager.isVisualFire()) {
                 damagedPlayer.setFireTicks(20 * 5);
+            }
+        } else if (event.getEntity() instanceof Player) {
+            Player damagedPlayer = (Player) event.getEntity();
+            if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && sharedDamageMap.containsKey(damagedPlayer.getUniqueId())) {
+                Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getDamage() / 2);
             }
         }
     }

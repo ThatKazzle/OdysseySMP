@@ -90,6 +90,7 @@ public class PowerPotionItem {
                     break;
             }
 
+            meta.setCustomModelData(1);
             meta.setDisplayName(ChatColor.BOLD + "" + ChatColor.LIGHT_PURPLE + nameToAdd);
 
             List<String> lore = new ArrayList<>();
