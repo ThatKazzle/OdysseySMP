@@ -287,7 +287,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
             boolean blocked = event.getFinalDamage() == 0;
 
-            if (pvpEnabled) {
+            if (!pvpEnabled) {
                 event.setCancelled(true);
             }
 

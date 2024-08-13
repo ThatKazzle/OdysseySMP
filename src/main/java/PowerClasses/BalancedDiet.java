@@ -27,8 +27,8 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
     public final ArrayList<UUID> doesSiphon = new ArrayList<>();
 
 
-    PotionEffect satEffect = new PotionEffect(PotionEffectType.SATURATION, 30 * 20, 1, false, false);
-    PotionEffect hungerEffect = new PotionEffect(PotionEffectType.HUNGER, 10 * 20, 59, false, false);
+    private PotionEffect satEffect = new PotionEffect(PotionEffectType.SATURATION, 30 * 20, 1, false, false, true);
+    private PotionEffect hungerEffect = new PotionEffect(PotionEffectType.HUNGER, 10 * 20, 59, false, false, true);
 
     public BalancedDiet(SimpleS5 plugin) {
         super(plugin);

@@ -8,6 +8,8 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
+import java.awt.*;
+
 public class PvpToggleCommand implements CommandExecutor {
     private SimpleS5 plugin;
 
@@ -21,11 +23,8 @@ public class PvpToggleCommand implements CommandExecutor {
             Player sender = (Player) commandSender;
             if (sender.isOp()) {
                 plugin.pvpEnabled = !plugin.pvpEnabled;
-                if (plugin.pvpEnabled) {
-                    sender.sendMessage(ChatColor.GREEN + "PvP has been ENABLED.");
-                } else {
-                    sender.sendMessage(ChatColor.RED + "PvP has been DISABLED.");
-                }
+
+                sender.sendMessage(ChatColor.GREEN + "PvP has been " + (plugin.pvpEnabled ? ChatColor.GREEN + "ENABLED" : ChatColor.RED + "DISABLED"));
 
                 return true;
             } else {

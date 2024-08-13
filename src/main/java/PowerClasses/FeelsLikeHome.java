@@ -130,7 +130,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
                 Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getDamage() / 2);
             }
 
-            if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && RandomUtils.getRandomIntInRange(1, 4) == 4) {
+            if (hasPower(damager, "nether/ride_strider_in_overworld_lava") && RandomUtils.getRandomIntInRange(1, 4) == 4 && damager.isVisualFire()) {
                 damagedPlayer.setFireTicks(20 * 5);
             }
         }
