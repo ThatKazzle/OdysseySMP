@@ -112,12 +112,12 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                         if (i < 1) {
                             i += 0.05;
 
-                            hitPlayer.teleport(plugin.vlerp(origVector, player.getLocation().toVector(), i).toLocation(player.getWorld()), PlayerTeleportEvent.TeleportCause.PLUGIN);
+                            hitPlayer.teleport(plugin.lerp(origVector, player.getLocation().toVector(), i).toLocation(player.getWorld()), PlayerTeleportEvent.TeleportCause.PLUGIN);
                         } else if (i > 1) {
                             this.cancel();
                         }
                     }
-                }.runTaskTimer(plugin, 0, 1);
+                }.runTaskTimer(plugin, 0, 3);
 
                 setCooldown(player.getUniqueId(), frogCooldowns, 120);
             }

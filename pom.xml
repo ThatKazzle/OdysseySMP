@@ -6,7 +6,7 @@
 
   <groupId>kazzleinc</groupId>
   <artifactId>SimpleS5</artifactId>
-  <version>4.0</version>
+  <version>4.2</version>
   <packaging>jar</packaging>
 
   <name>SimpleS5</name>
@@ -89,7 +89,7 @@
       <dependency>
           <groupId>dev.iiahmed</groupId>
           <artifactId>ModernDisguise</artifactId>
-          <version>3.1</version>
+          <version>3.2</version>
           <scope>compile</scope>
       </dependency>
   </dependencies>

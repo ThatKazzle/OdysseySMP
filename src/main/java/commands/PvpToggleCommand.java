@@ -20,9 +20,8 @@ public class PvpToggleCommand implements CommandExecutor {
         if (commandSender instanceof Player) {
             Player sender = (Player) commandSender;
             if (sender.isOp()) {
-                plugin.getConfig().set("settings.pvp", !plugin.getConfig().getBoolean("settings.pvp", false));
-                plugin.saveConfig();
-                if (plugin.getConfig().getBoolean("settings.pvp")) {
+                plugin.pvpEnabled = !plugin.pvpEnabled;
+                if (plugin.pvpEnabled) {
                     sender.sendMessage(ChatColor.GREEN + "PvP has been ENABLED.");
                 } else {
                     sender.sendMessage(ChatColor.RED + "PvP has been DISABLED.");

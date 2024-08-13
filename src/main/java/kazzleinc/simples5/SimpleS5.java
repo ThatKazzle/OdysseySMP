@@ -54,6 +54,7 @@ import java.math.RoundingMode;
 import java.util.*;
 
 public final class SimpleS5 extends JavaPlugin implements Listener {
+    public boolean pvpEnabled = true;
 
     public ProtocolManager protocolManager;
 
@@ -286,7 +287,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
             boolean blocked = event.getFinalDamage() == 0;
 
-            if (getConfig().getBoolean("settings.pvp", false)) {
+            if (pvpEnabled) {
                 event.setCancelled(true);
             }
 
@@ -297,8 +298,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                     hitPlayer.playEffect(EntityEffect.SHIELD_BREAK);
                 }
             }
-
-
         }
     }
 
@@ -634,15 +633,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         return outMin + (normalizedValue * (outMax - outMin));
     }
 
-    public static Vector vlerp(Vector start, Vector end, double t) {
-        // Clamp t between 0 and 1
-        t = Math.max(0, Math.min(1, t));
-
-        double x = start.getX() + t * (end.getX() - start.getX());
-        double y = start.getY() + t * (end.getY() - start.getY());
-        double z = start.getZ() + t * (end.getZ() - start.getZ());
-
-        return new Vector(x, y, z);
+    public static Vector lerp(Vector a, Vector b, double t) {
+        return a.clone().multiply(1 - t).add(b.clone().multiply(t));
     }
 
     public String switchOnPowers(Player player, String cooldownKey) {
