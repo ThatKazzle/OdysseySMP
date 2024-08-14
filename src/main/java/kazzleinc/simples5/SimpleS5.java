@@ -52,6 +52,7 @@ import java.lang.reflect.Field;
 import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
+import java.sql.Array;
 import java.util.*;
 
 public final class SimpleS5 extends JavaPlugin implements Listener {
@@ -205,12 +206,22 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onAdvancementMade(PlayerAdvancementDoneEvent event) {
+        List<String> takenPowers = Arrays.asList("");
 
         Advancement advancement = event.getAdvancement();
 
         String advName = advancement.getKey().getKey();
 
         Player player = event.getPlayer();
+
+        player.sendMessage("advName: " + advName);
+
+        if (checkPowerStatus().containsKey(advName.split("/")[1])) {
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
+            player.sendMessage(ChatColor.RED + "You gained the advancement, but was not granted the power because someone else has it.");
+
+            return;
+        }
 
         for (String keys : getConfig().getConfigurationSection("defaults").getKeys(false)) {
             if (keys.equals(advName.split("/")[1])) {
@@ -478,6 +489,47 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 }
             }
         }
+    }
+
+    private Map<String, Boolean> checkPowerStatus() {
+        Map<String, Boolean> powerStatus = new HashMap<>();
+
+        // Get the defaults section
+        ConfigurationSection defaultsSection = getConfig().getConfigurationSection("defaults");
+        if (defaultsSection == null) {
+            return powerStatus; // Return empty map if "defaults" section is not found
+        }
+
+        // Get all default power keys
+        Set<String> defaultPowerKeys = defaultsSection.getKeys(false);
+
+        // Initialize all powers as "not taken"
+        for (String defaultPowerKey : defaultPowerKeys) {
+            powerStatus.put(defaultPowerKey, false);
+        }
+
+        // Get the "players" section
+        ConfigurationSection playersSection = getConfig().getConfigurationSection("players");
+        if (playersSection == null) {
+            return powerStatus; // Return if "players" section is not found
+        }
+
+        // Loop through each player
+        Set<String> playerKeys = playersSection.getKeys(false);
+        for (String playerKey : playerKeys) {
+            ConfigurationSection powersSection = playersSection.getConfigurationSection(playerKey + ".powers");
+            if (powersSection != null) {
+                // Loop through each power for the player
+                for (String defaultPowerKey : defaultPowerKeys) {
+                    String powerPath = defaultsSection.getString(defaultPowerKey);
+                    if (powersSection.getBoolean(powerPath, false)) {
+                        powerStatus.put(defaultPowerKey, true); // Mark as "taken" if any player has it set to true
+                    }
+                }
+            }
+        }
+
+        return powerStatus;
     }
 
     public Advancement grantAdvancement(Player player, String key) {
