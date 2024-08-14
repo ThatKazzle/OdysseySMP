@@ -266,6 +266,9 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                 case "Dragon Egg":
                     powerName = "The Next Generation";
                     break;
+                case "Summon Iron Golem":
+                    powerName = "Hired Help";
+                    break;
                 default:
                     powerName = plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey());
                     break;

@@ -446,6 +446,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             case "Dragon Egg":
                 powerName = "The Next Generation";
                 break;
+            case "Summon Iron Golem":
+                powerName = "Hired Help";
+                break;
             default:
                 powerName = getAdvancementNameFormattedFromAdvancement(advancement);
                 break;
