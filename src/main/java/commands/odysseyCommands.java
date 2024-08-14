@@ -247,7 +247,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
             String status = entry.getValue() ? ChatColor.RED + "Taken" : ChatColor.GREEN + "Not Taken";
             String powerName = "";
 
-            switch (entry.getKey()) {
+            switch (plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey())) {
                 case "All Effects":
                     powerName = "How Did We Get Here?";
                     break;
@@ -267,7 +267,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                     powerName = "The Next Generation";
                     break;
                 default:
-                    powerName = entry.getKey();
+                    powerName = plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey());
                     break;
             }
 
