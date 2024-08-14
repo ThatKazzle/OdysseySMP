@@ -268,7 +268,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                 String itemPowerKey = item.getItemMeta().getPersistentDataContainer().get(powerPotionKey, PersistentDataType.STRING);
 
-                if (meta != null && item.getType() == Material.AMETHYST_SHARD && item.getItemMeta().getPersistentDataContainer().getKeys().contains(powerPotionKey) && event.getHand() == EquipmentSlot.HAND) {
+                if (meta != null && item.getType() == Material.AMETHYST_SHARD && item.getItemMeta().getPersistentDataContainer().getKeys().contains(powerPotionKey) && event.getHand() == EquipmentSlot.HAND && !checkPowerStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
                     if (!playerIsAtPowerLimit(player)) {
 
                         grantAdvancementPower(grantAdvancement(player, getAdvancementKeyFromFormattedString(itemPowerKey)), player, false);
@@ -283,6 +283,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                             player.sendTitle(ChatColor.RED + "Unable to Equip!", ChatColor.RED + "You already have this power!", 10, 60, 10);
                     }
+                } else if (checkPowerStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
+                    player.sendMessage(ChatColor.RED + "You were not granted the power because someone else has it.");
                 }
             }
         }
@@ -454,7 +457,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             player.getWorld().dropItem(player.getLocation(), new PowerPotionItem(this, getAdvancementNameFormattedFromAdvancement(advancement), powerPotionKey).getItemStack());
 
         } else {
-            player.sendTitle("New Power Collected!: " + powerName, "type " + ChatColor.GREEN + "\"/od powers\" for details.");
+            player.sendTitle("New Power Collected!: " + powerName, "type " + ChatColor.GREEN + "\"/od powers\"" + ChatColor.RESET + " for details.");
 
             getConfig().set("players." + provider.getInfo(player).getName() + ".powers." + getAdvancementNameUnformatted(advancement), true);
         }

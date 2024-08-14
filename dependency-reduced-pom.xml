@@ -4,7 +4,7 @@
   <groupId>kazzleinc</groupId>
   <artifactId>SimpleS5</artifactId>
   <name>SimpleS5</name>
-  <version>4.4.6-DEV</version>
+  <version>4.4.9</version>
   <build>
     <resources>
       <resource>

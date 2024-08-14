@@ -245,7 +245,33 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
         for (Map.Entry<String, Boolean> entry : powerStatus.entrySet()) {
             String status = entry.getValue() ? ChatColor.RED + "Taken" : ChatColor.GREEN + "Not Taken";
-            player.sendMessage(ChatColor.AQUA + plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey()) + ": " + status);
+            String powerName = "";
+
+            switch (entry.getKey()) {
+                case "All Effects":
+                    powerName = "How Did We Get Here?";
+                    break;
+                case "Kill All Mobs":
+                    powerName = "Monsters Hunted";
+                    break;
+                case "Froglights":
+                    powerName = "WOPC";
+                    break;
+                case "Create Full Beacon":
+                    powerName = "Beaconator";
+                    break;
+                case "Ride Strider In Overworld Lava":
+                    powerName = "Feels Like Home";
+                    break;
+                case "Dragon Egg":
+                    powerName = "The Next Generation";
+                    break;
+                default:
+                    powerName = entry.getKey();
+                    break;
+            }
+
+            player.sendMessage(ChatColor.AQUA + powerName + ": " + status);
         }
     }
 }
