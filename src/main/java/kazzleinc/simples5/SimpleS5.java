@@ -157,6 +157,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         DisguiseManager.initialize(this, allowEntities);
         provider.allowOverrideChat(true);
 
+        saveDefaultConfig();
         //the rewind player thing
     }
 

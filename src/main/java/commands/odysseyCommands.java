@@ -40,7 +40,6 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         this.plugin = plugin;
 
         canClickKey = new NamespacedKey(plugin, "isInGUI");
-
         AUTOFILL_ARGS_2.addAll(this.plugin.getConfig().getConfigurationSection("defaults.").getKeys(false));
     }
 
