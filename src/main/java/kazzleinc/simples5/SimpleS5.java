@@ -63,7 +63,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     private SimpleS5 localPlugin = this;
 
     public NamespacedKey powerPotionKey = new NamespacedKey(this, "power");
-    public odysseyCommands odysseyClass = new odysseyCommands(this);
+    public odysseyCommands odysseyClass;
 
     public DoubleJumpListener vvfClass = new DoubleJumpListener(this);
     public CompleteCatalogue catalogueClass = new CompleteCatalogue(this);
@@ -89,6 +89,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+        odysseyClass = new odysseyCommands(this);
         // Plugin startup logic
         getServer().getPluginManager().registerEvents(vvfClass, this);
         getServer().getPluginManager().registerEvents(catalogueClass, this);
@@ -156,9 +157,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         boolean allowEntities = getConfig().getBoolean("allow-entity-disguises");
         DisguiseManager.initialize(this, allowEntities);
         provider.allowOverrideChat(true);
-
-        saveDefaultConfig();
-        //the rewind player thing
     }
 
     @Override
@@ -208,16 +206,11 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     @EventHandler
     public void onAdvancementMade(PlayerAdvancementDoneEvent event) {
         List<String> takenPowers = Arrays.asList("");
-
         Advancement advancement = event.getAdvancement();
-
         String advName = advancement.getKey().getKey();
-
         Player player = event.getPlayer();
 
-        player.sendMessage("advName: " + advName);
-
-        if (checkPowerStatus().containsKey(advName.split("/")[1])) {
+        if (checkPowerStatus().getOrDefault(advName.split("/")[1], false)) {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
             player.sendMessage(ChatColor.RED + "You gained the advancement, but was not granted the power because someone else has it.");
 
