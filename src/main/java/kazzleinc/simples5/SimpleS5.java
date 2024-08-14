@@ -210,19 +210,23 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         String advName = advancement.getKey().getKey();
         Player player = event.getPlayer();
 
-        if (checkPowerStatus().getOrDefault(advName, false)) {
+        player.sendMessage(advName);
+        player.sendMessage("is in check power status: " + checkPowerStatus().getOrDefault(advName, false));
+        player.sendMessage(checkPowerStatus().toString());
+
+        if (checkPowerStatus().getOrDefault(advName.split("/")[1], false)) {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
             player.sendMessage(ChatColor.RED + "You gained the advancement, but was not granted the power because someone else has it.");
-
-            return;
-        }
-
-        for (String keys : getConfig().getConfigurationSection("defaults").getKeys(false)) {
-            if (keys.equals(advName.split("/")[1])) {
-                grantAdvancementPower(advancement, player, playerIsAtPowerLimit(player));
-                saveConfig();
+        } else {
+            for (String keys : getConfig().getConfigurationSection("defaults").getKeys(false)) {
+                if (keys.equals(advName.split("/")[1])) {
+                    grantAdvancementPower(advancement, player, playerIsAtPowerLimit(player));
+                    saveConfig();
+                }
             }
         }
+
+
     }
 
     @EventHandler
