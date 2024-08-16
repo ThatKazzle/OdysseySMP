@@ -29,7 +29,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
 
     private PotionEffect satEffect = new PotionEffect(PotionEffectType.SATURATION, 30 * 20, 1, false, false, true);
     private PotionEffect hungerEffect = new PotionEffect(PotionEffectType.HUNGER, 10 * 20, 59, false, false, true);
-    private PotionEffect nauseaEffect = new PotionEffect(PotionEffectType.HUNGER, 10 * 20, 1, false, false, true);
+    private PotionEffect poisonEffect = new PotionEffect(PotionEffectType.POISON, 10 * 20, 0, false, false, true);
 
     public BalancedDiet(SimpleS5 plugin) {
         super(plugin);
@@ -55,7 +55,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
             for (Player playerCheck : plugin.getServer().getOnlinePlayers()) {
                 if (playerCheck != player && playerCheck.getWorld() == player.getWorld() && playerCheck.getLocation().distance(player.getLocation()) <= 25) {
                     playerCheck.addPotionEffect(hungerEffect);
-                    playerCheck.addPotionEffect(nauseaEffect);
+                    playerCheck.addPotionEffect(poisonEffect);
 
                     playerCheck.sendMessage(ChatColor.RED + plugin.provider.getInfo(player).getName() + " has given you " + ChatColor.AQUA + "Hunger & Nausea" + ChatColor.RED + "!");
                 }

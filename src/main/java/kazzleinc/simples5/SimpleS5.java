@@ -214,10 +214,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         String advName = advancement.getKey().getKey();
         Player player = event.getPlayer();
 
-        player.sendMessage(advName);
-        player.sendMessage("is in check power status: " + checkPowerStatus().getOrDefault(advName, false));
-        player.sendMessage(checkPowerStatus().toString());
-
         if (checkPowerStatus().getOrDefault(advName.split("/")[1], false)) {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
             player.sendMessage(ChatColor.RED + "You gained the advancement, but was not granted the power because someone else has it.");
@@ -322,7 +318,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onPlayerCraftItemEvent(CraftItemEvent event) {
-        if (getConfig().getBoolean("world.mace_crafted")) {
+        if (getConfig().getBoolean("world.mace_crafted", false)) {
             if (event.getClickedInventory() != null) {
                 if (event.getRecipe().getResult().getType() == Material.MACE) {
                     event.setCancelled(true);
