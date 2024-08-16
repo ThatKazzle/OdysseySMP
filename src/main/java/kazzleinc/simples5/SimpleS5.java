@@ -32,10 +32,7 @@ import org.bukkit.event.block.CrafterCraftEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.inventory.CraftItemEvent;
-import org.bukkit.event.inventory.InventoryInteractEvent;
-import org.bukkit.event.inventory.InventoryMoveItemEvent;
-import org.bukkit.event.inventory.PrepareItemCraftEvent;
+import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -319,32 +316,20 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onPlayerCraftItemEvent(CraftItemEvent event) {
-        if (getConfig().getBoolean("world.mace_crafted", false)) {
-            if (event.getClickedInventory() != null) {
-                if (event.getRecipe().getResult().getType() == Material.MACE) {
-                    event.setCancelled(true);
-                    event.getWhoClicked().sendMessage(ChatColor.RED + "The Mace has already been crafted, you can no longer craft it.");
-
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            event.getClickedInventory().remove(Material.MACE);
-                            event.getInventory().remove(Material.MACE);
-                        }
-                    }.runTaskLater(this, 5);
-
-                    event.getClickedInventory().close();
-                }
-            }
-        } else {
-            if (event.getClickedInventory() != null) {
-                if (event.getRecipe().getResult().getType() == Material.MACE) {
-                    getConfig().set("world.mace_crafted", true);
-                    event.getWhoClicked().sendMessage(ChatColor.GREEN + "You were the first person to craft the Mace! No one else can craft it.");
-                }
-            }
+    public void onCraft(CraftItemEvent event) {
+        if (event.getRecipe().getResult().getType().equals(Material.MACE) && !this.getConfig().getBoolean("macecrafted")) {
+            this.getConfig().set("macecrafted", true);
+            this.saveConfig();
         }
+
+    }
+
+    @EventHandler
+    public void prepareCraft(PrepareItemCraftEvent event) {
+        if (event.getRecipe().getResult().getType().equals(Material.MACE) && this.getConfig().getBoolean("macecrafted")) {
+            event.getInventory().setResult((ItemStack)null);
+        }
+
     }
 
     @EventHandler
