@@ -283,7 +283,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                             player.sendTitle(ChatColor.RED + "Unable to Equip!", ChatColor.RED + "You already have this power!", 10, 60, 10);
                     }
-                } else if (checkPowerStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
+                } else if (itemPowerKey != null && checkPowerStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
                     player.sendMessage(ChatColor.RED + "You were not granted the power because someone else has it.");
                 }
@@ -329,6 +329,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         } else {
             if (event.getClickedInventory() != null) {
                 if (event.getRecipe().getResult().getType() == Material.MACE) {
+                    getConfig().set("world.mace_crafted", true);
                     event.getWhoClicked().sendMessage(ChatColor.GREEN + "You were the first person to craft the Mace! No one else can craft it.");
                 }
             }
