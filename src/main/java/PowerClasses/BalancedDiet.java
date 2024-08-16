@@ -1,6 +1,7 @@
 package PowerClasses;
 
 import kazzleinc.simples5.ParticleUtils;
+import kazzleinc.simples5.RandomUtils;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.*;
 import org.bukkit.attribute.Attribute;
@@ -8,6 +9,7 @@ import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
@@ -78,6 +80,8 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
                 player.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE).setBaseValue(3.5);
 
                 ParticleUtils.createParticleSphere(player.getLocation(), 3, 50, Particle.DUST, Color.ORANGE, 2);
+
+                doesSiphon.add(player.getUniqueId());
                 new BukkitRunnable() {
                     Player checkPlayer = player;
                     @Override
@@ -87,7 +91,6 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
                         AttributeInstance reach = checkPlayer.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE);
 
                         plugin.getLogger().info(ChatColor.GREEN + "attrRemover ran once");
-
 
                         if (checkPlayer.isOnline()) {
                             if (attackSpeed.getBaseValue() != 4.0) {
@@ -107,6 +110,10 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
 
                             ParticleUtils.createParticleSphere(checkPlayer.getLocation(), 3, 50, Particle.DUST, Color.ORANGE, 2);
 
+                            if (doesSiphon.contains(checkPlayer.getUniqueId())) {
+                                doesSiphon.remove(checkPlayer.getUniqueId());
+                            }
+
                             plugin.getLogger().info("Everything goes back to normal idiot.");
                             this.cancel();
                         }
@@ -116,6 +123,17 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
         }
     }
 
+    @EventHandler
+    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+            Player damager = (Player) event.getDamager();
+            Player damagedPlayer = (Player) event.getEntity();
+
+            if (doesSiphon.contains(damager.getUniqueId())) {
+                damager.setHealth(damager.getHealth() + event.getFinalDamage());
+            }
+        }
+    }
 
     @EventHandler
     public void onPlayerInteract(PlayerInteractEvent event) {

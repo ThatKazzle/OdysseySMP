@@ -188,6 +188,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             if (reach.getBaseValue() != 3.0) {
                 reach.setBaseValue(3.0);
             }
+
+            if (balancedDietClass.doesSiphon.contains(checkPlayer.getUniqueId())) {
+                balancedDietClass.doesSiphon.remove(checkPlayer.getUniqueId());
+            }
         }
     }
 
@@ -317,8 +321,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onCraft(CraftItemEvent event) {
-        if (event.getRecipe().getResult().getType().equals(Material.MACE) && !this.getConfig().getBoolean("macecrafted")) {
-            this.getConfig().set("macecrafted", true);
+        if (event.getRecipe().getResult().getType().equals(Material.MACE) && !this.getConfig().getBoolean("world.mace_crafted")) {
+            event.getWhoClicked().sendMessage(ChatColor.GREEN + "You were the first person to get the Mace, and no one can craft it anymore.");
+            this.getConfig().set("world.mace_crafted", true);
             this.saveConfig();
         }
 
@@ -326,8 +331,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     @EventHandler
     public void prepareCraft(PrepareItemCraftEvent event) {
-        if (event.getRecipe().getResult().getType().equals(Material.MACE) && this.getConfig().getBoolean("macecrafted")) {
-            event.getInventory().setResult((ItemStack)null);
+        if (event.getRecipe().getResult().getType().equals(Material.MACE) && this.getConfig().getBoolean("world.mace_crafted")) {
+            event.getInventory().setResult((ItemStack) null);
         }
 
     }
