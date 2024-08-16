@@ -5,6 +5,7 @@ import kazzleinc.simples5.SimpleS5;
 import org.bukkit.Bukkit;
 import org.bukkit.FluidCollisionMode;
 import org.bukkit.Location;
+import org.bukkit.block.Block;
 import org.bukkit.command.Command;
 import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
@@ -60,7 +61,7 @@ public class playerScatterCommand implements CommandExecutor {
 
                     Location targetLocation = center.clone().add(xOffset, 0, zOffset);
                     // Ensure the player is teleported to a safe location (above ground)
-                    targetLocation.setY(center.getWorld().getHighestBlockYAt(targetLocation));
+                    targetLocation.setY(center.getWorld().getHighestBlockYAt(targetLocation) + 1);
 
                     target.teleport(targetLocation);
                     target.sendMessage("You have been scattered to a random location!");
