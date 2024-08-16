@@ -28,6 +28,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
+import org.bukkit.event.block.CrafterCraftEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
@@ -324,8 +325,15 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 if (event.getRecipe().getResult().getType() == Material.MACE) {
                     event.setCancelled(true);
                     event.getWhoClicked().sendMessage(ChatColor.RED + "The Mace has already been crafted, you can no longer craft it.");
-                    event.getClickedInventory().remove(Material.MACE);
-                    event.getInventory().remove(Material.MACE);
+
+                    new BukkitRunnable() {
+                        @Override
+                        public void run() {
+                            event.getClickedInventory().remove(Material.MACE);
+                            event.getInventory().remove(Material.MACE);
+                        }
+                    }.runTaskLater(this, 5);
+
                     event.getClickedInventory().close();
                 }
             }
@@ -336,6 +344,13 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                     event.getWhoClicked().sendMessage(ChatColor.GREEN + "You were the first person to craft the Mace! No one else can craft it.");
                 }
             }
+        }
+    }
+
+    @EventHandler
+    public void onCrafterCraftItemEvent(CrafterCraftEvent event) {
+        if (getConfig().getBoolean("world.mace_crafted", false)) {
+            if (event.getRecipe().getResult().getType().equals(Material.MACE)) event.setCancelled(true);
         }
     }
 
