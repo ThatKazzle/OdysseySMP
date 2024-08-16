@@ -126,6 +126,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getCommand("power1").setExecutor(new powerOneCommand(this));
         getCommand("power2").setExecutor(new PowerTwoCommand(this));
         getCommand("toggle-pvp").setExecutor(new PvpToggleCommand(this));
+        getCommand("scatter").setExecutor(new playerScatterCommand(this));
 
         getServer().getMessenger().registerIncomingPluginChannel(this, "odysseyclientside:power_channel", new modPacketListener(this));
         //getServer().getMessenger().registerOutgoingPluginChannel(this, "odysseyclientside:power_channel_rec");

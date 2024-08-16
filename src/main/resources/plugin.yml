@@ -30,3 +30,6 @@ commands:
   toggle-pvp:
     usage: "/toggle-pvp"
     description: "Opped players can enable or disable PvP."
+  scatter:
+    usage: "/scatter (radius)"
+    description: "scatters players."

@@ -10,6 +10,7 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.player.PlayerInteractEvent;
 import org.bukkit.event.player.PlayerItemConsumeEvent;
 import org.bukkit.inventory.ItemStack;
@@ -50,7 +51,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
 
     public void fattyAction(Player player) {
         if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/balanced_diet") && !isOnCooldown(player.getUniqueId(), cooldowns)) {
-            setCooldown(player.getUniqueId(), cooldowns, 60 * 3);
+            setCooldown(player.getUniqueId(), cooldowns, 60 * 2);
 
             player.addPotionEffect(satEffect);
 
@@ -73,7 +74,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
 
         if (hasPower(player, "husbandry/balanced_diet")) {
             if (event.getItem().getType() == Material.GLISTERING_MELON_SLICE && !isOnCooldown(player.getUniqueId(), melonCooldowns)) {
-                setCooldown(player.getUniqueId(), melonCooldowns, 90);
+                setCooldown(player.getUniqueId(), melonCooldowns, (60 * 3) + 30);
 
                 player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(5.0);
                 player.getAttribute(Attribute.GENERIC_SCALE).setBaseValue(1.2);
@@ -130,7 +131,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
             Player damagedPlayer = (Player) event.getEntity();
 
             if (doesSiphon.contains(damager.getUniqueId())) {
-                damager.setHealth(damager.getHealth() + event.getFinalDamage());
+                damager.setHealth(damager.getHealth() + event.getDamage() - event.getFinalDamage());
             }
         }
     }
