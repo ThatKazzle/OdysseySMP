@@ -14,6 +14,8 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 import org.jetbrains.annotations.NotNull;
 
+import java.util.Random;
+
 public class playerScatterCommand implements CommandExecutor {
 
     SimpleS5 plugin;
@@ -24,40 +26,52 @@ public class playerScatterCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        if (commandSender instanceof Player) {
-            Player player = (Player) commandSender;
+        if (command.getName().equalsIgnoreCase("scatter")) {
+            if (commandSender instanceof Player) {
+                Player player = (Player) commandSender;
 
-            if (player.isOp()) {
-                if (args.length == 1) {
-                    scatterPlayers(Integer.parseInt(args[0]), player.getLocation());
-                } else {
-                    player.sendMessage("Not right args dumbass");
+                if (!player.isOp()) {
+                    player.sendMessage("You do not have permission to use this command.");
+                    return true;
                 }
 
+                if (args.length != 1) {
+                    player.sendMessage("Usage: /scatter <radius>");
+                    return true;
+                }
+
+                int radius;
+                try {
+                    radius = Integer.parseInt(args[0]);
+                } catch (NumberFormatException e) {
+                    player.sendMessage("Invalid radius. Please enter a valid number.");
+                    return true;
+                }
+
+                Location center = player.getLocation();
+                Random random = new Random();
+
+                // Scatter all players within the radius
+                for (Player target : Bukkit.getOnlinePlayers()) {
+                    double angle = random.nextDouble() * 2 * Math.PI; // Random angle
+                    double distance = random.nextDouble() * radius; // Random distance within the radius
+                    double xOffset = distance * Math.cos(angle);
+                    double zOffset = distance * Math.sin(angle);
+
+                    Location targetLocation = center.clone().add(xOffset, 0, zOffset);
+                    // Ensure the player is teleported to a safe location (above ground)
+                    targetLocation.setY(center.getWorld().getHighestBlockYAt(targetLocation));
+
+                    target.teleport(targetLocation);
+                    target.sendMessage("You have been scattered to a random location!");
+                }
+
+                player.sendMessage("Players have been scattered within a radius of " + radius + " blocks.");
                 return true;
             } else {
-                player.sendMessage("You are not opped idiot");
-                return false;
-            }
-        } else {
-            return false;
-        }
-    }
-
-    public void scatterPlayers(int radius, Location playerLocation) {
-        for (Player checkPlayer : Bukkit.getOnlinePlayers()) {
-            if (!checkPlayer.isOp()) {
-
-                Location tpLocation = new Location(checkPlayer.getWorld(),
-                        RandomUtils.getRandomIntInRange((int) (radius + playerLocation.getX()), (int) (radius + playerLocation.getX())),
-                        255,
-                        RandomUtils.getRandomIntInRange((int) (radius + playerLocation.getZ()), (int) (radius + playerLocation.getZ()))
-                );
-
-                RayTraceResult result = checkPlayer.getWorld().rayTraceBlocks(tpLocation, new Vector(0, -1, 0), 400, FluidCollisionMode.ALWAYS);
-
-                checkPlayer.teleport(result.getHitPosition().toLocation(checkPlayer.getWorld()), PlayerTeleportEvent.TeleportCause.PLUGIN);
+                commandSender.sendMessage("This command can only be run by a player.");
             }
         }
+        return false;
     }
 }
