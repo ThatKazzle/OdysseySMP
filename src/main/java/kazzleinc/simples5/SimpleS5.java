@@ -14,6 +14,7 @@ import commands.*;
 import dev.iiahmed.disguise.DisguiseManager;
 import dev.iiahmed.disguise.DisguiseProvider;
 import io.papermc.paper.advancement.AdvancementDisplay;
+import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -30,6 +31,9 @@ import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.inventory.CraftItemEvent;
+import org.bukkit.event.inventory.InventoryInteractEvent;
+import org.bukkit.event.inventory.InventoryMoveItemEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -300,7 +304,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
             boolean blocked = event.getFinalDamage() == 0;
 
-            if (!pvpEnabled) {
+            if (!pvpEnabled && !damager.isOp()) {
                 event.setCancelled(true);
             }
 
@@ -316,7 +320,24 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         }
     }
 
-
+    @EventHandler
+    public void onPlayerCraftItemEvent(CraftItemEvent event) {
+        if (getConfig().getBoolean("world.mace_crafted")) {
+            if (event.getClickedInventory() != null) {
+                if (event.getRecipe().getResult().getType() == Material.MACE) {
+                    event.setCancelled(true);
+                    event.getWhoClicked().sendMessage(ChatColor.RED + "The Mace has already been crafted, you can no longer craft it.");
+                    event.getClickedInventory().close();
+                }
+            }
+        } else {
+            if (event.getClickedInventory() != null) {
+                if (event.getRecipe().getResult().getType() == Material.MACE) {
+                    event.getWhoClicked().sendMessage(ChatColor.GREEN + "You were the first person to craft the Mace! No one else can craft it.");
+                }
+            }
+        }
+    }
 
     @EventHandler
     public void onPlayerPlaceBlockEvent(BlockPlaceEvent event) {

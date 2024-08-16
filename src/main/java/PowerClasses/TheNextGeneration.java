@@ -204,7 +204,6 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
         cloud.setWaitTime(0); // Time before the cloud starts applying effects
         cloud.setRadiusPerTick(0); // No radius change over time
         cloud.setReapplicationDelay(20);
-
         // Set the custom potion effect to apply damage similar to the dragon's breath
         // You can configure the effect further if needed
         cloud.setCustomName("Dragon's Breath");
