@@ -34,6 +34,7 @@ import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.inventory.CraftItemEvent;
 import org.bukkit.event.inventory.InventoryInteractEvent;
 import org.bukkit.event.inventory.InventoryMoveItemEvent;
+import org.bukkit.event.inventory.PrepareItemCraftEvent;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
 import org.bukkit.inventory.ItemStack;
@@ -323,6 +324,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 if (event.getRecipe().getResult().getType() == Material.MACE) {
                     event.setCancelled(true);
                     event.getWhoClicked().sendMessage(ChatColor.RED + "The Mace has already been crafted, you can no longer craft it.");
+                    event.getClickedInventory().remove(Material.MACE);
+                    event.getInventory().remove(Material.MACE);
                     event.getClickedInventory().close();
                 }
             }
