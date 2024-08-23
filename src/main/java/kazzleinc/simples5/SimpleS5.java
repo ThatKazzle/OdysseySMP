@@ -22,6 +22,7 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
+import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
@@ -32,6 +33,7 @@ import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
+import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
 import org.bukkit.inventory.meta.ShieldMeta;
@@ -225,9 +227,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
             player.sendMessage("Nice try, but this power has already been redeemed.");
         } else {
-            player.sendMessage("gained that power");
             for (String keys : getConfig().getConfigurationSection("defaults").getKeys(false)) {
-                if (keys.equals(advName.split("/")[1])) {
+                if (keys.equals(advName.split("/")[1]) && !advName.equals("adventure/bullseye")) {
                     grantAdvancementPower(advancement, player, playerIsAtPowerLimit(player));
                     getConfig().set("capped_advancements." + advName.split("/")[1], true);
                     saveConfig();
@@ -281,10 +282,33 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 if (meta != null && item.getType() == Material.AMETHYST_SHARD && item.getItemMeta().getPersistentDataContainer().getKeys().contains(powerPotionKey) && event.getHand() == EquipmentSlot.HAND && !checkPowerStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
                     if (!playerIsAtPowerLimit(player)) {
 
-                        getConfig().set("capped_advancements." + itemPowerKey, true);
-                        grantAdvancementPower(grantAdvancement(player, getAdvancementKeyFromFormattedString(itemPowerKey)), player, false);
+                        getConfig().set("capped_advancements." + getAdvancementKeyFromFormattedString(itemPowerKey), true);
 
-                        player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
+                        if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("adventure/bullseye")) {
+                            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
+
+                            getConfig().set("players." + provider.getInfo(player).getName() + ".powers." + "adventure/bullseye", true);
+
+                            World world = player.getWorld();
+                            new BukkitRunnable() {
+                                int i = 0;
+                                @Override
+                                public void run() {
+                                    if (i > 3) {
+                                        world.strikeLightningEffect(player.getLocation());
+                                    } else {
+                                        i++;
+                                    }
+                                }
+                            }.runTaskTimer(this, 0, 10);
+                            world.strikeLightningEffect(player.getLocation());
+
+                            player.getWorld().setStorm(true);
+                        } else {
+                            grantAdvancementPower(grantAdvancement(player, getAdvancementKeyFromFormattedString(itemPowerKey)), player, false);
+                            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
+                        }
+
                     } else if (playerIsAtPowerLimit(player)) {
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.f, 1.f);
 
@@ -300,6 +324,40 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 }
             }
         }
+    }
+
+    public void moveEntityTowardsLocation(Entity entity, Location target, long durationInTicks) {
+        Location startLocation = entity.getLocation();  // Starting location of the entity
+        long iterations = durationInTicks / 2;  // Number of iterations (adjust as needed)
+        double initialDistance = startLocation.distance(target);  // Initial distance to the target
+
+        // Start the task to move the entity
+        new BukkitRunnable() {
+            long tickCount = 0;
+
+            @Override
+            public void run() {
+                if (tickCount >= iterations) {
+                    // Final teleport to the exact target location
+                    entity.teleport(target);
+                    this.cancel();  // Stop the task
+                    return;
+                }
+
+                // Calculate the current exponential factor (starts at 1 and decreases)
+                double factor = Math.pow(0.5, tickCount / (double) iterations);
+
+                // Calculate the new position
+                double newX = startLocation.getX() + (target.getX() - startLocation.getX()) * (1 - factor);
+                double newY = startLocation.getY() + (target.getY() - startLocation.getY()) * (1 - factor);
+                double newZ = startLocation.getZ() + (target.getZ() - startLocation.getZ()) * (1 - factor);
+
+                // Teleport the entity to the new location
+                entity.teleport(new Location(entity.getWorld(), newX, newY, newZ));
+
+                tickCount++;  // Increment the tick counter
+            }
+        }.runTaskTimer(this, 0L, 2L);  // Run the task every 2 ticks (adjust as needed)
     }
 
     @EventHandler
@@ -808,6 +866,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             case "end/dragon_egg":
                 cooldownMessage = nextGenerationClass.getCooldownString(player, nextGenerationClass.cooldowns, "Ground Pound: ");
                 break;
+            case "adventure/bullseye":
+                cooldownMessage = bullseyeClass.getCooldownString(player, bullseyeClass.sonicBoomCooldowns, "Sonic Boom: ");
         }
 
         return cooldownMessage;

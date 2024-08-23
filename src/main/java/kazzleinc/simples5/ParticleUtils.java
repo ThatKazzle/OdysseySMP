@@ -261,7 +261,7 @@ public class ParticleUtils {
         }
     }
 
-    public static void createWardenLine(Location start, Location end, int density, Particle.DustOptions dustOptions) {
+    public static void createWardenLine(Location start, Location end, int density) {
         if (!start.getWorld().equals(end.getWorld())) {
             throw new IllegalArgumentException("Start and end locations must be in the same world.");
         }
@@ -278,7 +278,7 @@ public class ParticleUtils {
 
         for (int i = 0; i <= density; i++) {
             Vector currentPosition = startVector.clone().add(step.clone().multiply(i));
-            world.spawnParticle(Particle.DUST, currentPosition.toLocation(world), 1, dustOptions);
+            world.spawnParticle(Particle.SONIC_BOOM, currentPosition.toLocation(world), 1);
         }
     }
 
