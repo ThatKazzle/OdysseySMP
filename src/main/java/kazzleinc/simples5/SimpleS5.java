@@ -22,16 +22,13 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.NPC;
-import org.bukkit.entity.Player;
+import org.bukkit.entity.*;
 import org.bukkit.event.EventHandler;
+import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
 import org.bukkit.event.block.CrafterCraftEvent;
-import org.bukkit.event.entity.EntityDamageByEntityEvent;
-import org.bukkit.event.entity.EntityDamageEvent;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
@@ -80,6 +77,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public Beaconator beaconatorClass = new Beaconator(this);
     public BalancedDiet balancedDietClass = new BalancedDiet(this);
     public TheNextGeneration nextGenerationClass = new TheNextGeneration(this);
+    public Bullseye bullseyeClass = new Bullseye(this);
 
     public PowerStealerPlaceholder powerStealerPlaceholder = new PowerStealerPlaceholder(this);
 
@@ -104,6 +102,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(feelsLikeHomeClass, this);
         getServer().getPluginManager().registerEvents(wopcClass, this);
         getServer().getPluginManager().registerEvents(hiredHelpClass, this);
+        getServer().getPluginManager().registerEvents(bullseyeClass, this);
 
         getServer().getPluginManager().registerEvents(beaconatorClass, this);
         beaconatorClass.startTrackingPlayerStates();
@@ -218,14 +217,21 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         String advName = advancement.getKey().getKey();
         Player player = event.getPlayer();
 
+
         if (checkPowerStatus().getOrDefault(advName.split("/")[1], false)) {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
             player.sendMessage(ChatColor.RED + "You gained the advancement, but was not granted the power because someone else has it.");
+        } else if (getConfig().getBoolean("capped_advancements." + advName.split("/")[1])) {
+            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
+            player.sendMessage("Nice try, but this power has already been redeemed.");
         } else {
+            player.sendMessage("gained that power");
             for (String keys : getConfig().getConfigurationSection("defaults").getKeys(false)) {
                 if (keys.equals(advName.split("/")[1])) {
                     grantAdvancementPower(advancement, player, playerIsAtPowerLimit(player));
+                    getConfig().set("capped_advancements." + advName.split("/")[1], true);
                     saveConfig();
+                    break;
                 }
             }
         }
@@ -275,6 +281,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 if (meta != null && item.getType() == Material.AMETHYST_SHARD && item.getItemMeta().getPersistentDataContainer().getKeys().contains(powerPotionKey) && event.getHand() == EquipmentSlot.HAND && !checkPowerStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
                     if (!playerIsAtPowerLimit(player)) {
 
+                        getConfig().set("capped_advancements." + itemPowerKey, true);
                         grantAdvancementPower(grantAdvancement(player, getAdvancementKeyFromFormattedString(itemPowerKey)), player, false);
 
                         player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
@@ -296,7 +303,28 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     }
 
     @EventHandler
+    public void onEntityDamageEvent(EntityDamageEvent event) {
+        if (event.getEntity() instanceof Item) {
+            Item item = (Item) event.getEntity();
+
+            if (item.getItemStack().getItemMeta().getPersistentDataContainer().has(powerPotionKey)) {
+                getServer().getLogger().info("BALLER!");
+                event.setCancelled(true);
+            }
+        }
+    }
+
+    @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+
+        if (event.getEntity() instanceof Item) {
+            Item item = (Item) event.getEntity();
+
+            if (item.getItemStack().getItemMeta().getPersistentDataContainer().has(powerPotionKey) && event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+                getServer().getLogger().info("BALLER!");
+                event.setCancelled(true);
+            }
+        }
 
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             Player damager = (Player) event.getDamager();
@@ -335,15 +363,14 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         if (event.getRecipe().getResult().getType().equals(Material.MACE) && this.getConfig().getBoolean("world.mace_crafted")) {
             event.getInventory().setResult((ItemStack) null);
         }
-
     }
 
-    @EventHandler
-    public void onCrafterCraftItemEvent(CrafterCraftEvent event) {
-        if (getConfig().getBoolean("world.mace_crafted", false)) {
-            if (event.getRecipe().getResult().getType().equals(Material.MACE)) event.setCancelled(true);
-        }
-    }
+//    @EventHandler
+//    public void onCrafterCraftItemEvent(CrafterCraftEvent event) {
+//        if (getConfig().getBoolean("world.mace_crafted", false)) {
+//            if (event.getRecipe().getResult().getType().equals(Material.MACE)) event.setCancelled(true);
+//        }
+//    }
 
     @EventHandler
     public void onPlayerPlaceBlockEvent(BlockPlaceEvent event) {
@@ -721,6 +748,22 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     public static Vector lerp(Vector a, Vector b, double t) {
         return a.clone().multiply(1 - t).add(b.clone().multiply(t));
+    }
+
+    private void playSonicBoomEffect(Location startLocation, Vector direction) {
+        // Play particles along the path of the Sonic Boom
+        for (double i = 0; i < 20; i += 0.5) {
+            Location currentLocation = startLocation.clone().add(direction.clone().multiply(i));
+            currentLocation.getWorld().spawnParticle(Particle.SONIC_BOOM, currentLocation, 1, 0, 0, 0, 0);
+        }
+
+        // Play the Warden's Sonic Boom sound
+        startLocation.getWorld().playSound(startLocation, Sound.ENTITY_WARDEN_SONIC_BOOM, 1.0f, 1.0f);
+    }
+
+    private void applyKnockback(Player target, Location source) {
+        Vector knockbackDirection = target.getLocation().toVector().subtract(source.toVector()).normalize();
+        target.setVelocity(knockbackDirection.multiply(1.5)); // Apply knockback
     }
 
     public String switchOnPowers(Player player, String cooldownKey) {

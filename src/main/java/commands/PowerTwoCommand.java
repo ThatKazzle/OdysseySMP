@@ -79,6 +79,9 @@ public class PowerTwoCommand implements CommandExecutor {
                         case "end/dragon_egg":
                             plugin.nextGenerationClass.action(playerName);
                             break;
+                        case "adventure/bullseye":
+                            plugin.bullseyeClass.action(playerName);
+                            break;
                         case "player/power_stolen":
                             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
                             player.sendMessage(ChatColor.RED + "Your power has been stolen, you can't use this!");

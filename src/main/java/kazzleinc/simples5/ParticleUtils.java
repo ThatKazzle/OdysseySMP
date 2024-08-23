@@ -261,6 +261,27 @@ public class ParticleUtils {
         }
     }
 
+    public static void createWardenLine(Location start, Location end, int density, Particle.DustOptions dustOptions) {
+        if (!start.getWorld().equals(end.getWorld())) {
+            throw new IllegalArgumentException("Start and end locations must be in the same world.");
+        }
+
+        World world = start.getWorld();
+        Vector startVector = start.toVector();
+        Vector endVector = end.toVector();
+        Vector direction = endVector.clone().subtract(startVector);
+        double length = direction.length();
+        direction.normalize();
+
+        double interval = length / density;
+        Vector step = direction.multiply(interval);
+
+        for (int i = 0; i <= density; i++) {
+            Vector currentPosition = startVector.clone().add(step.clone().multiply(i));
+            world.spawnParticle(Particle.DUST, currentPosition.toLocation(world), 1, dustOptions);
+        }
+    }
+
     public static void createParticleRandomLine(Location start, Location end, int density, int size) {
         if (!start.getWorld().equals(end.getWorld())) {
             throw new IllegalArgumentException("Start and end locations must be in the same world.");

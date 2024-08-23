@@ -14,6 +14,7 @@ defaults:
   create_full_beacon: "nether/create_full_beacon"
   balanced_diet: "husbandry/balanced_diet"
   dragon_egg: "end/dragon_egg"
+  bullseye: "adventure/bullseye"
 descriptions:
   very_very_frightening:
     - " "
