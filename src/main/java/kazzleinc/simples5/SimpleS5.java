@@ -80,6 +80,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public BalancedDiet balancedDietClass = new BalancedDiet(this);
     public TheNextGeneration nextGenerationClass = new TheNextGeneration(this);
     public Bullseye bullseyeClass = new Bullseye(this);
+    public EventPowerOne eventPowerOneClass = new EventPowerOne(this);
 
     public PowerStealerPlaceholder powerStealerPlaceholder = new PowerStealerPlaceholder(this);
 
@@ -294,17 +295,17 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                                 int i = 0;
                                 @Override
                                 public void run() {
-                                    if (i > 3) {
+                                    if (i < 3) {
                                         world.strikeLightningEffect(player.getLocation());
-                                    } else {
                                         i++;
+                                    } else {
+                                        this.cancel();
                                     }
                                 }
                             }.runTaskTimer(this, 0, 10);
-                            world.strikeLightningEffect(player.getLocation());
 
                             player.getWorld().setStorm(true);
-                        } else {
+                        } else if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("events/event_power_one")) {
                             grantAdvancementPower(grantAdvancement(player, getAdvancementKeyFromFormattedString(itemPowerKey)), player, false);
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                         }
@@ -868,6 +869,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 break;
             case "adventure/bullseye":
                 cooldownMessage = bullseyeClass.getCooldownString(player, bullseyeClass.sonicBoomCooldowns, "Sonic Boom: ");
+                break;
+            case "events/event_power_one":
+                cooldownMessage = eventPowerOneClass.getCooldownString(player, eventPowerOneClass.auralBarrageCooldowns, "Power Slam: ");
+                break;
         }
 
         return cooldownMessage;

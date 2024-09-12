@@ -9,6 +9,9 @@ import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
+import java.util.ArrayList;
+import java.util.UUID;
+
 public class ParticleUtils {
 
     /**
@@ -261,10 +264,12 @@ public class ParticleUtils {
         }
     }
 
-    public static void createWardenLine(Location start, Location end, int density) {
+    public static void createWardenLine(Location start, Location end, int density, Player owningPlayer) {
         if (!start.getWorld().equals(end.getWorld())) {
             throw new IllegalArgumentException("Start and end locations must be in the same world.");
         }
+
+        ArrayList<UUID> playersAlreadyChecked = new ArrayList<>();
 
         World world = start.getWorld();
         Vector startVector = start.toVector();
@@ -279,6 +284,23 @@ public class ParticleUtils {
         for (int i = 0; i <= density; i++) {
             Vector currentPosition = startVector.clone().add(step.clone().multiply(i));
             world.spawnParticle(Particle.SONIC_BOOM, currentPosition.toLocation(world), 1);
+
+            for (Player playerCheck : Bukkit.getOnlinePlayers()) {
+                if (playerCheck.getWorld() == owningPlayer.getWorld() && playerCheck != owningPlayer) {
+                    if (currentPosition.distance(playerCheck.getEyeLocation().add(playerCheck.getLocation()).toVector().divide(new Vector(2, 2, 2))) < 2 && !playersAlreadyChecked.contains(playerCheck.getUniqueId())) {
+                        playerCheck.sendMessage("" + playerCheck.getLocation().distance(currentPosition.toLocation(world)));
+                        if (playerCheck.getHealth() - 12 <= 0) {
+                            playerCheck.setHealth(0);
+                        } else {
+                            playerCheck.setHealth(playerCheck.getHealth() - 12);
+                            playerCheck.damage(0.01);
+                        }
+                        playersAlreadyChecked.add(playerCheck.getUniqueId());
+
+                        playerCheck.sendMessage(playersAlreadyChecked.toString());
+                    }
+                }
+            }
         }
     }
 
