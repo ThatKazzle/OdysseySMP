@@ -134,6 +134,9 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                 player.sendMessage(ChatColor.RED + "Ye nice try idiot, you cant dupe.");
             } else {
                 this.plugin.removePlayerAdvancement(player, plugin.getAdvancementKeyFromFormattedString(powerName));
+                if (powerName.equals("events/charli's_power")) {
+                    player.sendMessage("BALLER!");
+                }
                 this.plugin.getConfig().set("players." + player.getName() + ".powers." +  plugin.getAdvancementKeyFromFormattedString(powerName), false);
 
                 ItemMeta newMeta = clickedItem.getItemMeta();

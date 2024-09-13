@@ -11,8 +11,8 @@ import com.comphenix.protocol.wrappers.WrappedAttribute;
 import com.comphenix.protocol.wrappers.WrappedChatComponent;
 import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import commands.*;
-import dev.iiahmed.disguise.DisguiseManager;
-import dev.iiahmed.disguise.DisguiseProvider;
+import dev.iiahmed.disguise.*;
+import dev.iiahmed.disguise.attribute.RangedAttribute;
 import io.papermc.paper.advancement.AdvancementDisplay;
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import org.bukkit.*;
@@ -24,6 +24,7 @@ import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
 import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
+import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
@@ -270,6 +271,26 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     }
 
     @EventHandler
+    public void onJoin(PlayerJoinEvent event) {
+        Player player = event.getPlayer();
+        String name = "";
+        if (event.getPlayer().getName().equals("Charli4K") || event.getPlayer().getName().equals("Charli4K")) {
+            if (event.getPlayer().getName().equals("Charli4K")) {
+                name = "Terracotta";
+            } else if (event.getPlayer().getName().equals("QuakX")) {
+                name = "Berries";
+            }
+            Disguise disguise = Disguise.builder()
+                    .setName(name)
+                    .setSkin(SkinAPI.MOJANG, UUID.fromString("ab1a82ad-c618-465d-8728-24751b0d07f9"))
+                    .build();
+
+            event.setJoinMessage(ChatColor.YELLOW + disguise.getName() + " joined the server");
+        }
+
+    }
+
+    @EventHandler
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         //Handling the clicking of the item if it is a power item
@@ -319,6 +340,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                         }
 
+                        saveConfig();
                     } else if (playerIsAtPowerLimit(player)) {
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.f, 1.f);
 

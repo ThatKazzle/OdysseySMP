@@ -13,18 +13,18 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class CharlisPower extends ParentPowerClass implements Listener {
+public class QuakPower extends ParentPowerClass implements Listener {
     public final HashMap<UUID, Long> cooldowns = new HashMap<>();
-    public final HashMap<UUID, Long> cobCooldowns = new HashMap<>();
+    public final HashMap<UUID, Long> gapCooldowns = new HashMap<>();
 
     private HashSet<Player> dashed = new HashSet<>(); //for making sure the player can only dash once
-    public CharlisPower(SimpleS5 plugin) {
+    public QuakPower(SimpleS5 plugin) {
         super(plugin);
     }
 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
-        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Webbed: " + getCooldownTimeLeft(player.getUniqueId(), cobCooldowns);
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Enhanced : " + getCooldownTimeLeft(player.getUniqueId(), gapCooldowns);
     }
 
     @Override
@@ -70,35 +70,7 @@ public class CharlisPower extends ParentPowerClass implements Listener {
     }
 
     public void cobAction(Player player) {
-        if (hasPower(player, "events/charli's_power")) {
-            if (isOnCooldown(player.getUniqueId(), cobCooldowns)) {
-                //cantUsePowerMessage(player, cooldowns, "Dash");
-            } else if (!isOnCooldown(player.getUniqueId(), cobCooldowns)) {
-                setCooldown(player.getUniqueId(), cobCooldowns, 150);
 
-                for (Player playerCheck : Bukkit.getOnlinePlayers()) {
-                    if (playerCheck.getLocation().distance(player.getLocation()) < 5 && playerCheck != player) {
-                        for (int x = -1; x < 2; x++) {
-                            for (int z = -1; z < 2; z++) {
-                                if (playerCheck.getWorld().getBlockAt(playerCheck.getLocation().add(x, 0.5, z)).getType().equals(Material.AIR)) {
-                                    playerCheck.getWorld().getBlockAt(playerCheck.getLocation().add(x, 0.5, z)).setType(Material.COBWEB);
-                                }
-                            }
-                        }
-                    }
-                }
-
-                for (int x = -1; x < 2; x++) {
-                    for (int z = -1; z < 2; z++) {
-                        if (player.getWorld().getBlockAt(player.getLocation().add(x, 0.5, z)).getType() == Material.COBWEB) {
-                            player.getWorld().getBlockAt(player.getLocation().add(x, 0.5, z)).setType(Material.COBWEB);
-                        }
-                    }
-                }
-
-
-            }
-        }
     }
 
     @EventHandler
