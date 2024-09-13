@@ -84,10 +84,10 @@ public class PowerTwoCommand implements CommandExecutor {
                         case "events/event_power_one":
                             plugin.eventPowerOneClass.action(playerName);
                             break;
-                        case "events/charli's_odyssey":
+                        case "events/charlis_odyssey":
                             plugin.charliPowerClass.action(playerName);
                             break;
-                        case "events/quak's_odyssey":
+                        case "events/quaks_odyssey":
                             plugin.quakPowerClass.action(playerName);
                         case "player/power_stolen":
                             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
