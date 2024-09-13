@@ -85,6 +85,9 @@ public class PowerTwoCommand implements CommandExecutor {
                         case "events/event_power_one":
                             plugin.eventPowerOneClass.action(playerName);
                             break;
+                        case "events/charli's_power":
+                            plugin.charlisPowerClass.action(playerName);
+                            break;
                         case "player/power_stolen":
                             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
                             player.sendMessage(ChatColor.RED + "Your power has been stolen, you can't use this!");

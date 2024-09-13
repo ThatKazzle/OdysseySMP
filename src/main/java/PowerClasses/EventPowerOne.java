@@ -50,7 +50,10 @@ public class EventPowerOne extends ParentPowerClass implements Listener {
 
     public void auralBarrage(Player player) {
         if (!isOnCooldown(player.getUniqueId(), auralBarrageCooldowns)) {
-            BukkitTask particle = new FollowParticle(player.getLocation(), player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(2)), plugin).runTaskTimer(plugin, 0, 0L);
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EVOKER_CAST_SPELL, 1.f, 1.f);
+            for (int i = 0; i < 10; i++) {
+                new FollowParticle(player.getEyeLocation(), player.getEyeLocation().getDirection(), player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(6)), player, plugin).runTaskTimer(plugin, 0, 0L);
+            }
             setCooldown(player.getUniqueId(), auralBarrageCooldowns, 0);
         }
     }

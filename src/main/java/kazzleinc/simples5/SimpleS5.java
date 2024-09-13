@@ -81,6 +81,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public TheNextGeneration nextGenerationClass = new TheNextGeneration(this);
     public Bullseye bullseyeClass = new Bullseye(this);
     public EventPowerOne eventPowerOneClass = new EventPowerOne(this);
+    public CharlisPower charlisPowerClass = new CharlisPower(this);
 
     public PowerStealerPlaceholder powerStealerPlaceholder = new PowerStealerPlaceholder(this);
 
@@ -871,7 +872,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 cooldownMessage = bullseyeClass.getCooldownString(player, bullseyeClass.sonicBoomCooldowns, "Sonic Boom: ");
                 break;
             case "events/event_power_one":
-                cooldownMessage = eventPowerOneClass.getCooldownString(player, eventPowerOneClass.auralBarrageCooldowns, "Power Slam: ");
+                cooldownMessage = eventPowerOneClass.getCooldownString(player, eventPowerOneClass.auralBarrageCooldowns, "Aural Barrage: ");
+                break;
+            case "events/charli's_power":
+                cooldownMessage = charlisPowerClass.getCooldownString(player, charlisPowerClass.cooldowns, "Dash: ");
                 break;
         }
 

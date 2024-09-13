@@ -4,8 +4,11 @@ import org.bukkit.Bukkit;
 import org.bukkit.Color;
 import org.bukkit.Location;
 import org.bukkit.Particle;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.LivingEntity;
 import org.bukkit.entity.Player;
 import org.bukkit.scheduler.BukkitRunnable;
+import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
 import java.util.Random;
@@ -16,14 +19,18 @@ public class FollowParticle extends BukkitRunnable {
     private final Location start;
     private final Location target;
     private Vector velocity;
-    private double speedIncrement = 0.02; // How much to increase speed each tick
-    private double maxSpeed = 0.4; // Maximum speed
-    private double easingFactor = 0.05; // How much influence the target has on the velocity each tick
+    private double speedIncrement = 0.0004; // How much to increase speed each tick
+    private double maxSpeed = 0.005; // Maximum speed
+    private double easingFactor = 0.08; // How much influence the target has on the velocity each tick
+    private Player owner;
 
-    public FollowParticle(Location start, Location target, SimpleS5 plugin) {
+    public FollowParticle(Location start, Vector startDirection, Location target, Player owner, SimpleS5 plugin) {
+        this.owner = owner;
         this.start = start.clone();
         this.target = target.clone();
         this.plugin = plugin;
+
+        Vector forward = startDirection.clone().normalize();
 
         Random random = new Random();
         double angle = random.nextDouble() * 360; // Angle between 0 and 360 degrees
@@ -39,40 +46,58 @@ public class FollowParticle extends BukkitRunnable {
         double zVelocity = initialSpeed * Math.sin(radians); // Horizontal Z velocity
         double yVelocity = random.nextDouble(-0.4, 0.4); // Upward velocity (higher to give it an arc)
 
-        // Initialize the velocity vector
-        this.velocity = new Vector(xVelocity, yVelocity, zVelocity);
+        Vector randomDirection = new Vector(xVelocity, yVelocity, zVelocity);
 
-        // Calculate the initial velocity vector from start to target
-        //Vector direction = target.toVector().subtract(start.toVector()).normalize();
-        //this.velocity = direction.multiply(0.1); // Start with a low speed
+        if (forward.dot(randomDirection) < 0) {
+            randomDirection.setX(-randomDirection.getX());
+            randomDirection.setZ(-randomDirection.getZ());
+        }
+
+        // Combine the forward direction with the random direction to get a varied initial velocity
+        this.velocity = forward.clone().add(randomDirection.multiply(100)).normalize().multiply(initialSpeed);
     }
 
     @Override
     public void run() {
         // If the particle is close to the target, stop the task
-        if (start.distance(target) < 0.3) {
+        if (start.distance(target) < 0.7) {
             this.cancel();
             return;
+        } else {
+            Bukkit.getPlayer("ItsKazzle").sendMessage(String.valueOf(start.distance(target)));
+        }
+
+        for (Entity entity : start.getNearbyEntities(0.2, 0.2, 0.2)) {
+            if (entity instanceof LivingEntity) {
+                if (entity != this.owner) {
+                    LivingEntity livEnt = (LivingEntity) entity;
+                    livEnt.damage(0.5);
+                    livEnt.setNoDamageTicks(0);
+
+                    livEnt.getWorld().spawnParticle(Particle.SONIC_BOOM, livEnt.getLocation(), 1);
+                }
+            }
         }
 
         //Bukkit.getOnlinePlayers().stream().findFirst().get().sendMessage("UPDATE!");
 
         // Spawn a particle at the current location
-        start.getWorld().spawnParticle(Particle.DUST, start, 1, new Particle.DustOptions(Color.RED, 2));
+        start.getWorld().spawnParticle(Particle.DUST, start, 5, new Particle.DustOptions(Color.AQUA, 1));
 
         // Calculate the direction towards the target
-        Vector toTarget = target.toVector().subtract(start.toVector()).normalize();
+        Vector toTarget = target.clone().toVector().subtract(start.toVector()).normalize();
 
         // Apply easing: slowly adjust the velocity toward the target
         velocity.add(toTarget.multiply(easingFactor));
 
-        // Update the particle's position using the velocity
-        // Gradually increase the velocity's magnitude
+        velocity.multiply(0.9);
+
         double currentSpeed = velocity.length();
-        if (currentSpeed < maxSpeed) {
-            velocity = velocity.normalize().multiply(currentSpeed + speedIncrement);
+        easingFactor += 0.001;
+
+        if (easingFactor > 1) {
+            this.cancel();
         }
-        easingFactor += 0.025;
 
         start.add(velocity);
     }
