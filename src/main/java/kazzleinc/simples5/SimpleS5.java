@@ -1,20 +1,11 @@
 package kazzleinc.simples5;
 
 import PowerClasses.*;
-import com.comphenix.protocol.PacketType;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
-import com.comphenix.protocol.events.PacketAdapter;
-import com.comphenix.protocol.events.PacketContainer;
-import com.comphenix.protocol.events.PacketEvent;
-import com.comphenix.protocol.wrappers.WrappedAttribute;
-import com.comphenix.protocol.wrappers.WrappedChatComponent;
-import com.comphenix.protocol.wrappers.WrappedWatchableObject;
 import commands.*;
 import dev.iiahmed.disguise.*;
-import dev.iiahmed.disguise.attribute.RangedAttribute;
 import io.papermc.paper.advancement.AdvancementDisplay;
-import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
 import org.bukkit.advancement.AdvancementProgress;
@@ -22,40 +13,28 @@ import org.bukkit.attribute.Attribute;
 import org.bukkit.attribute.AttributeInstance;
 import org.bukkit.configuration.ConfigurationSection;
 import org.bukkit.configuration.file.FileConfiguration;
-import org.bukkit.enchantments.Enchantment;
 import org.bukkit.entity.*;
 import org.bukkit.entity.Entity;
 import org.bukkit.event.EventHandler;
-import org.bukkit.event.EventPriority;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockPlaceEvent;
-import org.bukkit.event.block.CrafterCraftEvent;
 import org.bukkit.event.entity.*;
 import org.bukkit.event.inventory.*;
 import org.bukkit.event.player.*;
 import org.bukkit.inventory.EquipmentSlot;
-import org.bukkit.inventory.ItemFlag;
 import org.bukkit.inventory.ItemStack;
 import org.bukkit.inventory.meta.ItemMeta;
-import org.bukkit.inventory.meta.ShieldMeta;
 import org.bukkit.persistence.PersistentDataType;
 import org.bukkit.plugin.java.JavaPlugin;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import kazzleinc.simples5.ParticleUtils;
-import org.reflections.Reflections;
-import org.reflections.scanners.SubTypesScanner;
-
 import java.io.ByteArrayOutputStream;
 import java.io.DataOutputStream;
 import java.io.IOException;
-import java.lang.reflect.Field;
-import java.lang.reflect.InvocationTargetException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
-import java.sql.Array;
 import java.util.*;
 
 public final class SimpleS5 extends JavaPlugin implements Listener {
@@ -82,7 +61,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public TheNextGeneration nextGenerationClass = new TheNextGeneration(this);
     public Bullseye bullseyeClass = new Bullseye(this);
     public EventPowerOne eventPowerOneClass = new EventPowerOne(this);
-    public CharlisPower charlisPowerClass = new CharlisPower(this);
+    public CharliPower charliPowerClass = new CharliPower(this);
+    public QuakPower quakPowerClass = new QuakPower(this);
 
     public PowerStealerPlaceholder powerStealerPlaceholder = new PowerStealerPlaceholder(this);
 
@@ -108,12 +88,14 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(wopcClass, this);
         getServer().getPluginManager().registerEvents(hiredHelpClass, this);
         getServer().getPluginManager().registerEvents(bullseyeClass, this);
+        getServer().getPluginManager().registerEvents(balancedDietClass, this);
+        getServer().getPluginManager().registerEvents(nextGenerationClass, this);
 
         getServer().getPluginManager().registerEvents(beaconatorClass, this);
         beaconatorClass.startTrackingPlayerStates();
 
-        getServer().getPluginManager().registerEvents(balancedDietClass, this);
-        getServer().getPluginManager().registerEvents(nextGenerationClass, this);
+        getServer().getPluginManager().registerEvents(charliPowerClass, this);
+        getServer().getPluginManager().registerEvents(quakPowerClass, this);
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         uneasyAllianceClass.registerInvisListener();
@@ -307,7 +289,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         getConfig().set("capped_advancements." + getAdvancementKeyFromFormattedString(itemPowerKey), true);
 
                         if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("adventure/bullseye")) {
-                            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
 
                             getConfig().set("players." + provider.getInfo(player).getName() + ".powers." + "adventure/bullseye", true);
 
@@ -327,18 +308,21 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             }.runTaskTimer(this, 0, 10);
 
                             player.getWorld().setStorm(true);
-                        } else if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("events/charli's_power")) {
-                            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-
-                            getConfig().set("players." + player.getName() + ".powers." + "events/charli's_power", true);
+                        } else if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("events/charlis_odyssey")) {
+                            getConfig().set("players." + player.getName() + ".powers." + "events/charlis_odyssey", true);
 
                             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
-                            player.sendMessage(ChatColor.LIGHT_PURPLE + "Charli's Power Equipped...");
+                            player.sendMessage(ChatColor.LIGHT_PURPLE + "Charli4K's Odyssey Equipped...");
+                        } else if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("events/quaks_odyssey")) {
+                            getConfig().set("players." + player.getName() + ".powers." + "events/quaks_odyssey", true);
+
+                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
+                            player.sendMessage(ChatColor.YELLOW + "QuakX's Odyssey Equipped...");
                         } else {
                             grantAdvancementPower(grantAdvancement(player, getAdvancementKeyFromFormattedString(itemPowerKey)), player, false);
-                            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                         }
 
+                        player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                         saveConfig();
                     } else if (playerIsAtPowerLimit(player)) {
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.f, 1.f);
@@ -903,8 +887,11 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             case "events/event_power_one":
                 cooldownMessage = eventPowerOneClass.getCooldownString(player, eventPowerOneClass.auralBarrageCooldowns, "Aural Barrage: ");
                 break;
-            case "events/charli's_power":
-                cooldownMessage = charlisPowerClass.getCooldownString(player, charlisPowerClass.cooldowns, "Dash: ");
+            case "events/charlis_odyssey":
+                cooldownMessage = charliPowerClass.getCooldownString(player, charliPowerClass.cooldowns, "Dash: ");
+                break;
+            case "events/quaks_odyssey":
+                cooldownMessage = quakPowerClass.getCooldownString(player, quakPowerClass.cooldowns, "Double Jump: ");
                 break;
         }
 

@@ -13,12 +13,12 @@ import java.util.HashMap;
 import java.util.HashSet;
 import java.util.UUID;
 
-public class CharlisPower extends ParentPowerClass implements Listener {
+public class CharliPower extends ParentPowerClass implements Listener {
     public final HashMap<UUID, Long> cooldowns = new HashMap<>();
     public final HashMap<UUID, Long> cobCooldowns = new HashMap<>();
 
     private HashSet<Player> dashed = new HashSet<>(); //for making sure the player can only dash once
-    public CharlisPower(SimpleS5 plugin) {
+    public CharliPower(SimpleS5 plugin) {
         super(plugin);
     }
 
@@ -38,7 +38,7 @@ public class CharlisPower extends ParentPowerClass implements Listener {
     }
 
     public void dashAction(Player player) {
-        if (hasPower(player, "events/charli's_power")) {
+        if (hasPower(player, "events/charlis_odyssey")) {
             if (isOnCooldown(player.getUniqueId(), cooldowns)) {
                 //cantUsePowerMessage(player, cooldowns, "Dash");
             } else if (!player.isOnGround() && !player.isInWater() && !isOnCooldown(player.getUniqueId(), cooldowns)) {
@@ -70,7 +70,7 @@ public class CharlisPower extends ParentPowerClass implements Listener {
     }
 
     public void cobAction(Player player) {
-        if (hasPower(player, "events/charli's_power")) {
+        if (hasPower(player, "events/charlis_odyssey")) {
             if (isOnCooldown(player.getUniqueId(), cobCooldowns)) {
                 //cantUsePowerMessage(player, cooldowns, "Dash");
             } else if (!isOnCooldown(player.getUniqueId(), cobCooldowns)) {
@@ -105,7 +105,7 @@ public class CharlisPower extends ParentPowerClass implements Listener {
     public void onEntityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "events/charli's_power") && dashed.contains(player)) {
+            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "events/charlis_odyssey") && dashed.contains(player)) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                     event.setCancelled(true);
 

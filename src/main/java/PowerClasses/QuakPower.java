@@ -1,10 +1,12 @@
 package PowerClasses;
 
+import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
@@ -24,32 +26,34 @@ public class QuakPower extends ParentPowerClass implements Listener {
 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
-        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Enhanced : " + getCooldownTimeLeft(player.getUniqueId(), gapCooldowns);
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Gapple+: " + getCooldownTimeLeft(player.getUniqueId(), gapCooldowns);
     }
 
     @Override
     public void action(String playerName) {
         Player player = Bukkit.getPlayer(playerName);
         if (!player.isSneaking()) {
-            dashAction(player);
+            doubleJumpAction(player);
         } else {
             cobAction(player);
         }
     }
 
-    public void dashAction(Player player) {
-        if (hasPower(player, "events/charli's_power")) {
+    public void doubleJumpAction(Player player) {
+        if (hasPower(player, "events/quaks_odyssey")) {
             if (isOnCooldown(player.getUniqueId(), cooldowns)) {
                 //cantUsePowerMessage(player, cooldowns, "Dash");
             } else if (!player.isOnGround() && !player.isInWater() && !isOnCooldown(player.getUniqueId(), cooldowns)) {
                 Vector direction = player.getLocation().getDirection().normalize();
 
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1.f, 1.f);
-                player.setVelocity(direction.multiply(1.5));
+                player.setVelocity(player.getVelocity().setY(1.5));
+
+                ParticleUtils.createParticleRing(player.getLocation(), 1, 200, Particle.DUST, Color.fromRGB(193,179,22), 1);
 
                 //ParticleUtils.createParticleRing(player.getLocation(), 1, 200, Particle.DUST, Color.PURPLE);
 
-                setCooldown(player.getUniqueId(), cooldowns, 10);
+                setCooldown(player.getUniqueId(), cooldowns, 20);
                 dashed.add(player);
 
                 //the particles, looks super sigga
@@ -77,12 +81,25 @@ public class QuakPower extends ParentPowerClass implements Listener {
     public void onEntityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "events/charli's_power") && dashed.contains(player)) {
+            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "events/quaks_odyssey") && dashed.contains(player)) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                     event.setCancelled(true);
 
                     dashed.remove(player);
                 }
+            }
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamageByEntity(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+            Player damager = (Player) event.getDamager();
+            Player hitPlayer = (Player) event.getEntity();
+
+            if (dashed.contains(damager)) {
+                hitPlayer.setNoDamageTicks(0);
+                hitPlayer.damage(event.getDamage());
             }
         }
     }

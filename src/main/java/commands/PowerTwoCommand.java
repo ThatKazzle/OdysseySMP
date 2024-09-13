@@ -11,7 +11,6 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map;
 
 import static org.apache.logging.log4j.LogManager.getLogger;
 
@@ -85,9 +84,11 @@ public class PowerTwoCommand implements CommandExecutor {
                         case "events/event_power_one":
                             plugin.eventPowerOneClass.action(playerName);
                             break;
-                        case "events/charli's_power":
-                            plugin.charlisPowerClass.action(playerName);
+                        case "events/charli's_odyssey":
+                            plugin.charliPowerClass.action(playerName);
                             break;
+                        case "events/quak's_odyssey":
+                            plugin.quakPowerClass.action(playerName);
                         case "player/power_stolen":
                             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
                             player.sendMessage(ChatColor.RED + "Your power has been stolen, you can't use this!");
