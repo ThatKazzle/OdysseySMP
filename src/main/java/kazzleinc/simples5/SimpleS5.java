@@ -274,7 +274,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         String name = "";
-        if (event.getPlayer().getName().equals("Charli4K") || event.getPlayer().getName().equals("Charli4K")) {
+        if (event.getPlayer().getName().equals("Charli4K") || event.getPlayer().getName().equals("QuakX")) {
             if (event.getPlayer().getName().equals("Charli4K")) {
                 name = "Terracotta";
             } else if (event.getPlayer().getName().equals("QuakX")) {
@@ -287,7 +287,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
             event.setJoinMessage(ChatColor.YELLOW + disguise.getName() + " joined the server");
         }
-
     }
 
     @EventHandler
