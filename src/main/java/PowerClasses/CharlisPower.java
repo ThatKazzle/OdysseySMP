@@ -70,14 +70,24 @@ public class CharlisPower extends ParentPowerClass implements Listener {
     }
 
     public void cobAction(Player player) {
+        if (hasPower(player, "events/charli's_power")) {
+            if (isOnCooldown(player.getUniqueId(), cobCooldowns)) {
+                //cantUsePowerMessage(player, cooldowns, "Dash");
+            } else if (!isOnCooldown(player.getUniqueId(), cobCooldowns)) {
+                setCooldown(player.getUniqueId(), cobCooldowns, 150);
 
+                for (int x = -2; x < 2; x++) {
+                    player.getWorld().getBlockAt(player.getLocation().add(x, 0.5, 0)).setType(Material.COBWEB);
+                }
+            }
+        }
     }
 
     @EventHandler
     public void onEntityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "events/Charli's_Power") && dashed.contains(player)) {
+            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "events/charli's_power") && dashed.contains(player)) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                     event.setCancelled(true);
 

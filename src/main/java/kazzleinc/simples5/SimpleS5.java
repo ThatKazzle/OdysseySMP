@@ -294,6 +294,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             World world = player.getWorld();
                             new BukkitRunnable() {
                                 int i = 0;
+
                                 @Override
                                 public void run() {
                                     if (i < 3) {
@@ -306,7 +307,14 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                             }.runTaskTimer(this, 0, 10);
 
                             player.getWorld().setStorm(true);
-                        } else if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("events/event_power_one")) {
+                        } else if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("events/charli's_power")) {
+                            player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
+
+                            getConfig().set("players." + player.getName() + ".powers." + "events/charli's_power", true);
+
+                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
+                            player.sendMessage(ChatColor.LIGHT_PURPLE + "Charli's Power Equipped...");
+                        } else {
                             grantAdvancementPower(grantAdvancement(player, getAdvancementKeyFromFormattedString(itemPowerKey)), player, false);
                             player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
                         }
