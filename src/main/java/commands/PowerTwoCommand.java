@@ -89,9 +89,11 @@ public class PowerTwoCommand implements CommandExecutor {
                             break;
                         case "events/quaks_odyssey":
                             plugin.quakPowerClass.action(playerName);
+                            break;
                         case "player/power_stolen":
                             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
                             player.sendMessage(ChatColor.RED + "Your power has been stolen, you can't use this!");
+                            break;
                         default:
                             plugin.getLogger().warning("Power Use was called on player [" + playerName + "], but the power doesn't exist, the player doesn't have a power, or the power isn't initialized in the config.");
                             break;

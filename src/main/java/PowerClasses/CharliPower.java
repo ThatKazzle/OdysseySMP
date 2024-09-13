@@ -74,8 +74,7 @@ public class CharliPower extends ParentPowerClass implements Listener {
             if (isOnCooldown(player.getUniqueId(), cobCooldowns)) {
                 //cantUsePowerMessage(player, cooldowns, "Dash");
             } else if (!isOnCooldown(player.getUniqueId(), cobCooldowns)) {
-                setCooldown(player.getUniqueId(), cobCooldowns, 150);
-
+                int i = 0;
                 for (Player playerCheck : Bukkit.getOnlinePlayers()) {
                     if (playerCheck.getLocation().distance(player.getLocation()) < 5 && playerCheck != player) {
                         for (int x = -1; x < 2; x++) {
@@ -85,7 +84,15 @@ public class CharliPower extends ParentPowerClass implements Listener {
                                 }
                             }
                         }
+
+                        i++;
                     }
+                }
+
+                if (i == 0) {
+                    setCooldown(player.getUniqueId(), cobCooldowns, 150);
+                } else {
+                    player.sendMessage(ChatColor.RED + "No players were found.");
                 }
 
                 for (int x = -1; x < 2; x++) {

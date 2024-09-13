@@ -8,6 +8,8 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
 import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.Vector;
 
@@ -35,7 +37,7 @@ public class QuakPower extends ParentPowerClass implements Listener {
         if (!player.isSneaking()) {
             doubleJumpAction(player);
         } else {
-            cobAction(player);
+            gapAction(player);
         }
     }
 
@@ -47,9 +49,9 @@ public class QuakPower extends ParentPowerClass implements Listener {
                 Vector direction = player.getLocation().getDirection().normalize();
 
                 player.getWorld().playSound(player.getLocation(), Sound.ENTITY_WIND_CHARGE_WIND_BURST, 1.f, 1.f);
-                player.setVelocity(player.getVelocity().setY(1.5));
+                player.setVelocity(player.getVelocity().setY(1));
 
-                ParticleUtils.createParticleRing(player.getLocation(), 1, 200, Particle.DUST, Color.fromRGB(193,179,22), 1);
+                ParticleUtils.createParticleRing(player.getLocation(), 1, 200, Particle.DUST, Color.fromRGB(255, 255, 0), 1);
 
                 //ParticleUtils.createParticleRing(player.getLocation(), 1, 200, Particle.DUST, Color.PURPLE);
 
@@ -62,7 +64,7 @@ public class QuakPower extends ParentPowerClass implements Listener {
                     @Override
                     public void run() {
                         if (!checkPlayer.isOnGround()) {
-                            checkPlayer.getWorld().spawnParticle(Particle.DUST, checkPlayer.getLocation().add(new Vector(0, 1, 0)), 3, new Particle.DustOptions(Color.fromRGB(62, 14, 98), 3));
+                            checkPlayer.getWorld().spawnParticle(Particle.DUST, checkPlayer.getLocation().add(new Vector(0, 1, 0)), 3, new Particle.DustOptions(Color.fromRGB(255, 255, 0), 3));
                         } else {
                             dashed.remove(player);
                             this.cancel();
@@ -73,8 +75,20 @@ public class QuakPower extends ParentPowerClass implements Listener {
         }
     }
 
-    public void cobAction(Player player) {
+    PotionEffect strengthEffect = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 1, false, false, true);
+    PotionEffect resistanceEffect = new PotionEffect(PotionEffectType.RESISTANCE, 20 * 15, 1, false, false, true);
+    PotionEffect absorbEffect = new PotionEffect(PotionEffectType.ABSORPTION, 20 * 15, 1, false, false, true);
 
+    public void gapAction(Player player) {
+        if (!isOnCooldown(player.getUniqueId(), gapCooldowns)) {
+            setCooldown(player.getUniqueId(), gapCooldowns, 100);
+
+            player.addPotionEffect(strengthEffect);
+            player.addPotionEffect(resistanceEffect);
+            player.addPotionEffect(absorbEffect);
+
+            player.getWorld().playSound(player.getLocation(), Sound.BLOCK_BEACON_ACTIVATE, 1.f, 1.f);
+        }
     }
 
     @EventHandler
@@ -99,7 +113,7 @@ public class QuakPower extends ParentPowerClass implements Listener {
 
             if (dashed.contains(damager)) {
                 hitPlayer.setNoDamageTicks(0);
-                hitPlayer.damage(event.getDamage());
+                hitPlayer.damage(event.getFinalDamage());
             }
         }
     }
