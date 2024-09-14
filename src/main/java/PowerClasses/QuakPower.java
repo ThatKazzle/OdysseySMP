@@ -64,7 +64,7 @@ public class QuakPower extends ParentPowerClass implements Listener {
                     @Override
                     public void run() {
                         if (!checkPlayer.isOnGround()) {
-                            checkPlayer.getWorld().spawnParticle(Particle.DUST, checkPlayer.getLocation().add(new Vector(0, 1, 0)), 3, new Particle.DustOptions(Color.fromRGB(255, 255, 0), 3));
+                            checkPlayer.getWorld().spawnParticle(Particle.DUST, checkPlayer.getLocation().add(new Vector(0, 1, 0)), 3, new Particle.DustOptions(Color.fromRGB(255, 255, 0), 2));
                         } else {
                             dashed.remove(player);
                             this.cancel();
