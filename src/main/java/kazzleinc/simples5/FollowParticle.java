@@ -64,7 +64,7 @@ public class FollowParticle extends BukkitRunnable {
             this.cancel();
             return;
         } else {
-            Bukkit.getPlayer("ItsKazzle").sendMessage(String.valueOf(start.distance(target)));
+            //Bukkit.getPlayer("ItsKazzle").sendMessage(String.valueOf(start.distance(target)));
         }
 
         for (Entity entity : start.getNearbyEntities(0.2, 0.2, 0.2)) {

@@ -123,21 +123,21 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
 
     @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-        if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
+        if (event.getEntity() instanceof Player) {
             Player damager = (Player) event.getDamager();
             Player damagedPlayer = (Player) event.getEntity();
 
-            if (hasPower(damager, "nether/ride_strider_in_overworld_lava") && RandomUtils.getRandomIntInRange(1, 4) == 4 && damager.isVisualFire()) {
-                damagedPlayer.setFireTicks(20 * 5);
-            }
-        } else {
-            if (event.getEntity() instanceof Player) {
-                Player damagedPlayer = (Player) event.getEntity();
-                if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && sharedDamageMap.containsKey(damagedPlayer.getUniqueId())) {
-                    Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getDamage() / 2);
+            if (event.getDamager() instanceof Player) {
+                if (hasPower(damager, "nether/ride_strider_in_overworld_lava") && RandomUtils.getRandomIntInRange(1, 4) == 4 && damager.isVisualFire()) {
+                    damagedPlayer.setFireTicks(20 * 5);
                 }
             }
+            if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && sharedDamageMap.containsKey(damagedPlayer.getUniqueId())) {
+                Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getFinalDamage());
+                Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).setNoDamageTicks(0);
+            }
         }
+
     }
 
     @EventHandler
