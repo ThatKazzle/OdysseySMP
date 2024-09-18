@@ -76,7 +76,7 @@ public class CharliPower extends ParentPowerClass implements Listener {
             } else if (!isOnCooldown(player.getUniqueId(), cobCooldowns)) {
                 int i = 0;
                 for (Player playerCheck : Bukkit.getOnlinePlayers()) {
-                    if (playerCheck.getLocation().distance(player.getLocation()) < 7 && playerCheck != player) {
+                    if (playerCheck.getLocation().distance(player.getLocation()) < 7 && playerCheck != player && playerCheck.getWorld() == player.getWorld()) {
                         for (int x = -1; x < 2; x++) {
                             for (int z = -1; z < 2; z++) {
                                 if (playerCheck.getWorld().getBlockAt(playerCheck.getLocation().add(x, 0.5, z)).getType().equals(Material.AIR)) {
