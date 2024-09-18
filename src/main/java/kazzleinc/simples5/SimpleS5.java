@@ -63,7 +63,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public EventPowerOne eventPowerOneClass = new EventPowerOne(this);
     public CharliPower charliPowerClass = new CharliPower(this);
     public QuakPower quakPowerClass = new QuakPower(this);
-
     public PowerStealerPlaceholder powerStealerPlaceholder = new PowerStealerPlaceholder(this);
 
     public final DisguiseProvider provider = DisguiseManager.getProvider();
