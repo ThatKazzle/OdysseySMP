@@ -100,7 +100,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         uneasyAllianceClass.registerInvisListener();
 
         getServer().getPluginManager().registerEvents(this, this);
-
+        
         getCommand("reloadconfig").setExecutor(new reloadConfigCommand(this));
 
         getCommand("odyssey").setExecutor(odysseyClass);
