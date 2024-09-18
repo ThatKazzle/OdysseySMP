@@ -59,69 +59,47 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
         return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Mimic: " + getCooldownTimeLeft(player.getUniqueId(), mimicCooldowns);
     }
 
-    @EventHandler
-    public void onPlayerDeathEvent(PlayerDeathEvent event) {
-        Player deadPlayer = event.getPlayer();
-
-        if (hasPower(deadPlayer, "player/power_stolen")) {
-            event.setCancelled(true);
-            plugin.getConfig().set("players." + plugin.provider.getInfo(deadPlayer).getName() + ".powers." + "player/power_stolen", false);
-
-            plugin.getConfig().set("players." + plugin.provider.getInfo(deadPlayer).getName() + ".powers." + playerStoredPower.get(deadPlayer.getUniqueId()), true);
-            deadPlayer.setHealth(0);
-
-            OfflinePlayer otherPlayer = Bukkit.getOfflinePlayer(playerStoleFromPlayer.get(deadPlayer.getUniqueId()));
-
-            String otherPlayerName = otherPlayer.getName();
-
-            plugin.getConfig().set("players." + otherPlayerName + ".powers." + playerStoredPower.get(deadPlayer.getUniqueId()), false);
-            plugin.getConfig().set("players." + otherPlayerName + ".powers." + "husbandry/froglights", true);
-
-            playerStoredPower.remove(deadPlayer.getUniqueId());
-            playerStoleFromPlayer.remove(deadPlayer.getUniqueId());
-
-            deadPlayer.sendMessage(ChatColor.LIGHT_PURPLE + "The power that " + ChatColor.RED + otherPlayerName + ChatColor.LIGHT_PURPLE + " stole has been dropped at your location.");
-            if (otherPlayer.isOnline()) ((Player) otherPlayer).sendMessage(ChatColor.RED + plugin.provider.getInfo(deadPlayer).getName() + ChatColor.LIGHT_PURPLE + " has died, and you have been given WOPC back.");
-        }
-    }
-
     public void frogTongueAction(Player player) {
-        RayTraceResult result = plugin.getServer().getWorld("world").rayTraceEntities(player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(1.3)), player.getEyeLocation().getDirection().normalize(), 6);
 
-        ParticleUtils.createParticleRing(result.getHitPosition().toLocation(player.getWorld()), 1, 20, Particle.DUST, Color.RED, 1);
 
-        //checks to make sure everything lines up right
-        if (result.getHitEntity() == null) return;
+        new BukkitRunnable() {
+            Vector location = player.getLocation().toVector();
+            Vector direction = player.getEyeLocation().getDirection().normalize();
 
-        if (!(result.getHitEntity() instanceof Player)) return;
+            double radius = 1;
+            double distance = 1;
+            @Override
+            public void run() {
+                Vector newLocation = location.clone().add(direction.clone().multiply(distance));
+                //location = location.add(location.multiply(distance));
+                radius = 1;
+                for (double y = -2; y < 3; y+= 0.1) {
+                    ParticleUtils.createParticleRing(newLocation.clone().toLocation(player.getWorld()).add(new Vector(0, y, 0)), radius, (int) (radius * 10), Particle.CRIT, Color.GRAY, 1);
 
-        Player hitPlayer = (Player) result.getHitEntity();
+                    radius += 0.04;
+                }
+                distance += 0.2;
 
-        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights")) {
-            if (!isOnCooldown(player.getUniqueId(), frogCooldowns) && result.getHitEntity() != null) {
+                if (distance > 20) {
+                    this.cancel();
+                }
 
-                new BukkitRunnable() {
-                    double i = 0;
+                for (Player playerCheck : SimpleS5.getPlayersInRange(newLocation.toLocation(player.getWorld()), 10)) {
+                    double distanceToCenter = playerCheck.getLocation().distance(newLocation.toLocation(player.getWorld()));
+                    Vector direction = newLocation.subtract(playerCheck.getLocation().toVector()).normalize();
 
-                    Vector origVector = player.getLocation().toVector().clone();
-                    @Override
-                    public void run() {
-                        Vector dir = player.getLocation().toVector().subtract(hitPlayer.getLocation().toVector()).normalize();
-                        if (i < 1) {
-                            i += 0.05;
 
-                            hitPlayer.setVelocity(dir.multiply(0.6));
+                    if (playerCheck.getWorld() == player.getWorld()) {
+                        playerCheck.setVelocity(playerCheck.getVelocity().add(direction.multiply(0.085 + distanceToCenter / 10)));
+//                        if (distanceToCenter < 0.6) {
+//                            playerCheck.setVelocity(playerCheck.getVelocity().add(direction.multiply(-0.09)));
+//                        }
 
-                            //hitPlayer.teleport(plugin.lerp(origVector, player.getLocation().toVector(), i).toLocation(player.getWorld()), PlayerTeleportEvent.TeleportCause.PLUGIN);
-                        } else if (i > 1) {
-                            this.cancel();
-                        }
                     }
-                }.runTaskTimer(plugin, 0, 3);
-
-                setCooldown(player.getUniqueId(), frogCooldowns, 120);
+                }
             }
-        }
+        }.runTaskTimer(plugin, 0, 0);
+
     }
 
     public void stealerAction(Player player) {
@@ -199,47 +177,6 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     PotionEffect invisPot = new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 10, 0, false, false, false);
 
     public void mimicAction(Player player) {
-        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights")) {
-            if (!isOnCooldown(player.getUniqueId(), mimicCooldowns)) {
-                RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 45, entity -> entity != player);
 
-                if (result != null && result.getHitEntity() != null && result.getHitEntity() instanceof Player) {
-                    setCooldown(player.getUniqueId(), mimicCooldowns, (60 * 2) + 30);
-                    Player hitPlayer = (Player) result.getHitEntity();
-
-                    double playerHealth = player.getHealth();
-                    float playerSat = player.getSaturation();
-                    int satRegenRate = player.getSaturatedRegenRate();
-
-                    Vector playerVelocity = player.getVelocity();
-                    int activeSlot = player.getInventory().getHeldItemSlot();
-
-                    plugin.provider.setNamePattern(Pattern.compile("^[a-zA-Z0-9_.§]{1,16}$"));
-
-                    Disguise disguise = Disguise.builder()
-                            .setName(ChatColor.RESET + hitPlayer.getName())
-                            // you could as well use Disguise.Builder#setSkin(Skin)
-                            // or even Disguise.Builder#setSkin(uuid)
-                            // it's recommended to run this async since #setSkin from an online API will block the mainthread
-                            .setSkin(SkinAPI.MOJANG, hitPlayer.getUniqueId())
-                            .build();
-                    DisguiseResponse response = plugin.provider.disguise(player, disguise);
-
-                    player.setHealth(playerHealth);
-                    player.setSaturation(playerSat);
-                    player.setSaturatedRegenRate(satRegenRate);
-                    player.getInventory().setHeldItemSlot(activeSlot);
-
-                    player.teleport(hitPlayer);
-
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            DisguiseManager.getProvider().undisguise(player);
-                        }
-                    }.runTaskLater(plugin, 20 * 120);
-                }
-            }
-        }
     }
 }

@@ -88,7 +88,6 @@ public class CharliPower extends ParentPowerClass implements Listener {
                         i++;
                     }
                 }
-
                 if (i > 0) {
                     setCooldown(player.getUniqueId(), cobCooldowns, 150);
                 } else {
@@ -98,7 +97,7 @@ public class CharliPower extends ParentPowerClass implements Listener {
                 for (int x = -1; x < 2; x++) {
                     for (int z = -1; z < 2; z++) {
                         if (player.getWorld().getBlockAt(player.getLocation().add(x, 0.5, z)).getType() == Material.COBWEB) {
-                            player.getWorld().getBlockAt(player.getLocation().add(x, 0.5, z)).setType(Material.COBWEB);
+                            player.getWorld().getBlockAt(player.getLocation().add(x, 0.5, z)).setType(Material.AIR);
                         }
                     }
                 }

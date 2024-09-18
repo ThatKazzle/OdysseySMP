@@ -15,8 +15,8 @@ defaults:
   balanced_diet: "husbandry/balanced_diet"
   dragon_egg: "end/dragon_egg"
   bullseye: "adventure/bullseye"
-  charli's_odyssey: "events/charli's_odyssey"
-  quakX's_odyssey: "events/quak's_odyssey"
+  charlis_odyssey: "events/charlis_odyssey"
+  quaks_odyssey: "events/quaks_odyssey"
 descriptions:
   very_very_frightening:
     - " "
