@@ -10,6 +10,8 @@ import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.entity.EntityDamageByEntityEvent;
+import org.bukkit.event.entity.EntityDamageEvent;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.event.player.PlayerMoveEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
@@ -19,6 +21,7 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
+import java.util.Map;
 import java.util.UUID;
 
 public class FeelsLikeHome extends ParentPowerClass implements Listener {
@@ -108,7 +111,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
                         if (player.isDead()) {
                             this.cancel();
                             hitPlayer.setKiller(player);
-                            hitPlayer.setHealth(0);
+//                            hitPlayer.setHealth(0);
                         }
                     }
                 }.runTaskTimer(plugin, 0, 2);
@@ -127,24 +130,27 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
         }
     }
 
-//    @EventHandler
-//    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
-//        if (event.getEntity() instanceof Player) {
-//            Player damager = (Player) event.getDamager();
-//            Player damagedPlayer = (Player) event.getEntity();
-//
-//            if (event.getDamager() instanceof Player) {
-//                if (hasPower(damager, "nether/ride_strider_in_overworld_lava") && RandomUtils.getRandomIntInRange(1, 4) == 4 && damager.isVisualFire()) {
-//                    damagedPlayer.setFireTicks(20 * 5);
-//                }
-//            }
-//            if (hasPower(damagedPlayer, "nether/ride_strider_in_overworld_lava") && sharedDamageMap.containsKey(damagedPlayer.getUniqueId())) {
-//                Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).damage(event.getFinalDamage());
-//                Bukkit.getPlayer(sharedDamageMap.get(damagedPlayer.getUniqueId())).setNoDamageTicks(0);
-//            }
-//        }
-//
-//    }
+    @EventHandler
+    public void onPlayerDeathEvent(PlayerDeathEvent event) {
+        if (sharedDamageMap.containsValue(event.getPlayer())) {
+            event.getPlayer().sendMessage(event.getPlayer().getName() + " died because of " + Bukkit.getPlayer(getKeyByValue(sharedDamageMap, event.getPlayer().getUniqueId())).getName());
+        }
+    }
+
+    @EventHandler
+    public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
+        if (event.getEntity() instanceof Player) {
+            Player damager = (Player) event.getDamager();
+            Player damagedPlayer = (Player) event.getEntity();
+
+            if (event.getDamager() instanceof Player) {
+                if (hasPower(damager, "nether/ride_strider_in_overworld_lava") && RandomUtils.getRandomIntInRange(1, 4) == 4 && damager.isVisualFire()) {
+                    damagedPlayer.setFireTicks(20 * 5);
+                }
+            }
+        }
+
+    }
 
     @EventHandler
     public void onPlayerMoveEvent(PlayerMoveEvent event) {
@@ -158,5 +164,15 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
         player.removePotionEffect(PotionEffectType.FIRE_RESISTANCE);
     }
 
-
+    public static <K, V> K getKeyByValue(HashMap<K, V> map, V value) {
+        for (Map.Entry<K, V> entry : map.entrySet()) {
+            // Handle null values comparison
+            if (entry.getValue() == null && value == null) {
+                return entry.getKey();
+            } else if (entry.getValue() != null && entry.getValue().equals(value)) {
+                return entry.getKey();
+            }
+        }
+        return null;  // Return null if no matching value is found
+    }
 }

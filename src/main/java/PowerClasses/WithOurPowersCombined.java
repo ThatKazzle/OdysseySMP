@@ -5,7 +5,9 @@ import kazzleinc.simples5.SimpleS5;
 import kazzleinc.simples5.TrimUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
+import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
+import org.bukkit.event.entity.PlayerDeathEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -50,7 +52,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     }
 
     public void tornadoAction(Player player) {
-
+        setCooldown(player.getUniqueId(), frogCooldowns, 60);
 
         new BukkitRunnable() {
             Vector location = player.getLocation().toVector();
@@ -80,7 +82,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
 
                     if (playerCheck.getWorld() == player.getWorld() && playerCheck != player) {
-                        playerCheck.setVelocity(playerCheck.getVelocity().add(direction.clone().multiply(1.2)));
+                        playerCheck.setVelocity(playerCheck.getVelocity().add(direction.clone().multiply(0.1)));
 //                        if (distanceToCenter < 0.6) {
 //                            playerCheck.setVelocity(playerCheck.getVelocity().add(direction.multiply(-0.09)));
 //                        }
