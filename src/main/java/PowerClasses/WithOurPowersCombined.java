@@ -52,46 +52,47 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     }
 
     public void tornadoAction(Player player) {
-        setCooldown(player.getUniqueId(), frogCooldowns, 60);
+        if (!isOnCooldown(player.getUniqueId(), frogCooldowns)) {
+            setCooldown(player.getUniqueId(), frogCooldowns, 60);
 
-        new BukkitRunnable() {
-            Vector location = player.getLocation().toVector();
-            Vector direction = player.getEyeLocation().getDirection().normalize();
+            new BukkitRunnable() {
+                Vector location = player.getLocation().toVector();
+                Vector direction = player.getEyeLocation().getDirection().normalize();
 
-            double radius = 1;
-            double distance = 1;
-            @Override
-            public void run() {
-                Vector newLocation = location.clone().add(direction.clone().multiply(distance));
-                //location = location.add(location.multiply(distance));
-                radius = 1;
-                for (double y = -2; y < 3; y+= 0.1) {
-                    ParticleUtils.createParticleRing(newLocation.clone().toLocation(player.getWorld()).add(new Vector(0, y, 0)), radius, (int) (radius * 8), Particle.SMALL_GUST, Color.GRAY, 1);
+                double radius = 1;
+                double distance = 1;
+                @Override
+                public void run() {
+                    Vector newLocation = location.clone().add(direction.clone().multiply(distance));
+                    //location = location.add(location.multiply(distance));
+                    radius = 1;
+                    for (double y = -2; y < 3; y+= 0.1) {
+                        ParticleUtils.createParticleRing(newLocation.clone().toLocation(player.getWorld()).add(new Vector(0, y, 0)), radius, (int) (radius * 8), Particle.SMALL_GUST, Color.GRAY, 1);
 
-                    radius += 0.04;
-                }
-                distance += 0.4;
+                        radius += 0.04;
+                    }
+                    distance += 0.4;
 
-                if (distance > 20) {
-                    this.cancel();
-                }
+                    if (distance > 20) {
+                        this.cancel();
+                    }
 
-                for (Player playerCheck : SimpleS5.getPlayersInRange(newLocation.toLocation(player.getWorld()), 10)) {
-                    double distanceToCenter = playerCheck.getLocation().distance(newLocation.toLocation(player.getWorld()));
-                    Vector direction = newLocation.clone().add(new Vector(0, 1.5, 0)).subtract(playerCheck.getLocation().toVector()).normalize();
+                    for (Player playerCheck : SimpleS5.getPlayersInRange(newLocation.toLocation(player.getWorld()), 10)) {
+                        double distanceToCenter = playerCheck.getLocation().distance(newLocation.toLocation(player.getWorld()));
+                        Vector direction = newLocation.clone().add(new Vector(0, 1.5, 0)).subtract(playerCheck.getLocation().toVector()).normalize();
 
 
-                    if (playerCheck.getWorld() == player.getWorld() && playerCheck != player) {
-                        playerCheck.setVelocity(playerCheck.getVelocity().add(direction.clone().multiply(0.1)));
+                        if (playerCheck.getWorld() == player.getWorld() && playerCheck != player) {
+                            playerCheck.setVelocity(playerCheck.getVelocity().add(direction.clone().multiply(0.1)));
 //                        if (distanceToCenter < 0.6) {
 //                            playerCheck.setVelocity(playerCheck.getVelocity().add(direction.multiply(-0.09)));
 //                        }
-                        direction = null;
+                            direction = null;
+                        }
                     }
                 }
-            }
-        }.runTaskTimer(plugin, 0, 0);
-
+            }.runTaskTimer(plugin, 0, 0);
+        }
     }
 
     public void stealerAction(Player player) {
