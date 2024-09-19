@@ -107,6 +107,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
                         ParticleUtils.createParticleLine(player.getLocation().add(new Vector(0, 1, 0)), hitPlayer.getLocation().add(new Vector(0, 1, 0)), (int) player.getLocation().distance(hitPlayer.getLocation()) * 3, new Particle.DustOptions(Color.PURPLE, 1));
                         if (player.isDead()) {
                             this.cancel();
+                            hitPlayer.setKiller(player);
                             hitPlayer.setHealth(0);
                         }
                     }

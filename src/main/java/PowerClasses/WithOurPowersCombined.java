@@ -1,19 +1,11 @@
 package PowerClasses;
 
-import dev.iiahmed.disguise.*;
 import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
 import kazzleinc.simples5.TrimUtils;
 import org.bukkit.*;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
-import org.bukkit.event.player.PlayerInteractEntityEvent;
-import org.bukkit.event.player.PlayerTeleportEvent;
-import org.bukkit.inventory.Inventory;
-import org.bukkit.inventory.ItemStack;
-import org.bukkit.inventory.meta.ArmorMeta;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
@@ -21,9 +13,7 @@ import org.bukkit.util.RayTraceResult;
 import org.bukkit.util.Vector;
 
 import java.util.HashMap;
-import java.util.Objects;
 import java.util.UUID;
-import java.util.regex.Pattern;
 
 public class WithOurPowersCombined extends ParentPowerClass implements Listener {
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
@@ -47,7 +37,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     public void action(String playerName) {
         Player player = plugin.getServer().getPlayer(playerName);
         if (!player.isSneaking()) {
-            frogTongueAction(player);
+            tornadoAction(player);
         } else {
             mimicAction(player);
         }
@@ -59,7 +49,9 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
         return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Mimic: " + getCooldownTimeLeft(player.getUniqueId(), mimicCooldowns);
     }
 
-    public void frogTongueAction(Player player) {
+    public void tornadoAction(Player player) {
+
+
         new BukkitRunnable() {
             Vector location = player.getLocation().toVector();
             Vector direction = player.getEyeLocation().getDirection().normalize();
@@ -88,7 +80,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
 
                     if (playerCheck.getWorld() == player.getWorld() && playerCheck != player) {
-                        playerCheck.setVelocity(playerCheck.getVelocity().add(direction.clone().multiply(0.092)));
+                        playerCheck.setVelocity(playerCheck.getVelocity().add(direction.clone().multiply(1.2)));
 //                        if (distanceToCenter < 0.6) {
 //                            playerCheck.setVelocity(playerCheck.getVelocity().add(direction.multiply(-0.09)));
 //                        }

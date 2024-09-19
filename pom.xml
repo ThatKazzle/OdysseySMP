@@ -6,7 +6,7 @@
 
   <groupId>kazzleinc</groupId>
   <artifactId>SimpleS5</artifactId>
-  <version>5.2.1</version>
+  <version>5.2.2</version>
   <packaging>jar</packaging>
 
   <name>SimpleS5</name>
