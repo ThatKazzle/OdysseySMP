@@ -60,8 +60,6 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     }
 
     public void frogTongueAction(Player player) {
-
-
         new BukkitRunnable() {
             Vector location = player.getLocation().toVector();
             Vector direction = player.getEyeLocation().getDirection().normalize();
@@ -74,7 +72,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                 //location = location.add(location.multiply(distance));
                 radius = 1;
                 for (double y = -2; y < 3; y+= 0.1) {
-                    ParticleUtils.createParticleRing(newLocation.clone().toLocation(player.getWorld()).add(new Vector(0, y, 0)), radius, (int) (radius * 10), Particle.CRIT, Color.GRAY, 1);
+                    ParticleUtils.createParticleRing(newLocation.clone().toLocation(player.getWorld()).add(new Vector(0, y, 0)), radius, (int) (radius * 8), Particle.SMALL_GUST, Color.GRAY, 1);
 
                     radius += 0.04;
                 }
@@ -86,15 +84,15 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
                 for (Player playerCheck : SimpleS5.getPlayersInRange(newLocation.toLocation(player.getWorld()), 10)) {
                     double distanceToCenter = playerCheck.getLocation().distance(newLocation.toLocation(player.getWorld()));
-                    Vector direction = newLocation.subtract(playerCheck.getLocation().toVector()).normalize();
+                    Vector direction = newLocation.clone().add(new Vector(0, 1.5, 0)).subtract(playerCheck.getLocation().toVector()).normalize();
 
 
-                    if (playerCheck.getWorld() == player.getWorld()) {
-                        playerCheck.setVelocity(playerCheck.getVelocity().add(direction.multiply(0.085 + distanceToCenter / 10)));
+                    if (playerCheck.getWorld() == player.getWorld() && playerCheck != player) {
+                        playerCheck.setVelocity(playerCheck.getVelocity().add(direction.clone().multiply(0.085)));
 //                        if (distanceToCenter < 0.6) {
 //                            playerCheck.setVelocity(playerCheck.getVelocity().add(direction.multiply(-0.09)));
 //                        }
-
+                        direction = null;
                     }
                 }
             }
