@@ -76,7 +76,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
                     radius += 0.04;
                 }
-                distance += 0.2;
+                distance += 0.4;
 
                 if (distance > 20) {
                     this.cancel();
@@ -88,7 +88,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
 
                     if (playerCheck.getWorld() == player.getWorld() && playerCheck != player) {
-                        playerCheck.setVelocity(playerCheck.getVelocity().add(direction.clone().multiply(0.085)));
+                        playerCheck.setVelocity(playerCheck.getVelocity().add(direction.clone().multiply(0.092)));
 //                        if (distanceToCenter < 0.6) {
 //                            playerCheck.setVelocity(playerCheck.getVelocity().add(direction.multiply(-0.09)));
 //                        }
