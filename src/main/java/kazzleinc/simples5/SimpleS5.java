@@ -863,7 +863,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 cooldownMessage = uneasyAllianceClass.getCooldownString(player, uneasyAllianceClass.cooldowns, "Invisibility: ");
                 break;
             case "husbandry/froglights":
-                cooldownMessage = wopcClass.getCooldownString(player, wopcClass.frogCooldowns, "Tornado: ");
+                cooldownMessage = wopcClass.getCooldownString(player, wopcClass.tornadoCooldowns, "Tornado: ");
                 break;
             case "adventure/summon_iron_golem":
                 cooldownMessage = hiredHelpClass.getCooldownString(player, hiredHelpClass.cooldowns, "Hired Help: ");

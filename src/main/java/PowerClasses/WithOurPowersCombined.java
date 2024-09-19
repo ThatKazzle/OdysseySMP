@@ -25,7 +25,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
     public HashMap<UUID, UUID> playerStoleFromPlayer = new HashMap<>();
 
-    public HashMap<UUID, Long>  frogCooldowns = new HashMap<>();
+    public HashMap<UUID, Long>  tornadoCooldowns = new HashMap<>();
 
     public HashMap<UUID, Long>  playerGetsPowerBackTime = new HashMap<>();
 
@@ -52,8 +52,8 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     }
 
     public void tornadoAction(Player player) {
-        if (!isOnCooldown(player.getUniqueId(), frogCooldowns)) {
-            setCooldown(player.getUniqueId(), frogCooldowns, 60);
+        if (!isOnCooldown(player.getUniqueId(), tornadoCooldowns)) {
+            setCooldown(player.getUniqueId(), tornadoCooldowns, 60);
 
             new BukkitRunnable() {
                 Vector location = player.getLocation().toVector();
