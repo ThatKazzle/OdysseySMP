@@ -134,9 +134,6 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                 player.sendMessage(ChatColor.RED + "Ye nice try idiot, you cant dupe.");
             } else {
                 this.plugin.removePlayerAdvancement(player, plugin.getAdvancementKeyFromFormattedString(powerName));
-                if (powerName.equals("events/charli's_power")) {
-                    player.sendMessage("BALLER!");
-                }
                 this.plugin.getConfig().set("players." + player.getName() + ".powers." +  plugin.getAdvancementKeyFromFormattedString(powerName), false);
 
                 ItemMeta newMeta = clickedItem.getItemMeta();
@@ -180,8 +177,8 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         }
     }
 
-    private Map<String, Boolean> checkPowerStatus() {
-        Map<String, Boolean> powerStatus = new HashMap<>();
+    private Map<String, String> checkPowerStatus() {
+        Map<String, String> powerStatus = new HashMap<>();
 
         // Get the defaults section
         ConfigurationSection defaultsSection = plugin.getConfig().getConfigurationSection("defaults");
@@ -194,7 +191,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
         // Initialize all powers as "not taken"
         for (String defaultPowerKey : defaultPowerKeys) {
-            powerStatus.put(defaultPowerKey, false);
+            powerStatus.put(defaultPowerKey, "false");
         }
 
         // Get the "players" section
@@ -212,7 +209,9 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                 for (String defaultPowerKey : defaultPowerKeys) {
                     String powerPath = defaultsSection.getString(defaultPowerKey);
                     if (powersSection.getBoolean(powerPath, false)) {
-                        powerStatus.put(defaultPowerKey, true); // Mark as "taken" if any player has it set to true
+                        powerStatus.put(defaultPowerKey, ChatColor.GREEN + playerKey); // Mark as "taken" if any player has it set to true
+                    } else {
+                        powerStatus.put(defaultPowerKey, ChatColor.RED + "Taken");
                     }
                 }
             }
@@ -243,11 +242,11 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 //        }
 //    }
 
-    private void sendPowerStatus(Player player, Map<String, Boolean> powerStatus) {
+    private void sendPowerStatus(Player player, Map<String, String> powerStatus) {
         player.sendMessage("" + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "List of powers that are currently taken: ");
 
-        for (Map.Entry<String, Boolean> entry : powerStatus.entrySet()) {
-            String status = entry.getValue() ? ChatColor.RED + "Taken" : ChatColor.GREEN + "Not Taken";
+        for (Map.Entry<String, String> entry : powerStatus.entrySet()) {
+            String status = entry.getValue();
             String powerName = "";
 
             switch (plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey())) {
