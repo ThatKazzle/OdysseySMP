@@ -89,7 +89,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     }
 
     public void openGUI(Player player) {
-        Inventory gui = Bukkit.createInventory(null, 9, "Choose an effect to withdraw:");
+        Inventory gui = Bukkit.createInventory(null, 9, "Choose an Odyssey to withdraw:");
 
         FileConfiguration config = plugin.getConfig();
         for (String keys : this.plugin.getConfig().getConfigurationSection("players." + plugin.provider.getInfo(player).getName() + ".powers").getKeys(false)) {
@@ -115,7 +115,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     @EventHandler
     public void onInventoryClick(InventoryClickEvent event) {
 
-        if (!event.getView().getTitle().equals("Choose an effect to withdraw:")) return;
+        if (!event.getView().getTitle().equals("Choose an Odyssey to withdraw:")) return;
         if (event.isShiftClick()) {
             event.setCancelled(true);
             return;

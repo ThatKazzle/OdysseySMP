@@ -4,6 +4,9 @@ import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
 import kazzleinc.simples5.TrimUtils;
 import org.bukkit.*;
+import org.bukkit.entity.BlockDisplay;
+import org.bukkit.entity.Entity;
+import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -12,7 +15,10 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
+import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
+import org.joml.Quaternionf;
+import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.UUID;
@@ -41,7 +47,17 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
         if (!player.isSneaking()) {
             tornadoAction(player);
         } else {
-            mimicAction(player);
+            //mimicAction(player);
+            BlockDisplay blockDisplay = (BlockDisplay) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.BLOCK_DISPLAY);
+
+            blockDisplay.setDisplayHeight(2);
+            blockDisplay.setBlock(Material.WHITE_CONCRETE.createBlockData());
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    blockDisplay.setTransformation(new Transformation(player.getLocation().toVector().toVector3f(), new Quaternionf(), new Vector(1, 2, 1).toVector3f(), new Quaternionf()));
+                }
+            }.runTaskTimer(plugin, 0, 0);
         }
 
     }
