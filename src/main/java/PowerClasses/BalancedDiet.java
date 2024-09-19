@@ -41,7 +41,12 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
     @Override
     public void action(String playerName) {
         Player player = plugin.getServer().getPlayer(playerName);
-        fattyAction(player);
+        
+        if (!player.isSneaking()) {
+            fattyAction(player);
+        } else {
+            getBiggerAction(player);
+        }
     }
 
     @Override
@@ -68,12 +73,9 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerItemConsumeEvent(PlayerItemConsumeEvent event) {
-        Player player = event.getPlayer();
-
+    public void getBiggerAction(Player player) {
         if (hasPower(player, "husbandry/balanced_diet")) {
-            if (event.getItem().getType() == Material.GLISTERING_MELON_SLICE && !isOnCooldown(player.getUniqueId(), melonCooldowns)) {
+            if (!isOnCooldown(player.getUniqueId(), melonCooldowns)) {
                 setCooldown(player.getUniqueId(), melonCooldowns, (60 * 3) + 30);
 
                 player.getAttribute(Attribute.GENERIC_ATTACK_SPEED).setBaseValue(5.0);
@@ -125,13 +127,18 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
     }
 
     @EventHandler
+    public void onPlayerItemConsumeEvent(PlayerItemConsumeEvent event) {
+        Player player = event.getPlayer();
+    }
+
+    @EventHandler
     public void onEntityDamageByEntityEvent(EntityDamageByEntityEvent event) {
         if (event.getEntity() instanceof Player && event.getDamager() instanceof Player) {
             Player damager = (Player) event.getDamager();
             Player damagedPlayer = (Player) event.getEntity();
 
             if (doesSiphon.contains(damager.getUniqueId())) {
-                damager.setHealth(damager.getHealth() + event.getDamage() - event.getFinalDamage());
+                damager.setHealth(damager.getHealth() + 2);
             }
         }
     }
