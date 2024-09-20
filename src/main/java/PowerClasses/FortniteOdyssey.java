@@ -21,6 +21,8 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
 
     public final HashMap<UUID, Long> fullBoxCooldowns = new HashMap<>();
 
+    public final HashSet<Location> protectedBlocks = new HashSet<>();
+
     List<SavedBlock> savedBlocks = new ArrayList<>();
 
     private final List<Material> unreplaceableMaterials = Arrays.asList(
@@ -77,6 +79,7 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
                     // Get the block at this location
                     Location blockLocation = new Location(center.getWorld(), x, y, z);
                     Block block = blockLocation.getBlock();
+                    protectedBlocks.add(blockLocation);
 
                     // Save the original block
                     if (!unreplaceableMaterials.contains(block.getType())) {
@@ -134,5 +137,12 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
         }
 
         savedBlocks.clear();
+    }
+
+    @EventHandler
+    public void onBreakBlockEvent(BlockBreakEvent event) {
+        if (protectedBlocks.contains(event.getBlock().getLocation())) {
+            event.setDropItems(false);
+        }
     }
 }
