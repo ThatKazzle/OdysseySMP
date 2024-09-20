@@ -27,7 +27,7 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
     @Override
     public void action(String playerName) {
         Player player = Bukkit.getPlayer(playerName);
-        createAndRestoreSquare(player.getLocation(), Material.IRON_BLOCK);
+        createAndRestoreCube(player.getLocation(), Material.IRON_BLOCK);
     }
 
     public class SavedBlock {
@@ -48,32 +48,34 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
         }
     }
 
-    public void createAndRestoreSquare(Location center, Material newMaterial) {
+    public void createAndRestoreCube(Location center, Material newMaterial) {
         // List to store the original blocks
         List<SavedBlock> savedBlocks = new ArrayList<>();
 
-        // Get the coordinates for the 4x4 hollow square
-        int startX = center.getBlockX() - 2;  // 2 blocks to the left
-        int startZ = center.getBlockZ() - 2;  // 2 blocks back
-        int y = center.getBlockY();  // Assume we want the square at the same Y level
+        // Get the coordinates for the 7x7x7 hollow cube
+        int startX = center.getBlockX() - 3;  // 3 blocks to the left
+        int startY = center.getBlockY() - 3;  // 3 blocks down
+        int startZ = center.getBlockZ() - 3;  // 3 blocks back
 
-        // Loop through and select the border blocks
-        for (int x = startX; x < startX + 5; x++) {
-            for (int z = startZ; z < startZ + 5; z++) {
-                // Skip inner blocks to make it hollow
-                if (x != startX && x != startX + 4 && z != startZ && z != startZ + 4) {
-                    continue;
+        // Loop through the cube area
+        for (int x = startX; x < startX + 7; x++) {
+            for (int y = startY; y < startY + 7; y++) {
+                for (int z = startZ; z < startZ + 7; z++) {
+                    // Hollow out the center 5x5x5 space
+                    if (x > startX && x < startX + 6 && y > startY && y < startY + 6 && z > startZ && z < startZ + 6) {
+                        continue;  // Skip inner blocks (hollow part)
+                    }
+
+                    // Get the block at this location
+                    Location blockLocation = new Location(center.getWorld(), x, y, z);
+                    Block block = blockLocation.getBlock();
+
+                    // Save the original block
+                    savedBlocks.add(new SavedBlock(blockLocation, block.getBlockData()));
+
+                    // Replace the block with the new material (iron block in this case)
+                    block.setType(newMaterial);
                 }
-
-                // Get the block at this location
-                Location blockLocation = new Location(center.getWorld(), x, y, z);
-                Block block = blockLocation.getBlock();
-
-                // Save the original block
-                savedBlocks.add(new SavedBlock(blockLocation, block.getBlockData()));
-
-                // Replace the block with the new material (iron block in this case)
-                block.setType(newMaterial);
             }
         }
 
