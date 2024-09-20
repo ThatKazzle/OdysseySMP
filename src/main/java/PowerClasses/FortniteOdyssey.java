@@ -106,7 +106,6 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
 
                             // Save the original block
                             if (!unreplaceableMaterials.contains(block.getType())) {
-                                savedBlocks.add(new SavedBlock(blockLocation, block.getBlockData()));
 
                                 // Replace the block with the new material (iron block in this case)
                                 block.setType(newMaterial);
