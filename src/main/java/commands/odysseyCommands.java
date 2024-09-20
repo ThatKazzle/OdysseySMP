@@ -204,7 +204,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         // Loop through each player
         Set<String> playerKeys = playersSection.getKeys(false);
         for (String playerKey : playerKeys) {
-            ConfigurationSection powersSection = playersSection.getConfigurationSection(playerKey + ".powers");
+            ConfigurationSection powersSection = playersSection.getConfigurationSection("powers");
             if (powersSection != null) {
                 // Loop through each power for the player
                 for (String defaultPowerKey : defaultPowerKeys) {

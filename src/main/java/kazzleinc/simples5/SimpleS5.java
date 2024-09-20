@@ -147,13 +147,13 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             }
         }.runTaskTimer(this, 0, 20);
 
-        getServer().getScheduler().runTaskLater(this, () -> {
-            try {
-                upsideDownClass.createUpsideDownWorld();
-            } catch (IOException e) {
-                throw new RuntimeException(e);
-            }
-        }, 20L); // Delay to allow world loading
+//        getServer().getScheduler().runTaskLater(this, () -> {
+//            try {
+//                upsideDownClass.createUpsideDownWorld();
+//            } catch (IOException e) {
+//                throw new RuntimeException(e);
+//            }
+//        }, 20L); // Delay to allow world loading
 
         boolean allowEntities = getConfig().getBoolean("allow-entity-disguises");
         DisguiseManager.initialize(this, allowEntities);
