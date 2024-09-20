@@ -914,6 +914,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             case "events/quaks_odyssey":
                 cooldownMessage = quakPowerClass.getCooldownString(player, quakPowerClass.cooldowns, "Double Jump: ");
                 break;
+            case "events/fortnite_odyssey":
+                cooldownMessage = fortniteOdysseyClass.getCooldownString(player, fortniteOdysseyClass.fullBoxCooldowns, "Box Up: ");
+                break;
         }
 
         return cooldownMessage;

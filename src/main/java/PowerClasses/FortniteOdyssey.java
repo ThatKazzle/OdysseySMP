@@ -12,9 +12,13 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
+import java.util.UUID;
 
 public class FortniteOdyssey extends ParentPowerClass implements Listener {
+
+    public final HashMap<UUID, Long> fullBoxCooldowns = new HashMap<>();
 
     public FortniteOdyssey(SimpleS5 plugin) {
         super(plugin);
