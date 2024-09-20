@@ -178,6 +178,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     }
 
     private Map<String, String> checkPowerStatus() {
+        plugin.saveConfig();
         Map<String, String> powerStatus = new HashMap<>();
 
         // Get the defaults section
@@ -190,9 +191,9 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         Set<String> defaultPowerKeys = defaultsSection.getKeys(false);
 
         // Initialize all powers as "not taken"
-        for (String defaultPowerKey : defaultPowerKeys) {
-            powerStatus.put(defaultPowerKey, "false");
-        }
+//        for (String defaultPowerKey : defaultPowerKeys) {
+//            powerStatus.put(defaultPowerKey, "false");
+//        }
 
         // Get the "players" section
         ConfigurationSection playersSection = plugin.getConfig().getConfigurationSection("players");
@@ -209,8 +210,10 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                 for (String defaultPowerKey : defaultPowerKeys) {
                     String powerPath = defaultsSection.getString(defaultPowerKey);
                     if (powersSection.getBoolean(powerPath, false)) {
-                        powerStatus.put(defaultPowerKey, ChatColor.RED + playerKey); // Mark as "taken" if any player has it set to true
+                        powerStatus.put(defaultPowerKey, ChatColor.RED + playerKey);
+                        plugin.getLogger().info(playerKey + " took " + powerPath);
                     } else {
+                        plugin.getLogger().info(playerKey + " DID NOT TAKE " + powerPath);
                         powerStatus.put(defaultPowerKey, ChatColor.GREEN + "Not Taken");
                     }
                 }
@@ -247,34 +250,17 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
         for (Map.Entry<String, String> entry : powerStatus.entrySet()) {
             String status = entry.getValue();
-            String powerName = "";
-
-            switch (plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey())) {
-                case "All Effects":
-                    powerName = "How Did We Get Here?";
-                    break;
-                case "Kill All Mobs":
-                    powerName = "Monsters Hunted";
-                    break;
-                case "Froglights":
-                    powerName = "WOPC";
-                    break;
-                case "Create Full Beacon":
-                    powerName = "Beaconator";
-                    break;
-                case "Ride Strider In Overworld Lava":
-                    powerName = "Feels Like Home";
-                    break;
-                case "Dragon Egg":
-                    powerName = "The Next Generation";
-                    break;
-                case "Summon Iron Golem":
-                    powerName = "Hired Help";
-                    break;
-                default:
-                    powerName = plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey());
-                    break;
-            }
+            player.sendMessage(entry.getKey() + " checks for " + entry.getValue());
+            String powerName = switch (plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey())) {
+                case "All Effects" -> "How Did We Get Here?";
+                case "Kill All Mobs" -> "Monsters Hunted";
+                case "Froglights" -> "WOPC";
+                case "Create Full Beacon" -> "Beaconator";
+                case "Ride Strider In Overworld Lava" -> "Feels Like Home";
+                case "Dragon Egg" -> "The Next Generation";
+                case "Summon Iron Golem" -> "Hired Help";
+                default -> plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey());
+            };
 
             player.sendMessage(ChatColor.AQUA + powerName + ": " + status);
         }

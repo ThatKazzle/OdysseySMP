@@ -135,7 +135,6 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
             Block block = savedBlock.getLocation().getBlock();
             block.setBlockData(savedBlock.getBlockData());  // Restore the original block
         }
-
         savedBlocks.clear();
     }
 
