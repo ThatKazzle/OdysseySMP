@@ -64,6 +64,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public CharliPower charliPowerClass = new CharliPower(this);
     public QuakPower quakPowerClass = new QuakPower(this);
     public PowerStealerPlaceholder powerStealerPlaceholder = new PowerStealerPlaceholder(this);
+    public FortniteOdyssey fortniteOdysseyClass = new FortniteOdyssey(this);
 
     public UpsideDownWorldSetupClass upsideDownClass = new UpsideDownWorldSetupClass(this);
 
@@ -91,6 +92,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(bullseyeClass, this);
         getServer().getPluginManager().registerEvents(balancedDietClass, this);
         getServer().getPluginManager().registerEvents(nextGenerationClass, this);
+        getServer().getPluginManager().registerEvents(fortniteOdysseyClass, this);
 
         getServer().getPluginManager().registerEvents(beaconatorClass, this);
         beaconatorClass.startTrackingPlayerStates();
@@ -297,38 +299,48 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                         getConfig().set("capped_advancements." + getAdvancementKeyFromFormattedString(itemPowerKey), true);
 
-                        if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("adventure/bullseye")) {
+                        switch (getAdvancementKeyFromFormattedString(itemPowerKey)) {
+                            case "adventure/bullseye" -> {
 
-                            getConfig().set("players." + provider.getInfo(player).getName() + ".powers." + "adventure/bullseye", true);
+                                getConfig().set("players." + provider.getInfo(player).getName() + ".powers." + "adventure/bullseye", true);
 
-                            World world = player.getWorld();
-                            new BukkitRunnable() {
-                                int i = 0;
+                                World world = player.getWorld();
+                                new BukkitRunnable() {
+                                    int i = 0;
 
-                                @Override
-                                public void run() {
-                                    if (i < 3) {
-                                        world.strikeLightningEffect(player.getLocation());
-                                        i++;
-                                    } else {
-                                        this.cancel();
+                                    @Override
+                                    public void run() {
+                                        if (i < 3) {
+                                            world.strikeLightningEffect(player.getLocation());
+                                            i++;
+                                        } else {
+                                            this.cancel();
+                                        }
                                     }
-                                }
-                            }.runTaskTimer(this, 0, 10);
+                                }.runTaskTimer(this, 0, 10);
 
-                            player.getWorld().setStorm(true);
-                        } else if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("events/charlis_odyssey")) {
-                            getConfig().set("players." + player.getName() + ".powers." + "events/charlis_odyssey", true);
+                                player.getWorld().setStorm(true);
+                            }
+                            case "events/charlis_odyssey" -> {
+                                getConfig().set("players." + player.getName() + ".powers." + "events/charlis_odyssey", true);
 
-                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
-                            player.sendMessage(ChatColor.LIGHT_PURPLE + "Charli4K's Odyssey Equipped...");
-                        } else if (getAdvancementKeyFromFormattedString(itemPowerKey).equals("events/quaks_odyssey")) {
-                            getConfig().set("players." + player.getName() + ".powers." + "events/quaks_odyssey", true);
+                                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
+                                player.sendMessage(ChatColor.LIGHT_PURPLE + "Charli4K's Odyssey Equipped...");
+                            }
+                            case "events/quaks_odyssey" -> {
+                                getConfig().set("players." + player.getName() + ".powers." + "events/quaks_odyssey", true);
 
-                            player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
-                            player.sendMessage(ChatColor.YELLOW + "QuakX's Odyssey Equipped...");
-                        } else {
-                            grantAdvancementPower(grantAdvancement(player, getAdvancementKeyFromFormattedString(itemPowerKey)), player, false);
+                                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
+                                player.sendMessage(ChatColor.YELLOW + "QuakX's Odyssey Equipped...");
+                            }
+                            case "events/fortnite_odyssey" -> {
+                                getConfig().set("players." + player.getName() + ".powers." + "events/fortnite_odyssey", true);
+
+                                player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
+                            }
+                            default -> {
+                                    grantAdvancementPower(grantAdvancement(player, getAdvancementKeyFromFormattedString(itemPowerKey)), player, false);
+                            }
                         }
 
                         player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
