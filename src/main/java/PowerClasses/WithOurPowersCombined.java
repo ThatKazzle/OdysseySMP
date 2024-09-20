@@ -4,29 +4,23 @@ import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
 import kazzleinc.simples5.TrimUtils;
 import org.bukkit.*;
-import org.bukkit.entity.BlockDisplay;
-import org.bukkit.entity.Entity;
-import org.bukkit.entity.EntityType;
 import org.bukkit.entity.Player;
-import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
-import org.bukkit.event.entity.PlayerDeathEvent;
+import org.bukkit.event.player.PlayerTeleportEvent;
 import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.util.RayTraceResult;
-import org.bukkit.util.Transformation;
 import org.bukkit.util.Vector;
-import org.joml.Quaternionf;
-import org.joml.Vector3f;
 
 import java.util.HashMap;
 import java.util.UUID;
 
 public class WithOurPowersCombined extends ParentPowerClass implements Listener {
+    int uses = 0;
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
 
-    public HashMap<UUID, Long>  mimicCooldowns = new HashMap<>();
+    public HashMap<UUID, Long> swapPlacesCooldowns = new HashMap<>();
     public HashMap<UUID, String> playerStoredPower = new HashMap<>();
 
     public HashMap<UUID, UUID> playerStoleFromPlayer = new HashMap<>();
@@ -48,23 +42,14 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
             tornadoAction(player);
         } else {
             //mimicAction(player);
-            BlockDisplay blockDisplay = (BlockDisplay) player.getLocation().getWorld().spawnEntity(player.getLocation(), EntityType.BLOCK_DISPLAY);
-
-            blockDisplay.setDisplayHeight(2);
-            blockDisplay.setBlock(Material.WHITE_CONCRETE.createBlockData());
-            new BukkitRunnable() {
-                @Override
-                public void run() {
-                    blockDisplay.setTransformation(new Transformation(player.getLocation().toVector().toVector3f(), new Quaternionf(), new Vector(1, 2, 1).toVector3f(), new Quaternionf()));
-                }
-            }.runTaskTimer(plugin, 0, 0);
+            swapPlacesAction(player);
         }
 
     }
 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
-        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Mimic: " + getCooldownTimeLeft(player.getUniqueId(), mimicCooldowns);
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " |" + uses + "| " + ChatColor.RESET + ChatColor.AQUA + "Boogie Woogie: " + getCooldownTimeLeft(player.getUniqueId(), swapPlacesCooldowns);
     }
 
     public void tornadoAction(Player player) {
@@ -83,7 +68,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                     //location = location.add(location.multiply(distance));
                     radius = 1;
                     for (double y = -2; y < 3; y+= 0.1) {
-                        ParticleUtils.createParticleRing(newLocation.clone().toLocation(player.getWorld()).add(new Vector(0, y, 0)), radius, (int) (radius * 8), Particle.SMALL_GUST, Color.GRAY, 1);
+                        ParticleUtils.createParticleRing(newLocation.clone().toLocation(player.getWorld()).add(new Vector(0, y, 0)), radius, (int) (radius * 5), Particle.SMALL_GUST, Color.GRAY, 1);
 
                         radius += 0.04;
                     }
@@ -182,10 +167,73 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
             }
         }
     }
+    public void swapPlacesAction(Player player) {
+        if (!isOnCooldown(player.getUniqueId(), swapPlacesCooldowns)) {
+            RayTraceResult result = plugin.getServer().getWorld("world").rayTraceEntities(player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(1.3)), player.getEyeLocation().getDirection().normalize(), 15, 2, entity -> {
+                return entity instanceof Player && entity != player;
+            });
+
+            if (result != null && result.getHitEntity() instanceof Player) {
+                Player hitPlayer = (Player) result.getHitEntity();
+
+                final Location casterLocation = player.getLocation();
+                final Vector casterDirection = player.getEyeLocation().getDirection();
+                final Vector casterVelocity = player.getVelocity();
+
+                final Location hitPlayerLocation = hitPlayer.getLocation();
+                final Vector hitPlayerDirection = hitPlayer.getEyeLocation().getDirection();
+                final Vector hitPlayerVelocity = hitPlayer.getVelocity();
+
+                player.teleport(hitPlayerLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                player.setVelocity(hitPlayerVelocity);
+                player.getEyeLocation().setDirection(hitPlayerDirection);
+                ParticleUtils.createParticleLine(player.getLocation(), player.getEyeLocation(), 5, Particle.POOF, new Particle.DustOptions(Color.GRAY, 1));
+
+
+                hitPlayer.teleport(casterLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
+                hitPlayer.setVelocity(casterVelocity);
+                hitPlayer.getEyeLocation().setDirection(casterDirection);
+                ParticleUtils.createParticleLine(hitPlayer.getLocation(), hitPlayer.getEyeLocation(), 5, Particle.POOF, new Particle.DustOptions(Color.GRAY, 1));
+
+
+                if (uses == 2) {
+                    setCooldown(player.getUniqueId(), swapPlacesCooldowns, 120);
+                    uses = 0;
+                } else {
+                    uses++;
+                }
+
+            } else {
+                player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 0.5f, 1.f);
+                player.sendMessage(ChatColor.RED + "No players were hit.");
+            }
+
+
+        }
+    }
 
     PotionEffect invisPot = new PotionEffect(PotionEffectType.INVISIBILITY, 20 * 10, 0, false, false, false);
 
     public void mimicAction(Player player) {
 
+    }
+
+    @Override
+    public void makePlayerInvisible(Player player) {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            onlinePlayer.hidePlayer(plugin, player);
+        }
+
+        //player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.5f);
+        //player.sendMessage(ChatColor.GREEN + "You are now " + ChatColor.RED + "completely invisible" + ChatColor.GREEN + ".");
+    }
+
+    @Override
+    public void makePlayerVisible(Player player) {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            onlinePlayer.showPlayer(plugin, player);
+        }
+        //player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.7f);
+        //player.sendMessage(ChatColor.GREEN + "You are no longer " + ChatColor.RED + "completely invisible" + ChatColor.GREEN + ".");
     }
 }

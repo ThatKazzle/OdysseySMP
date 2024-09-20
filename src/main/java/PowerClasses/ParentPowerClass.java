@@ -1,6 +1,7 @@
 package PowerClasses;
 
 import kazzleinc.simples5.SimpleS5;
+import org.bukkit.Bukkit;
 import org.bukkit.ChatColor;
 import org.bukkit.Sound;
 import org.bukkit.entity.Player;
@@ -78,5 +79,22 @@ public abstract class ParentPowerClass {
         } else {
             return "" + ChatColor.RED + seconds + "s";
         }
+    }
+
+    public void makePlayerInvisible(Player player) {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            onlinePlayer.hidePlayer(plugin, player);
+        }
+
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.5f);
+        player.sendMessage(ChatColor.GREEN + "You are now " + ChatColor.RED + "completely invisible" + ChatColor.GREEN + ".");
+    }
+
+    public void makePlayerVisible(Player player) {
+        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
+            onlinePlayer.showPlayer(plugin, player);
+        }
+        player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.7f);
+        player.sendMessage(ChatColor.GREEN + "You are no longer " + ChatColor.RED + "completely invisible" + ChatColor.GREEN + ".");
     }
 }

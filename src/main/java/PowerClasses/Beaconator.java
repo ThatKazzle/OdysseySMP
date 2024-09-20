@@ -105,7 +105,7 @@ public class Beaconator extends ParentPowerClass implements Listener {
         PlayerState state = getPlayerState(player.getUniqueId(), 3000);
 
         if (!isOnCooldown(player.getUniqueId(), rewindCooldwns)) {
-            setCooldown(player.getUniqueId(), rewindCooldwns, 60 * 5);
+            setCooldown(player.getUniqueId(), rewindCooldwns, 120);
 
             player.getWorld().spawnParticle(Particle.PORTAL, player.getLocation(), 100, 1, 1, 1, 1);
 

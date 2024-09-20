@@ -243,7 +243,7 @@ public class ParticleUtils {
         }
     }
 
-    public static void createParticleLine(Location start, Location end, int density, Particle.DustOptions dustOptions) {
+    public static void createParticleLine(Location start, Location end, int density, Particle particle, Particle.DustOptions dustOptions) {
         if (!start.getWorld().equals(end.getWorld())) {
             throw new IllegalArgumentException("Start and end locations must be in the same world.");
         }
@@ -260,7 +260,12 @@ public class ParticleUtils {
 
         for (int i = 0; i <= density; i++) {
             Vector currentPosition = startVector.clone().add(step.clone().multiply(i));
-            world.spawnParticle(Particle.DUST, currentPosition.toLocation(world), 1, dustOptions);
+            if (particle == Particle.DUST) {
+                world.spawnParticle(Particle.DUST, currentPosition.toLocation(world), 1, dustOptions);
+            } else {
+                world.spawnParticle(particle, currentPosition.toLocation(world), 1);
+            }
+
         }
     }
 

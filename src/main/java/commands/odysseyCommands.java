@@ -209,9 +209,9 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                 for (String defaultPowerKey : defaultPowerKeys) {
                     String powerPath = defaultsSection.getString(defaultPowerKey);
                     if (powersSection.getBoolean(powerPath, false)) {
-                        powerStatus.put(defaultPowerKey, ChatColor.GREEN + playerKey); // Mark as "taken" if any player has it set to true
+                        powerStatus.put(defaultPowerKey, ChatColor.RED + playerKey); // Mark as "taken" if any player has it set to true
                     } else {
-                        powerStatus.put(defaultPowerKey, ChatColor.RED + "Taken");
+                        powerStatus.put(defaultPowerKey, ChatColor.GREEN + "Not Taken");
                     }
                 }
             }
