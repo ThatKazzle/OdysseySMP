@@ -17,6 +17,7 @@ defaults:
   bullseye: "adventure/bullseye"
   charlis_odyssey: "events/charlis_odyssey"
   quaks_odyssey: "events/quaks_odyssey"
+  fortnite_odyssey: "events/fortnite_odyssey"
 descriptions:
   very_very_frightening:
     - " "
