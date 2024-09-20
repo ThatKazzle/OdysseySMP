@@ -11,14 +11,18 @@ import org.bukkit.event.Listener;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.UUID;
+import java.util.*;
 
 public class FortniteOdyssey extends ParentPowerClass implements Listener {
 
     public final HashMap<UUID, Long> fullBoxCooldowns = new HashMap<>();
+
+    private final List<Material> unreplaceableMaterials = Arrays.asList(
+            Material.SMOKER, Material.FURNACE, Material.BLAST_FURNACE,
+            Material.BEACON, Material.DISPENSER, Material.DROPPER,
+            Material.HOPPER, Material.JUKEBOX, Material.COMMAND_BLOCK,
+            Material.CHEST, Material.BARREL, Material.ENDER_CHEST,
+            Material.RESPAWN_ANCHOR, Material.BREWING_STAND);
 
     public FortniteOdyssey(SimpleS5 plugin) {
         super(plugin);
@@ -71,10 +75,13 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
                     Block block = blockLocation.getBlock();
 
                     // Save the original block
-                    savedBlocks.add(new SavedBlock(blockLocation, block.getBlockData()));
+                    if (!unreplaceableMaterials.contains(block.getType())) {
+                        savedBlocks.add(new SavedBlock(blockLocation, block.getBlockData()));
 
-                    // Replace the block with the new material (iron block in this case)
-                    block.setType(newMaterial);
+                        // Replace the block with the new material (iron block in this case)
+                        block.setType(newMaterial);
+                    }
+
                 }
             }
         }
