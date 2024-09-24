@@ -49,7 +49,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
-        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " |" + uses + "| " + ChatColor.RESET + ChatColor.AQUA + "Boogie Woogie: " + getCooldownTimeLeft(player.getUniqueId(), swapPlacesCooldowns);
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " |" + (3 - uses) + "| " + ChatColor.RESET + ChatColor.AQUA + "Boogie Woogie: " + getCooldownTimeLeft(player.getUniqueId(), swapPlacesCooldowns);
     }
 
     public void tornadoAction(Player player) {
