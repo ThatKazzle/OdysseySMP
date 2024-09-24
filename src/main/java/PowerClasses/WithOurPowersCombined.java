@@ -217,23 +217,4 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     public void mimicAction(Player player) {
 
     }
-
-    @Override
-    public void makePlayerInvisible(Player player) {
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            onlinePlayer.hidePlayer(plugin, player);
-        }
-
-        //player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.5f);
-        //player.sendMessage(ChatColor.GREEN + "You are now " + ChatColor.RED + "completely invisible" + ChatColor.GREEN + ".");
-    }
-
-    @Override
-    public void makePlayerVisible(Player player) {
-        for (Player onlinePlayer : Bukkit.getOnlinePlayers()) {
-            onlinePlayer.showPlayer(plugin, player);
-        }
-        //player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.7f);
-        //player.sendMessage(ChatColor.GREEN + "You are no longer " + ChatColor.RED + "completely invisible" + ChatColor.GREEN + ".");
-    }
 }
