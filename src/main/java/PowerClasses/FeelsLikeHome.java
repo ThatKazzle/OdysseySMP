@@ -32,7 +32,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
 
 
     PotionEffect regenPot = new PotionEffect(PotionEffectType.REGENERATION, 20 * 15, 2, false, false, true);
-    PotionEffect strengthPot = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 1, false, false, true);
+    PotionEffect strengthPot = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 2, false, false, true);
     PotionEffect fireResPot = new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0, false, false, true);
 
     SimpleS5 plugin;

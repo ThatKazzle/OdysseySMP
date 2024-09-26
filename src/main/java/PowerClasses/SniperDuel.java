@@ -46,7 +46,7 @@ public class SniperDuel extends ParentPowerClass implements Listener {
 
                 double timeLeft = roundDecimalNumber((cooldowns.get(player.getUniqueId()) - System.currentTimeMillis()), 1) / 1000;
             } else if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
-                PotionEffect strength = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 1, false, false, true);
+                PotionEffect strength = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 2, false, false, true);
                 player.addPotionEffect(strength);
 
                 StringBuilder displayableList = new StringBuilder();

@@ -78,6 +78,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public void onEnable() {
         saveDefaultConfig();
         odysseyClass = new odysseyCommands(this);
+        LongerPotsClass longerPotsClass = new LongerPotsClass(this);
         // Plugin startup logic
         getServer().getPluginManager().registerEvents(vvfClass, this);
         getServer().getPluginManager().registerEvents(catalogueClass, this);
