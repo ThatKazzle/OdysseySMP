@@ -42,7 +42,7 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
         if (shootsPowerBow.contains(player.getUniqueId())) {
-            return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Heavy Sniper: " + ChatColor.BLUE + "Activated";
+            return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Heavy Sniper: " + ChatColor.BLUE + ChatColor.BOLD + "Activated";
         } else {
             return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Heavy Sniper: " + getCooldownTimeLeft(player.getUniqueId(), heavySniperCooldowns);
         }
