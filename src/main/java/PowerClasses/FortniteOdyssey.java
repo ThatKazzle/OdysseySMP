@@ -5,6 +5,7 @@ import kazzleinc.simples5.SimpleS5;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.data.BlockData;
+import org.bukkit.entity.Arrow;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -40,7 +41,11 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
-        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Heavy Sniper: " + (shootsPowerBow.contains(player) ? ChatColor.BLUE + "Activated" : getCooldownTimeLeft(player.getUniqueId(), heavySniperCooldowns));
+        if (shootsPowerBow.contains(player.getUniqueId())) {
+            return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Heavy Sniper: " + ChatColor.BLUE + "Activated";
+        } else {
+            return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Heavy Sniper: " + getCooldownTimeLeft(player.getUniqueId(), heavySniperCooldowns);
+        }
     }
 
     @Override
@@ -169,10 +174,11 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
             Player player = (Player) event.getEntity();
 
             if (shootsPowerBow.contains(player.getUniqueId())) {
-                event.getProjectile().setVelocity(event.getProjectile().getVelocity().multiply(3));
+                Arrow arrow = (Arrow) event.getProjectile();
+                arrow.setVelocity(player.getEyeLocation().getDirection().normalize().multiply(6));
 
                 shootsPowerBow.remove(player.getUniqueId());
-                setCooldown(player.getUniqueId(), heavySniperCooldowns, (20 * 60));
+                setCooldown(player.getUniqueId(), heavySniperCooldowns, 60);
             }
         }
     }
