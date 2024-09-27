@@ -134,6 +134,9 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                 player.sendMessage(ChatColor.RED + "Ye nice try idiot, you cant dupe.");
             } else {
                 this.plugin.removePlayerAdvancement(player, plugin.getAdvancementKeyFromFormattedString(powerName));
+                if (powerName.equals("events/charli's_power")) {
+                    player.sendMessage("BALLER!");
+                }
                 this.plugin.getConfig().set("players." + player.getName() + ".powers." +  plugin.getAdvancementKeyFromFormattedString(powerName), false);
 
                 ItemMeta newMeta = clickedItem.getItemMeta();
@@ -177,9 +180,8 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         }
     }
 
-    private Map<String, String> checkPowerStatus() {
-        plugin.saveConfig();
-        Map<String, String> powerStatus = new HashMap<>();
+    private Map<String, Boolean> checkPowerStatus() {
+        Map<String, Boolean> powerStatus = new HashMap<>();
 
         // Get the defaults section
         ConfigurationSection defaultsSection = plugin.getConfig().getConfigurationSection("defaults");
@@ -191,9 +193,9 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         Set<String> defaultPowerKeys = defaultsSection.getKeys(false);
 
         // Initialize all powers as "not taken"
-//        for (String defaultPowerKey : defaultPowerKeys) {
-//            powerStatus.put(defaultPowerKey, "false");
-//        }
+        for (String defaultPowerKey : defaultPowerKeys) {
+            powerStatus.put(defaultPowerKey, false);
+        }
 
         // Get the "players" section
         ConfigurationSection playersSection = plugin.getConfig().getConfigurationSection("players");
@@ -204,17 +206,13 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         // Loop through each player
         Set<String> playerKeys = playersSection.getKeys(false);
         for (String playerKey : playerKeys) {
-            ConfigurationSection powersSection = playersSection.getConfigurationSection("powers");
+            ConfigurationSection powersSection = playersSection.getConfigurationSection(playerKey + ".powers");
             if (powersSection != null) {
                 // Loop through each power for the player
                 for (String defaultPowerKey : defaultPowerKeys) {
                     String powerPath = defaultsSection.getString(defaultPowerKey);
                     if (powersSection.getBoolean(powerPath, false)) {
-                        powerStatus.put(defaultPowerKey, ChatColor.RED + playerKey);
-                        plugin.getLogger().info(playerKey + " took " + powerPath);
-                    } else {
-                        plugin.getLogger().info(playerKey + " DID NOT TAKE " + powerPath);
-                        powerStatus.put(defaultPowerKey, ChatColor.GREEN + "Not Taken");
+                        powerStatus.put(defaultPowerKey, true); // Mark as "taken" if any player has it set to true
                     }
                 }
             }
@@ -245,22 +243,39 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 //        }
 //    }
 
-    private void sendPowerStatus(Player player, Map<String, String> powerStatus) {
+    private void sendPowerStatus(Player player, Map<String, Boolean> powerStatus) {
         player.sendMessage("" + ChatColor.LIGHT_PURPLE + ChatColor.BOLD + "List of powers that are currently taken: ");
 
-        for (Map.Entry<String, String> entry : powerStatus.entrySet()) {
-            String status = entry.getValue();
-            player.sendMessage(entry.getKey() + " checks for " + entry.getValue());
-            String powerName = switch (plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey())) {
-                case "All Effects" -> "How Did We Get Here?";
-                case "Kill All Mobs" -> "Monsters Hunted";
-                case "Froglights" -> "WOPC";
-                case "Create Full Beacon" -> "Beaconator";
-                case "Ride Strider In Overworld Lava" -> "Feels Like Home";
-                case "Dragon Egg" -> "The Next Generation";
-                case "Summon Iron Golem" -> "Hired Help";
-                default -> plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey());
-            };
+        for (Map.Entry<String, Boolean> entry : powerStatus.entrySet()) {
+            String status = entry.getValue() ? ChatColor.RED + "Taken" : ChatColor.GREEN + "Not Taken";
+            String powerName = "";
+
+            switch (plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey())) {
+                case "All Effects":
+                    powerName = "How Did We Get Here?";
+                    break;
+                case "Kill All Mobs":
+                    powerName = "Monsters Hunted";
+                    break;
+                case "Froglights":
+                    powerName = "WOPC";
+                    break;
+                case "Create Full Beacon":
+                    powerName = "Beaconator";
+                    break;
+                case "Ride Strider In Overworld Lava":
+                    powerName = "Feels Like Home";
+                    break;
+                case "Dragon Egg":
+                    powerName = "The Next Generation";
+                    break;
+                case "Summon Iron Golem":
+                    powerName = "Hired Help";
+                    break;
+                default:
+                    powerName = plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey());
+                    break;
+            }
 
             player.sendMessage(ChatColor.AQUA + powerName + ": " + status);
         }
