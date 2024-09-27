@@ -11,8 +11,13 @@ import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
 import org.bukkit.event.block.BlockBreakEvent;
 import org.bukkit.event.entity.EntityShootBowEvent;
+import org.bukkit.event.entity.ProjectileHitEvent;
+import org.bukkit.potion.PotionEffect;
+import org.bukkit.potion.PotionEffectType;
+import org.bukkit.potion.PotionType;
 import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
+import org.checkerframework.checker.units.qual.N;
 import org.jetbrains.annotations.NotNull;
 
 import java.util.*;
@@ -28,6 +33,8 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
 
     List<SavedBlock> savedBlocks = new ArrayList<>();
 
+    NamespacedKey dataKey;
+
     private final List<Material> unreplaceableMaterials = Arrays.asList(
             Material.SMOKER, Material.FURNACE, Material.BLAST_FURNACE,
             Material.BEACON, Material.DISPENSER, Material.DROPPER,
@@ -37,6 +44,8 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
 
     public FortniteOdyssey(SimpleS5 plugin) {
         super(plugin);
+
+        dataKey = new NamespacedKey(plugin, "triple_damage_arrow");
     }
 
     @Override
@@ -77,72 +86,75 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
     }
 
     public void createAndRestoreCube(Player player, Material newMaterial) {
-        Location center = player.getLocation();
-        // Get the coordinates for the 7x7x7 hollow cube
-        int startX = center.getBlockX() - 3;  // 3 blocks to the left
-        int startY = center.getBlockY() - 3;  // 3 blocks down
-        int startZ = center.getBlockZ() - 3;  // 3 blocks back
+        if (!isOnCooldown(player.getUniqueId(), fullBoxCooldowns)) {
+            setCooldown(player.getUniqueId(), fullBoxCooldowns, 120);
+            Location center = player.getLocation();
+            // Get the coordinates for the 7x7x7 hollow cube
+            int startX = center.getBlockX() - 3;  // 3 blocks to the left
+            int startY = center.getBlockY() - 3;  // 3 blocks down
+            int startZ = center.getBlockZ() - 3;  // 3 blocks back
 
-        // Loop through the cube area
-        for (int x = startX; x < startX + 7; x++) {
-            for (int y = startY; y < startY + 7; y++) {
-                for (int z = startZ; z < startZ + 7; z++) {
-                    // Hollow out the center 5x5x5 space
-                    if (x > startX && x < startX + 6 && y > startY && y < startY + 6 && z > startZ && z < startZ + 6) {
-                        continue;  // Skip inner blocks (hollow part)
-                    }
+            // Loop through the cube area
+            for (int x = startX; x < startX + 7; x++) {
+                for (int y = startY; y < startY + 7; y++) {
+                    for (int z = startZ; z < startZ + 7; z++) {
+                        // Hollow out the center 5x5x5 space
+                        if (x > startX && x < startX + 6 && y > startY && y < startY + 6 && z > startZ && z < startZ + 6) {
+                            continue;  // Skip inner blocks (hollow part)
+                        }
 
-                    // Get the block at this location
-                    Location blockLocation = new Location(center.getWorld(), x, y, z);
-                    Block block = blockLocation.getBlock();
-                    protectedBlocks.add(blockLocation);
+                        // Get the block at this location
+                        Location blockLocation = new Location(center.getWorld(), x, y, z);
+                        Block block = blockLocation.getBlock();
+                        protectedBlocks.add(blockLocation);
 
-                    // Save the original block
-                    if (!unreplaceableMaterials.contains(block.getType())) {
-                        savedBlocks.add(new SavedBlock(blockLocation, block.getBlockData()));
+                        // Save the original block
+                        if (!unreplaceableMaterials.contains(block.getType())) {
+                            savedBlocks.add(new SavedBlock(blockLocation, block.getBlockData()));
 
-                        // Replace the block with the new material (iron block in this case)
-                        block.setType(newMaterial);
-                    }
-                }
-            }
-        }
-
-        BukkitTask replacer = new BukkitRunnable() {
-            @Override
-            public void run() {
-                for (int x = startX; x < startX + 7; x++) {
-                    for (int y = startY; y < startY + 7; y++) {
-                        for (int z = startZ; z < startZ + 7; z++) {
-                            // Hollow out the center 5x5x5 space
-                            if (x > startX && x < startX + 6 && y > startY && y < startY + 6 && z > startZ && z < startZ + 6) {
-                                continue;  // Skip inner blocks (hollow part)
-                            }
-
-                            // Get the block at this location
-                            Location blockLocation = new Location(center.getWorld(), x, y, z);
-                            Block block = blockLocation.getBlock();
-
-                            // Save the original block
-                            if (!unreplaceableMaterials.contains(block.getType())) {
-
-                                // Replace the block with the new material (iron block in this case)
-                                block.setType(newMaterial);
-                            }
+                            // Replace the block with the new material (iron block in this case)
+                            block.setType(newMaterial);
                         }
                     }
                 }
             }
-        }.runTaskTimer(plugin, 0, 2);
 
-        // Create a delayed task to restore the blocks after 10 seconds (200 ticks)
-        new BukkitRunnable() {
-            @Override
-            public void run() {
-                replacer.cancel();
-                restoreBlocks();
-            }
-        }.runTaskLater(plugin, 200L);  // 200 ticks = 10 seconds
+            BukkitTask replacer = new BukkitRunnable() {
+                @Override
+                public void run() {
+                    for (int x = startX; x < startX + 7; x++) {
+                        for (int y = startY; y < startY + 7; y++) {
+                            for (int z = startZ; z < startZ + 7; z++) {
+                                // Hollow out the center 5x5x5 space
+                                if (x > startX && x < startX + 6 && y > startY && y < startY + 6 && z > startZ && z < startZ + 6) {
+                                    continue;  // Skip inner blocks (hollow part)
+                                }
+
+                                // Get the block at this location
+                                Location blockLocation = new Location(center.getWorld(), x, y, z);
+                                Block block = blockLocation.getBlock();
+
+                                // Save the original block
+                                if (!unreplaceableMaterials.contains(block.getType())) {
+
+                                    // Replace the block with the new material (iron block in this case)
+                                    block.setType(newMaterial);
+                                }
+                            }
+                        }
+                    }
+                }
+            }.runTaskTimer(plugin, 0, 2);
+
+            // Create a delayed task to restore the blocks after 10 seconds (200 ticks)
+            new BukkitRunnable() {
+                @Override
+                public void run() {
+                    replacer.cancel();
+                    restoreBlocks();
+                }
+            }.runTaskLater(plugin, 200L);  // 200 ticks = 10 seconds
+        }
     }
 
     public void heavySniperAbility(Player player) {
@@ -175,12 +187,19 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
 
             if (shootsPowerBow.contains(player.getUniqueId())) {
                 Arrow arrow = (Arrow) event.getProjectile();
-                arrow.setVelocity(player.getEyeLocation().getDirection().normalize().multiply(6));
+                //arrow.setVelocity(player.getEyeLocation().getDirection().normalize().multiply(8));
+
+                arrow.setDamage(arrow.getDamage() * 4);
 
                 shootsPowerBow.remove(player.getUniqueId());
                 setCooldown(player.getUniqueId(), heavySniperCooldowns, 60);
             }
         }
+    }
+
+    @EventHandler
+    public void onHitArrowEvent(ProjectileHitEvent event) {
+
     }
 
     @EventHandler
