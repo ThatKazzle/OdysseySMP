@@ -187,14 +187,15 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                 player.teleport(hitPlayerLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
                 player.setVelocity(hitPlayerVelocity);
                 player.getEyeLocation().setDirection(hitPlayerDirection);
-                ParticleUtils.createParticleLine(player.getLocation(), player.getEyeLocation(), 5, Particle.POOF, new Particle.DustOptions(Color.GRAY, 1));
+                ParticleUtils.createParticleLine(player.getLocation(), player.getEyeLocation(), 5, Particle.DUST, new Particle.DustOptions(Color.GRAY, 1));
+                player.getWorld().playSound(player.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1.f, 1.f);
 
 
                 hitPlayer.teleport(casterLocation, PlayerTeleportEvent.TeleportCause.PLUGIN);
                 hitPlayer.setVelocity(casterVelocity);
                 hitPlayer.getEyeLocation().setDirection(casterDirection);
-                ParticleUtils.createParticleLine(hitPlayer.getLocation(), hitPlayer.getEyeLocation(), 5, Particle.POOF, new Particle.DustOptions(Color.GRAY, 1));
-
+                ParticleUtils.createParticleLine(hitPlayer.getLocation(), hitPlayer.getEyeLocation(), 5, Particle.DUST, new Particle.DustOptions(Color.GRAY, 1));
+                hitPlayer.getWorld().playSound(hitPlayer.getLocation(), Sound.ENTITY_PLAYER_TELEPORT, 1.f, 1.f);
 
                 if (uses == 2) {
                     setCooldown(player.getUniqueId(), swapPlacesCooldowns, 120);
