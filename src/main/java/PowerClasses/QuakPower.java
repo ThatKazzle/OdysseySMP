@@ -75,7 +75,7 @@ public class QuakPower extends ParentPowerClass implements Listener {
         }
     }
 
-    PotionEffect strengthEffect = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 1, false, false, true);
+    PotionEffect strengthEffect = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 2, false, false, true);
     PotionEffect resistanceEffect = new PotionEffect(PotionEffectType.RESISTANCE, 20 * 15, 1, false, false, true);
     PotionEffect absorbEffect = new PotionEffect(PotionEffectType.ABSORPTION, 20 * 15, 1, false, false, true);
 

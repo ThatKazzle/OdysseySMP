@@ -114,7 +114,7 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
             } else if (!isOnCooldown(player.getUniqueId(), zeusCooldowns)) {
                 strikeLightningEffect(player, player.getLocation());
 
-                player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 1, false, false, true));
+                player.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 2, false, false, true));
                 player.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, 20 * 15, 1, false, false, true));
 
                 setCooldown(player.getUniqueId(), zeusCooldowns, 120);
