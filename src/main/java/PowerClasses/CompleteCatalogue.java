@@ -1,5 +1,6 @@
 package PowerClasses;
 
+import kazzleinc.simples5.FollowParticle;
 import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.*;
@@ -24,6 +25,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
 
     public HashMap<UUID, Long> cooldowns = new HashMap<>();
     public HashMap<UUID, Long> effectStealerCooldown = new HashMap<>();
+    public final HashMap<UUID, Long> auralBarrageCooldowns = new HashMap<>();
 
     List<PotionEffectType> negPotionTypes = Arrays.asList(PotionEffectType.BLINDNESS, PotionEffectType.SLOWNESS, PotionEffectType.WEAKNESS, PotionEffectType.WITHER, PotionEffectType.NAUSEA, PotionEffectType.HUNGER, PotionEffectType.DARKNESS, PotionEffectType.MINING_FATIGUE, PotionEffectType.SLOW_FALLING);
 
@@ -35,7 +37,13 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
 
     @Override
     public void action(String playerName) {
-        effectStealerAction(Bukkit.getPlayer(playerName));
+        Player player = Bukkit.getPlayer(playerName);
+        if (player.isSneaking()) {
+            effectStealerAction(Bukkit.getPlayer(playerName));
+        } else {
+            auralBarrage(player);
+        }
+
     }
 
     @Override
@@ -84,32 +92,13 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
         }
     }
 
-    @EventHandler
-    public void onPlayerDamage(EntityDamageEvent event) {
-        if (event.getEntity() instanceof Player) {
-            Player player = (Player) event.getEntity();
-
-            if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/complete_catalogue") && !isOnCooldown(player.getUniqueId(), cooldowns)) {
-                if (player.getHealth() - event.getFinalDamage() <= 0 && player.getInventory().getItemInOffHand().getType() != Material.TOTEM_OF_UNDYING) {
-                    setCooldown(player.getUniqueId(), cooldowns, 10 * 60);
-
-                    event.setCancelled(true);
-
-                    ItemStack offhandItem = player.getInventory().getItemInOffHand();
-
-                    player.getInventory().setItemInOffHand(new ItemStack(Material.TOTEM_OF_UNDYING));
-                    new BukkitRunnable() {
-                        @Override
-                        public void run() {
-                            player.damage(20);
-                            player.getInventory().setItemInOffHand(offhandItem);
-                            player.setHealth(0.5f);
-                            applyTotemEffects(player);
-                        }
-                    }.runTaskLater(plugin, 6L);
-
-                }
+    public void auralBarrage(Player player) {
+        if (!isOnCooldown(player.getUniqueId(), auralBarrageCooldowns)) {
+            player.getWorld().playSound(player.getLocation(), Sound.ENTITY_EVOKER_CAST_SPELL, 1.f, 1.f);
+            for (int i = 0; i < 10; i++) {
+                new FollowParticle(player.getEyeLocation(), player.getEyeLocation().getDirection(), player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(6)), player, plugin).runTaskTimer(plugin, 0, 0L);
             }
+            setCooldown(player.getUniqueId(), auralBarrageCooldowns, 120);
         }
     }
 

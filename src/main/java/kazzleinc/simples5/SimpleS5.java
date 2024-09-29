@@ -874,7 +874,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                 cooldownMessage = hdwghClass.getCooldownString(player, hdwghClass.rightClickedCooldowns, "Item Disable: ");
                 break;
             case "husbandry/complete_catalogue":
-                cooldownMessage = catalogueClass.getCooldownString(player, catalogueClass.cooldowns, "Rechargeable Totem: ");
+                cooldownMessage = catalogueClass.getCooldownString(player, catalogueClass.auralBarrageCooldowns, "Aural Barrage: ");
                 break;
             case "adventure/kill_all_mobs":
                 cooldownMessage = monstersClass.getCooldownString(player, monstersClass.sphereCooldowns, "Domain Expansion: ");

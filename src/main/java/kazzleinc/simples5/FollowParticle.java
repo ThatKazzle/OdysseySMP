@@ -71,7 +71,8 @@ public class FollowParticle extends BukkitRunnable {
             if (entity instanceof LivingEntity) {
                 if (entity != this.owner) {
                     LivingEntity livEnt = (LivingEntity) entity;
-                    livEnt.damage(0.3);
+                    livEnt.setHealth(livEnt.getHealth() - 0.3);
+                    livEnt.damage(0.01);
                     livEnt.setNoDamageTicks(0);
 
                     livEnt.getWorld().spawnParticle(Particle.SONIC_BOOM, livEnt.getLocation(), 1);

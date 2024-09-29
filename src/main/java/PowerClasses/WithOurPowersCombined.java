@@ -169,7 +169,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     }
     public void swapPlacesAction(Player player) {
         if (!isOnCooldown(player.getUniqueId(), swapPlacesCooldowns)) {
-            RayTraceResult result = plugin.getServer().getWorld("world").rayTraceEntities(player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(1.3)), player.getEyeLocation().getDirection().normalize(), 15, 2, entity -> {
+            RayTraceResult result = plugin.getServer().getWorld("world").rayTraceEntities(player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(1.3)), player.getEyeLocation().getDirection().normalize(), 15, 1.2, entity -> {
                 return entity instanceof Player && entity != player;
             });
 
