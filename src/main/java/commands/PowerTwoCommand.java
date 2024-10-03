@@ -93,6 +93,9 @@ public class PowerTwoCommand implements CommandExecutor {
                         case "events/fortnite_odyssey":
                             plugin.fortniteOdysseyClass.action(playerName);
                             break;
+                        case "adventure/trim_with_all_exclusive_armor_patterns":
+                            plugin.scrollWheelTestClass.action(playerName);
+                            break;
                         case "player/power_stolen":
                             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
                             player.sendMessage(ChatColor.RED + "Your power has been stolen, you can't use this!");

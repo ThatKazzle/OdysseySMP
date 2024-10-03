@@ -3,6 +3,7 @@ package PowerClasses;
 import io.papermc.paper.event.player.PlayerInventorySlotChangeEvent;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.Bukkit;
+import org.bukkit.ChatColor;
 import org.bukkit.entity.Player;
 import org.bukkit.event.EventHandler;
 import org.bukkit.event.Listener;
@@ -19,6 +20,17 @@ public class TestingScrollWheelPower extends ParentPowerClass implements Listene
 
     public TestingScrollWheelPower(SimpleS5 plugin) {
         super(plugin);
+    }
+
+    @Override
+    public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
+        if (!powerLevel.containsKey(player.getUniqueId())) {
+            return ChatColor.GREEN + "Current Power: " + "1";
+        } else {
+            return ChatColor.GREEN + "Current Power: " + powerLevel.get(player.getUniqueId());
+        }
+
+
     }
 
     @Override
