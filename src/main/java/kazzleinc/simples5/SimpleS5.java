@@ -65,6 +65,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public QuakPower quakPowerClass = new QuakPower(this);
     public PowerStealerPlaceholder powerStealerPlaceholder = new PowerStealerPlaceholder(this);
     public FortniteOdyssey fortniteOdysseyClass = new FortniteOdyssey(this);
+    public TestingScrollWheelPower scrollWheelTestClass = new TestingScrollWheelPower(this);
 
     public UpsideDownWorldSetupClass upsideDownClass = new UpsideDownWorldSetupClass(this);
 
@@ -94,6 +95,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getServer().getPluginManager().registerEvents(balancedDietClass, this);
         getServer().getPluginManager().registerEvents(nextGenerationClass, this);
         getServer().getPluginManager().registerEvents(fortniteOdysseyClass, this);
+        getServer().getPluginManager().registerEvents(scrollWheelTestClass, this);
 
         getServer().getPluginManager().registerEvents(beaconatorClass, this);
         beaconatorClass.startTrackingPlayerStates();
@@ -918,6 +920,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             case "events/fortnite_odyssey":
                 cooldownMessage = fortniteOdysseyClass.getCooldownString(player, fortniteOdysseyClass.fullBoxCooldowns, "Box Up: ");
                 break;
+            case "adventure/trim_with_all_exclusive_armor_patterns":
+                cooldownMessage = scrollWheelTestClass.getCooldownString(player, scrollWheelTestClass.cooldowns, "Not using this rn lmao: ");
         }
 
         return cooldownMessage;
