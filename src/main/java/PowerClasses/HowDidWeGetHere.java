@@ -60,7 +60,7 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
                     damager.sendMessage(ChatColor.GREEN + "You have inflicted " + ChatColor.AQUA + hitPlayer.getDisplayName() + ChatColor.GREEN + " with " + ChatColor.YELLOW + plugin.titleCaseString(potion.getName().toLowerCase()) + ChatColor.GREEN + "!");
                 }
 
-                if (RandomUtils.getRandomIntInRange(0, 30) > 29) {
+                if (RandomUtils.getRandomIntInRange(0, 20) > 19) {
                     PotionEffectType potion = getRandomElement(posPotionTypes);
                     if (potion.equals(PotionEffectType.SPEED)) {
                         damager.addPotionEffect(new PotionEffect(potion, 20 * 10, 1, false, true, true));

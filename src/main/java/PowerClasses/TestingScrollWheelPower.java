@@ -50,7 +50,6 @@ public class TestingScrollWheelPower extends ParentPowerClass implements Listene
     @EventHandler
     public void onPlayerChangeSlotEvent(PlayerItemHeldEvent event) {
         Player player = event.getPlayer();
-
         if (player.isSneaking() && hasPower(player, "adventure/trim_with_all_exclusive_armor_patterns")) {
             if (!powerLevel.containsKey(player.getUniqueId())) powerLevel.put(player.getUniqueId(), 1);
 
@@ -69,6 +68,8 @@ public class TestingScrollWheelPower extends ParentPowerClass implements Listene
                     powerLevel.put(player.getUniqueId(), (powerLevel.get(player.getUniqueId()) - 1));
                 }
             }
+
+            event.setCancelled(true);
         }
     }
 }
