@@ -48,7 +48,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public NamespacedKey powerPotionKey = new NamespacedKey(this, "power");
     public odysseyCommands odysseyClass;
 
-    public GlowingEntities glowingEntitiesClass = new GlowingEntities(this);
+    public GlowingEntities glowingEntitiesClass;
 
     public DoubleJumpListener vvfClass = new DoubleJumpListener(this);
     public CompleteCatalogue catalogueClass = new CompleteCatalogue(this);
@@ -164,6 +164,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         boolean allowEntities = getConfig().getBoolean("allow-entity-disguises");
         DisguiseManager.initialize(this, allowEntities);
         provider.allowOverrideChat(true);
+
+        glowingEntitiesClass = new GlowingEntities(this);
     }
 
     @Override
