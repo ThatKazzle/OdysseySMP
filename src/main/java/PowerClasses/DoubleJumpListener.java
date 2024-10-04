@@ -146,17 +146,6 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
 //        }
 //    }
 
-
-
-    @EventHandler
-    public void onPlayerDropItemEvent(PlayerDropItemEvent event) {
-        Player player = event.getPlayer();
-
-        if (event.getItemDrop().getItemStack().getType() == Material.STRUCTURE_VOID) {
-            event.setCancelled(true);
-        }
-    }
-
     public void strikeLightningEffect(Player player, Location location) {
         World world = player.getWorld();
         world.strikeLightningEffect(location);

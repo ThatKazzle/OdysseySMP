@@ -489,6 +489,38 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         }
     }
 
+    @EventHandler
+    public void onPrepareAnvilEvent(PrepareAnvilEvent event) {
+        if (event.getInventory().getFirstItem() != null && event.getInventory().getFirstItem().getPersistentDataContainer().has(powerPotionKey)) {
+            ItemStack firstItem = event.getInventory().getFirstItem();
+            ItemMeta firstItemMeta = firstItem.getItemMeta();
+
+            ItemStack resultItem = event.getInventory().getResult();
+
+            if (resultItem != null) {
+                ItemMeta resultItemMeta = resultItem.getItemMeta();
+
+                resultItemMeta.setDisplayName(ChatColor.LIGHT_PURPLE + firstItemMeta.getDisplayName());
+            }
+
+
+        }
+    }
+
+    @EventHandler
+    public void onPlayerDropItemEvent(PlayerDropItemEvent event) {
+        Player player = event.getPlayer();
+
+        if (event.getItemDrop().getItemStack().getType() == Material.STRUCTURE_VOID) {
+            event.setCancelled(true);
+        }
+
+        if (event.getItemDrop().getPersistentDataContainer().has(powerPotionKey)) {
+            event.getItemDrop().setGlowing(true);
+        }
+    }
+
+
     public ArrayList<String> getPlayerPowersList(Player player) {
         ArrayList<String> enabledKeys = new ArrayList<>();
 
