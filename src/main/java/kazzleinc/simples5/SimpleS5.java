@@ -495,22 +495,22 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onPrepareAnvilEvent(PrepareAnvilEvent event) {
-        if (event.getInventory().getFirstItem() != null && event.getInventory().getFirstItem().getPersistentDataContainer().has(powerPotionKey)) {
-            event.getViewers().getFirst().sendMessage("You update Anvil inventory.");
-            ItemStack firstItem = event.getInventory().getFirstItem();
-            ItemMeta firstItemMeta = firstItem.getItemMeta();
-
-            ItemStack resultItem = event.getInventory().getResult();
-
-            if (resultItem != null) {
-                ItemMeta resultItemMeta = resultItem.getItemMeta();
-
-                resultItemMeta.setDisplayName(ChatColor.LIGHT_PURPLE + getAdvancementNameFormattedFromUnformattedString(firstItemMeta.getPersistentDataContainer().get(powerPotionKey, PersistentDataType.STRING)));
-            }
-
-
+    public void preventRenaming(PrepareAnvilEvent event) {
+        ItemStack original = event.getInventory().getFirstItem();
+        if (original == null || original.getItemMeta().getDisplayName() == null || event.getResult() == null) return;
+        String displayName = original.getItemMeta().getDisplayName();
+        if (original.getPersistentDataContainer().has(powerPotionKey)) {
+            ItemMeta resultMeta = event.getResult().getItemMeta();
+            resultMeta.setDisplayName(displayName);
+            event.getResult().setItemMeta(resultMeta);
+            return;
         }
+//        if (displayName.replaceAll("§","").equals(event.getInventory().getRenameText())){
+//            ItemMeta resultMeta = event.getResult().getItemMeta();
+//            resultMeta.setDisplayName(displayName);
+//            event.getResult().setItemMeta(resultMeta);
+//        }
+
     }
 
     @EventHandler
