@@ -495,6 +495,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     @EventHandler
     public void onPrepareAnvilEvent(PrepareAnvilEvent event) {
         if (event.getInventory().getFirstItem() != null && event.getInventory().getFirstItem().getPersistentDataContainer().has(powerPotionKey)) {
+            event.getViewers().getFirst().sendMessage("You update Anvil inventory.");
             ItemStack firstItem = event.getInventory().getFirstItem();
             ItemMeta firstItemMeta = firstItem.getItemMeta();
 
