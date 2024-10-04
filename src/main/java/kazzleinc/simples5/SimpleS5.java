@@ -5,6 +5,7 @@ import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import commands.*;
 import dev.iiahmed.disguise.*;
+import fr.skytasul.glowingentities.GlowingEntities;
 import io.papermc.paper.advancement.AdvancementDisplay;
 import org.bukkit.*;
 import org.bukkit.advancement.Advancement;
@@ -46,6 +47,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     public NamespacedKey powerPotionKey = new NamespacedKey(this, "power");
     public odysseyCommands odysseyClass;
+
+    public GlowingEntities glowingEntitiesClass = new GlowingEntities(this);
 
     public DoubleJumpListener vvfClass = new DoubleJumpListener(this);
     public CompleteCatalogue catalogueClass = new CompleteCatalogue(this);
@@ -500,7 +503,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             if (resultItem != null) {
                 ItemMeta resultItemMeta = resultItem.getItemMeta();
 
-                resultItemMeta.setDisplayName(ChatColor.LIGHT_PURPLE + firstItemMeta.getDisplayName());
+                resultItemMeta.setDisplayName(ChatColor.LIGHT_PURPLE + getAdvancementNameFormattedFromUnformattedString(firstItemMeta.getPersistentDataContainer().get(powerPotionKey, PersistentDataType.STRING)));
             }
 
 
@@ -508,7 +511,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     }
 
     @EventHandler
-    public void onPlayerDropItemEvent(PlayerDropItemEvent event) {
+    public void onPlayerDropItemEvent(PlayerDropItemEvent event) throws ReflectiveOperationException {
         Player player = event.getPlayer();
 
         if (event.getItemDrop().getItemStack().getType() == Material.STRUCTURE_VOID) {
@@ -516,7 +519,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         }
 
         if (event.getItemDrop().getPersistentDataContainer().has(powerPotionKey)) {
-            event.getItemDrop().setGlowing(true);
+            glowingEntitiesClass.setGlowing(event.getItemDrop(), player, ChatColor.GOLD);
         }
     }
 
