@@ -43,12 +43,24 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
         } else {
             auralBarrage(player);
         }
-
     }
 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
         return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Potion Stealer: " + getCooldownTimeLeft(player.getUniqueId(), effectStealerCooldown);
+    }
+
+    public void startVisualHits() {
+        new BukkitRunnable() {
+            @Override
+            public void run() {
+                for (Player player : Bukkit.getOnlinePlayers()) {
+                    if (hasPower(player, "husbandry/complete_catalogue")) {
+                        player.getWorld().spawnParticle(Particle.DUST, player.getEyeLocation().add(player.getEyeLocation().getDirection().normalize().multiply(6)), 2, new Particle.DustOptions(Color.AQUA, 2));
+                    }
+                }
+            }
+        }.runTaskTimer(plugin, 0, 3);
     }
 
     public void effectStealerAction(Player player) {

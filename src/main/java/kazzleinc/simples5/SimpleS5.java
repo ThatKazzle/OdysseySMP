@@ -86,6 +86,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         // Plugin startup logic
         getServer().getPluginManager().registerEvents(vvfClass, this);
         getServer().getPluginManager().registerEvents(catalogueClass, this);
+        catalogueClass.startVisualHits();
+
         getServer().getPluginManager().registerEvents(odysseyClass, this);
         getServer().getPluginManager().registerEvents(hdwghClass, this);
         getServer().getPluginManager().registerEvents(monstersClass, this);

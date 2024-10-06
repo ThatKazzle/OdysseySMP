@@ -39,7 +39,7 @@ public class FollowParticle extends BukkitRunnable {
         double radians = Math.toRadians(angle);
 
         // Set an initial speed for the arc
-        double initialSpeed = 0.5;
+        double initialSpeed = 1;
 
         // Calculate the initial velocity components based on the random angle
         double xVelocity = initialSpeed * Math.cos(radians); // Horizontal X velocity
@@ -67,11 +67,11 @@ public class FollowParticle extends BukkitRunnable {
             //Bukkit.getPlayer("ItsKazzle").sendMessage(String.valueOf(start.distance(target)));
         }
 
-        for (Entity entity : start.getNearbyEntities(0.2, 0.2, 0.2)) {
+        for (Entity entity : start.getNearbyEntities(0.4, 0.4, 0.4)) {
             if (entity instanceof LivingEntity) {
                 if (entity != this.owner) {
                     LivingEntity livEnt = (LivingEntity) entity;
-                    livEnt.setHealth(livEnt.getHealth() - 0.3);
+                    livEnt.setHealth(livEnt.getHealth() - 0.35);
                     livEnt.damage(0.01);
                     livEnt.setNoDamageTicks(0);
 
