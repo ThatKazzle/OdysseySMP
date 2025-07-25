@@ -23,6 +23,7 @@ public class FollowParticle extends BukkitRunnable {
     private double maxSpeed = 0.005; // Maximum speed
     private double easingFactor = 0.08; // How much influence the target has on the velocity each tick
     private Player owner;
+    private double damageAmt = 0.35;
 
     public FollowParticle(Location start, Vector startDirection, Location target, Player owner, SimpleS5 plugin) {
         this.owner = owner;
@@ -71,7 +72,12 @@ public class FollowParticle extends BukkitRunnable {
             if (entity instanceof LivingEntity) {
                 if (entity != this.owner) {
                     LivingEntity livEnt = (LivingEntity) entity;
-                    livEnt.setHealth(livEnt.getHealth() - 0.35);
+                    if (livEnt.getHealth() < damageAmt) {
+                        livEnt.setHealth(0);
+                    } else {
+                        livEnt.setHealth(livEnt.getHealth() - damageAmt);
+                    }
+
                     livEnt.damage(0.01);
                     livEnt.setNoDamageTicks(0);
 

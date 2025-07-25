@@ -58,6 +58,7 @@ public class PowerTwoCommand implements CommandExecutor {
                             break;
                         case "adventure/sniper_duel":
                             plugin.sniperDuelClass.action(playerName);
+                            break;
                         case "nether/uneasy_alliance":
                             plugin.uneasyAllianceClass.action(playerName);
                             break;
@@ -66,6 +67,7 @@ public class PowerTwoCommand implements CommandExecutor {
                             break;
                         case "adventure/summon_iron_golem":
                             plugin.hiredHelpClass.action(playerName);
+                            break;
                         case "nether/ride_strider_in_overworld_lava":
                             plugin.feelsLikeHomeClass.action(playerName);
                             break;

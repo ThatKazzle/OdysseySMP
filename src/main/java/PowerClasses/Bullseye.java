@@ -25,7 +25,7 @@ public class Bullseye extends ParentPowerClass implements Listener {
 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
-        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Flashbang: " + getCooldownTimeLeft(player.getUniqueId(), pearlCooldowns);
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Ender Pearl: " + getCooldownTimeLeft(player.getUniqueId(), pearlCooldowns);
     }
 
     @Override
