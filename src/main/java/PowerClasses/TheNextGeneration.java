@@ -117,7 +117,11 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
                                                     checkPlayer.setVelocity(dir);
 
                                                     if (checkPlayer.getHealth() - 8 <= 0) {
-                                                        checkPlayer.setHealth(0);
+                                                        if (checkPlayer.getInventory().getItemInOffHand().getType() == Material.TOTEM_OF_UNDYING) {
+                                                            checkPlayer.damage(20);
+                                                        } else {
+                                                            checkPlayer.setHealth(0);
+                                                        }
                                                     } else {
                                                         checkPlayer.setHealth(checkPlayer.getHealth() - 8);
                                                     }
