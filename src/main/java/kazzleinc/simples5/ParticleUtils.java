@@ -295,7 +295,11 @@ public class ParticleUtils {
                     if (currentPosition.distance(playerCheck.getEyeLocation().add(playerCheck.getLocation()).toVector().divide(new Vector(2, 2, 2))) < 2 && !playersAlreadyChecked.contains(playerCheck.getUniqueId())) {
                         playerCheck.sendMessage("" + playerCheck.getLocation().distance(currentPosition.toLocation(world)));
                         if (playerCheck.getHealth() - 12 <= 0) {
-                            playerCheck.setHealth(0);
+                            if (playerCheck.getInventory().getItemInOffHand().getType() == Material.TOTEM_OF_UNDYING) {
+                                playerCheck.damage(20);
+                            } else {
+                                playerCheck.setHealth(0);
+                            }
                         } else {
                             playerCheck.setHealth(playerCheck.getHealth() - 12);
                             playerCheck.damage(0.01);
