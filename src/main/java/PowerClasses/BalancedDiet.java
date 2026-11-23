@@ -88,36 +88,12 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
                     Player checkPlayer = player;
                     @Override
                     public void run() {
-                        AttributeInstance attackSpeed = checkPlayer.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
-                        AttributeInstance scale = checkPlayer.getAttribute(Attribute.GENERIC_SCALE);
-                        AttributeInstance reach = checkPlayer.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE);
-
-                        plugin.getLogger().info(ChatColor.GREEN + "attrRemover ran once");
-
                         if (checkPlayer.isOnline()) {
-                            if (attackSpeed.getBaseValue() != 4.0) {
-                                attackSpeed.setBaseValue(4.0);
-                                plugin.getLogger().info(ChatColor.RED + "Updated attack speed");
-                            }
-
-                            if (scale.getBaseValue() != 1.0) {
-                                scale.setBaseValue(1.0);
-                                plugin.getLogger().info(ChatColor.RED + "Updated scale");
-                            }
-
-                            if (reach.getBaseValue() != 3.0) {
-                                reach.setBaseValue(3.0);
-                                plugin.getLogger().info(ChatColor.RED + "Updated reach");
-                            }
+                            SimpleS5.resetPowerAttributes(checkPlayer);
 
                             ParticleUtils.createParticleSphere(checkPlayer.getLocation(), 3, 50, Particle.DUST, Color.ORANGE, 2);
 
-                            if (doesSiphon.contains(checkPlayer.getUniqueId())) {
-                                doesSiphon.remove(checkPlayer.getUniqueId());
-                            }
-
-                            plugin.getLogger().info("Everything goes back to normal idiot.");
-                            this.cancel();
+                            doesSiphon.remove(checkPlayer.getUniqueId());
                         }
                     }
                 }.runTaskLater(plugin, 15 * 20);
@@ -137,7 +113,9 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
             Player damagedPlayer = (Player) event.getEntity();
 
             if (doesSiphon.contains(damager.getUniqueId())) {
-                damager.setHealth(damager.getHealth() + 2);
+                // Capped at max health: setHealth above the maximum throws and the heal was lost.
+                double maxHealth = damager.getAttribute(Attribute.GENERIC_MAX_HEALTH).getValue();
+                damager.setHealth(Math.min(damager.getHealth() + 2, maxHealth));
             }
         }
     }

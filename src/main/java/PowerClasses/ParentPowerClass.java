@@ -22,6 +22,14 @@ public abstract class ParentPowerClass {
 
     public abstract void action(Player player);
 
+    /**
+     * Called once when the plugin is disabled (server stop or /reload). Override it to undo
+     * anything the power changed for a limited time, such as blocks, summoned mobs or hidden
+     * players, because the tasks that would normally undo it are cancelled with the plugin.
+     */
+    public void onShutdown() {
+    }
+
     public boolean isOnCooldown(UUID playerId, HashMap<UUID, Long> map) {
         return map.containsKey(playerId) && map.get(playerId) > System.currentTimeMillis();
     }

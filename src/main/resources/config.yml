@@ -1,5 +1,14 @@
 # Static settings and text only. Player data (powers, selected slot, claimed advancements,
 # mace status) lives in data.yml, keyed by player UUID. Edit this file freely and run /reloadconfig.
+
+# Players whose join message shows another name: <real name>: "<name to show>".
+# Set it to {} to turn this off.
+join-aliases:
+  Charli4K: "Terracotta"
+  QuakX: "Berries"
+
+# Loads the unfinished scroll-wheel test power. Needs a server restart to take effect.
+enable-test-power: false
 defaults:
   very_very_frightening: "adventure/very_very_frightening"
   complete_catalogue: "husbandry/complete_catalogue"

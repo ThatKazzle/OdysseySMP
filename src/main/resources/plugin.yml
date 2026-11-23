@@ -26,8 +26,6 @@ commands:
     description: "resets the cooldowns of your enabled powers."
     aliases:
       - "rc"
-  skin:
-    usage: "baller"
   toggle-pvp:
     usage: "/toggle-pvp"
     description: "Opped players can enable or disable PvP."

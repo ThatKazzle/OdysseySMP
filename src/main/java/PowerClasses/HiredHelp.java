@@ -15,10 +15,15 @@ import org.bukkit.potion.PotionEffect;
 import org.bukkit.potion.PotionEffectType;
 
 import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 import java.util.UUID;
 
 public class HiredHelp extends ParentPowerClass implements Listener {
     public final HashMap<UUID, Long> cooldowns = new HashMap<>();
+
+    /** Golems that are still alive, so they can be removed if the server stops before they expire. */
+    private final Set<IronGolem> activeGolems = new HashSet<>();
 
     private Player lastDamagedPlayer;
 
@@ -53,8 +58,20 @@ public class HiredHelp extends ParentPowerClass implements Listener {
             //golem.addPotionEffect(new PotionEffect(PotionEffectType.STRENGTH, Integer.MAX_VALUE, 0, false, true));
             golem.addPotionEffect(new PotionEffect(PotionEffectType.SPEED, Integer.MAX_VALUE, 2, false, true));
 
-            plugin.getServer().getScheduler().runTaskLater(plugin, golem::remove, 20 * 20);
+            activeGolems.add(golem);
+            plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
+                activeGolems.remove(golem);
+                golem.remove();
+            }, 20 * 20);
         }
+    }
+
+    @Override
+    public void onShutdown() {
+        for (IronGolem golem : activeGolems) {
+            golem.remove();
+        }
+        activeGolems.clear();
     }
 
     @EventHandler

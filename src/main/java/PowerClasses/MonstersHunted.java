@@ -2,7 +2,6 @@ package PowerClasses;
 
 import kazzleinc.simples5.ParticleUtils;
 import kazzleinc.simples5.SimpleS5;
-import net.bytebuddy.implementation.bind.annotation.Super;
 import org.bukkit.*;
 import org.bukkit.block.Block;
 import org.bukkit.block.BlockState;
@@ -32,11 +31,13 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
     public HashMap<UUID, Long> sphereCooldowns = new HashMap<>();
     public HashMap<UUID, Long> blackHoleCooldowns = new HashMap<>();
 
-    private HashMap<Location, BlockState> blockDataHashMap = new HashMap<>();
-
     private HashMap<UUID, Location> sphereCenterLocations = new HashMap<>();
 
-    private Map<Location, Material> originalBlocks = new HashMap<>();
+    /**
+     * The blocks each active ice sphere replaced, by caster, so each sphere puts back its own area.
+     * (One shared map meant a second sphere wiped the first one's copy and left ice in the world.)
+     */
+    private final Map<UUID, Map<Location, Material>> originalBlocks = new HashMap<>();
 
     private final int sphereRadius = 7;
     private final int cooldownTime = 120;
@@ -98,27 +99,27 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
             } else if (!isOnCooldown(player.getUniqueId(), sphereCooldowns)) {
                 setCooldown(player.getUniqueId(), sphereCooldowns, cooldownTime);
 
-                sphereCenterLocations.put(player.getUniqueId(), player.getLocation());
-                saveOriginalBlocks(sphereCenterLocations.get(player.getUniqueId()), sphereRadius);
-                //to run the code
+                UUID casterId = player.getUniqueId();
+                Location center = player.getLocation();
+                sphereCenterLocations.put(casterId, center);
+                saveOriginalBlocks(casterId, center, sphereRadius);
 
                 player.addPotionEffect(new PotionEffect(PotionEffectType.RESISTANCE, 8 * 20, 0, false, false, true));
 
                 BukkitTask tickRunner = new BukkitRunnable() {
                     @Override
                     public void run() {
-                        createSphere(sphereCenterLocations.get(player.getUniqueId()), sphereRadius, Material.ICE, false);
+                        createSphere(center, sphereRadius, Material.ICE);
                     }
                 }.runTaskTimer(this.plugin, 0, 1);
 
                 //to exit after 8 seconds
-                BukkitTask tickEnder = new BukkitRunnable() {
+                new BukkitRunnable() {
                     @Override
                     public void run() {
                         tickRunner.cancel();
-                        createSphere(sphereCenterLocations.get(player.getUniqueId()), sphereRadius, Material.AIR, true);
-                        sphereCenterLocations.remove(player.getUniqueId());
-                        this.cancel();
+                        restoreOriginalBlocks(casterId);
+                        sphereCenterLocations.remove(casterId);
                     }
                 }.runTaskLater(this.plugin, 20 * 8);
             }
@@ -195,106 +196,70 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
         }
     }
 
-    public void createSphere(Location center, int radius, Material replacementMaterial, boolean isReplacing) {
-        // Save original blocks if isReplacing is true
-        if (isReplacing) {
-            replaceOriginalBlocks();
-        } else {
-            // Replace blocks to create the sphere
-            for (int x = -radius; x <= radius; x++) {
-                for (int y = -radius; y <= radius; y++) {
-                    for (int z = -radius; z <= radius; z++) {
-                        if (x * x + y * y + z * z <= radius * radius) {
-                            if (x * x + y * y + z * z >= (radius - 1) * (radius - 1)) {
-                                Block block = center.getWorld().getBlockAt(center.getBlockX() + x, center.getBlockY() + y, center.getBlockZ() + z);
-                                if (!unreplaceableMaterials.contains(block.getType())) {
-                                    block.setType(replacementMaterial);
-                                }
-                            }
-                        }
-                    }
-                }
+    /** Sets every block in the sphere's shell to the material, except blocks that must not be replaced. */
+    public void createSphere(Location center, int radius, Material replacementMaterial) {
+        for (Block block : shellBlocks(center, radius)) {
+            if (!unreplaceableMaterials.contains(block.getType())) {
+                block.setType(replacementMaterial);
             }
         }
     }
 
-    public void createSphereAnimated(Player player, Location center, int radius, Material material) {
-        Bukkit.getScheduler().runTaskAsynchronously(this.plugin, () -> {
-            int layers = radius * 2 + 1;
-            for (int y = -radius; y <= radius; y++) {
-                int finalY = y;
-                Bukkit.getScheduler().runTaskLater(this.plugin, () -> createSphereLayer(center, radius, finalY, material), (y + radius) * 2L);
-            }
-        });
-    }
-
-    private void createSphereLayer(Location center, int radius, int yOffset, Material material) {
-        saveOriginalBlocks(center, radius);
-        double rSquared = radius * radius;
-        for (int x = -radius; x <= radius; x++) {
-            for (int z = -radius; z <= radius; z++) {
-                if (x * x + z * z + yOffset * yOffset <= rSquared) {
-                    if (x * x + yOffset * yOffset + z * z >= (radius - 1) * (radius - 1)) {
-                        Location blockLocation = center.clone().add(x, yOffset, z);
-                        blockLocation.getBlock().setType(material);
-                    }
-                }
-            }
+    /** Puts back every ice sphere still standing. Called when the plugin is disabled. */
+    @Override
+    public void onShutdown() {
+        for (UUID casterId : new ArrayList<>(originalBlocks.keySet())) {
+            restoreOriginalBlocks(casterId);
         }
+        sphereCenterLocations.clear();
     }
 
-    public Block getBlockBelowPlayer(Player player) {
-        // Get the player's location
-        Location playerLocation = player.getLocation();
-
-        // Create a new location one block below the player's feet
-        Location blockBelowLocation = playerLocation.clone().subtract(0, 1, 0);
-
-        // Get the block at that location
-        Block blockBelow = blockBelowLocation.getBlock();
-
-        // While the block is air, continue going down until a non-air block is found
-        while (blockBelow.getType() == Material.AIR && blockBelowLocation.getY() > 0) {
-            blockBelowLocation.subtract(0, 1, 0);
-            blockBelow = blockBelowLocation.getBlock();
-        }
-
-        // Return the block below the player
-        return blockBelow;
-    }
-
-    private void saveOriginalBlocks(Location center, int radius) {
-        originalBlocks.clear(); // Clear existing saved blocks
-
+    private List<Block> shellBlocks(Location center, int radius) {
+        List<Block> blocks = new ArrayList<>();
         for (int x = -radius; x <= radius; x++) {
             for (int y = -radius; y <= radius; y++) {
                 for (int z = -radius; z <= radius; z++) {
-                    if (x * x + y * y + z * z <= radius * radius) {
-                        if (x * x + y * y + z * z >= (radius - 1) * (radius - 1)) {
-                            Block block = center.getWorld().getBlockAt(center.getBlockX() + x, center.getBlockY() + y, center.getBlockZ() + z);
-
-                            originalBlocks.put(block.getLocation(), block.getType());
-                            blockDataHashMap.put(block.getLocation(), block.getState());
-                        }
+                    int distanceSquared = x * x + y * y + z * z;
+                    if (distanceSquared <= radius * radius && distanceSquared >= (radius - 1) * (radius - 1)) {
+                        blocks.add(center.getWorld().getBlockAt(center.getBlockX() + x, center.getBlockY() + y, center.getBlockZ() + z));
                     }
                 }
             }
         }
+        return blocks;
     }
 
-    private void replaceOriginalBlocks() {
-        for (Map.Entry<Location, Material> entry : originalBlocks.entrySet()) {
+    private void saveOriginalBlocks(UUID casterId, Location center, int radius) {
+        Map<Location, Material> saved = new HashMap<>();
+        for (Block block : shellBlocks(center, radius)) {
+            Location loc = block.getLocation();
+            // If another sphere already turned this block to ice, its copy holds the real block.
+            Material original = block.getType();
+            for (Map<Location, Material> other : originalBlocks.values()) {
+                if (other.containsKey(loc)) {
+                    original = other.get(loc);
+                    break;
+                }
+            }
+            saved.put(loc, original);
+        }
+        originalBlocks.put(casterId, saved);
+    }
 
+    private void restoreOriginalBlocks(UUID casterId) {
+        Map<Location, Material> saved = originalBlocks.remove(casterId);
+        if (saved == null) return;
+
+        for (Map.Entry<Location, Material> entry : saved.entrySet()) {
             Location loc = entry.getKey();
-            Material material = entry.getValue();
+            // Still part of another active sphere: that sphere puts it back when it ends.
+            boolean stillInUse = originalBlocks.values().stream().anyMatch(other -> other.containsKey(loc));
+            if (stillInUse) continue;
+
             Block block = loc.getBlock();
             if (!unreplaceableMaterials.contains(block.getType())) {
-                block.setType(material);
+                block.setType(entry.getValue());
             }
-
         }
-        originalBlocks.clear(); // Clear saved blocks after replacing them back
     }
-
-
 }

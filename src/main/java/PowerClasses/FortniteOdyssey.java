@@ -179,6 +179,13 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
         savedBlocks.clear();
     }
 
+    /** Takes down any box that is still up, so a restart never leaves iron blocks in the world. */
+    @Override
+    public void onShutdown() {
+        restoreBlocks();
+        protectedBlocks.clear();
+    }
+
     @EventHandler
     public void onEntityShootBowEvent(EntityShootBowEvent event) {
         if (event.getEntity() instanceof Player) {

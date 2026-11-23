@@ -31,9 +31,6 @@ import org.bukkit.scheduler.BukkitRunnable;
 import org.bukkit.scheduler.BukkitTask;
 import org.bukkit.util.Vector;
 
-import java.io.ByteArrayOutputStream;
-import java.io.DataOutputStream;
-import java.io.IOException;
 import java.math.BigDecimal;
 import java.math.RoundingMode;
 import java.util.*;
@@ -42,8 +39,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public boolean pvpEnabled = true;
 
     public ProtocolManager protocolManager;
-
-    private SimpleS5 localPlugin = this;
 
     public NamespacedKey powerPotionKey = new NamespacedKey(this, "power");
     public odysseyCommands odysseyClass;
@@ -70,8 +65,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public FortniteOdyssey fortniteOdysseyClass = new FortniteOdyssey(this);
     public TestingScrollWheelPower scrollWheelTestClass = new TestingScrollWheelPower(this);
 
-    public UpsideDownWorldSetupClass upsideDownClass = new UpsideDownWorldSetupClass(this);
-
     public final DisguiseProvider provider = DisguiseManager.getProvider();
 
     /** Player data (powers, slot, claimed advancements). Use this, never config.yml, for player state. */
@@ -79,8 +72,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     /** Every power, its key, display name and action-bar cooldown. Filled by registerPowers(). */
     public final PowerRegistry powers = new PowerRegistry();
-
-    public boolean resetPlayerHealthAttribute = false;
 
     public BukkitTask secondsTask = null;
 
@@ -131,9 +122,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         getCommand("scatter").setExecutor(new playerScatterCommand(this));
 
         getServer().getMessenger().registerIncomingPluginChannel(this, "odysseyclientside:power_channel", new modPacketListener(this));
-        //getServer().getMessenger().registerOutgoingPluginChannel(this, "odysseyclientside:power_channel_rec");
-
-        //CustomWorldGenerator.createVoidWorld(this, "void_world");
 
         secondsTask = new BukkitRunnable() {
             @Override
@@ -162,14 +150,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             }
         }.runTaskTimer(this, 0, 20);
 
-//        getServer().getScheduler().runTaskLater(this, () -> {
-//            try {
-//                upsideDownClass.createUpsideDownWorld();
-//            } catch (IOException e) {
-//                throw new RuntimeException(e);
-//            }
-//        }, 20L); // Delay to allow world loading
-
         boolean allowEntities = getConfig().getBoolean("allow-entity-disguises");
         DisguiseManager.initialize(this, allowEntities);
         provider.allowOverrideChat(true);
@@ -179,51 +159,51 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
+        // Bukkit cancels this plugin's tasks after onDisable, so anything a power changed for a
+        // limited time (ice spheres, boxes, golems, invisibility, Juggernaut size) is undone here.
+        if (secondsTask != null) secondsTask.cancel();
+
+        Set<ParentPowerClass> shutDown = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (PowerRegistry.PowerDefinition def : powers.all()) {
+            if (!shutDown.add(def.power())) continue;
+            try {
+                def.power().onShutdown();
+            } catch (RuntimeException e) {
+                getLogger().log(java.util.logging.Level.WARNING, "Cleanup failed for " + def.key(), e);
+            }
+        }
+
+        for (Player player : Bukkit.getOnlinePlayers()) {
+            resetPowerAttributes(player);
+        }
+
+        if (glowingEntitiesClass != null) glowingEntitiesClass.disable();
+
         // Write any unsaved player data before the server stops.
         if (powerStore != null) powerStore.shutdown();
     }
 
-    @EventHandler
-    public void onPlayerQuitEvent(PlayerQuitEvent event) {
-        Player checkPlayer = event.getPlayer();
+    /**
+     * Puts back the attributes Juggernaut (Balanced Diet) changes: attack speed, size and reach.
+     * They are saved with the player, so a crash or restart mid-power would otherwise keep them.
+     */
+    public static void resetPowerAttributes(Player player) {
+        setBaseIfChanged(player.getAttribute(Attribute.GENERIC_ATTACK_SPEED), 4.0);
+        setBaseIfChanged(player.getAttribute(Attribute.GENERIC_SCALE), 1.0);
+        setBaseIfChanged(player.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE), 3.0);
+    }
 
-        AttributeInstance attackSpeed = checkPlayer.getAttribute(Attribute.GENERIC_ATTACK_SPEED);
-        AttributeInstance scale = checkPlayer.getAttribute(Attribute.GENERIC_SCALE);
-        AttributeInstance reach = checkPlayer.getAttribute(Attribute.PLAYER_ENTITY_INTERACTION_RANGE);
-
-        //attribute thing, to make sure that the player goes back to normal attributes when they leave
-        if (checkPlayer.isOnline()) {
-            if (attackSpeed.getBaseValue() != 4.0) {
-                attackSpeed.setBaseValue(4.0);
-            }
-
-            if (scale.getBaseValue() != 1.0) {
-                scale.setBaseValue(1.0);
-            }
-
-            if (reach.getBaseValue() != 3.0) {
-                reach.setBaseValue(3.0);
-            }
-
-            if (balancedDietClass.doesSiphon.contains(checkPlayer.getUniqueId())) {
-                balancedDietClass.doesSiphon.remove(checkPlayer.getUniqueId());
-            }
+    private static void setBaseIfChanged(AttributeInstance attribute, double value) {
+        if (attribute != null && attribute.getBaseValue() != value) {
+            attribute.setBaseValue(value);
         }
     }
 
-    public void sendCustomPacket(Player player, String message) {
-        ByteArrayOutputStream byteArrayOutputStream = new ByteArrayOutputStream();
-        DataOutputStream dataOutputStream = new DataOutputStream(byteArrayOutputStream);
-
-        try {
-            dataOutputStream.writeUTF(message);
-        } catch (IOException e) {
-            e.printStackTrace();
-            return;
-        }
-
-        byte[] data = byteArrayOutputStream.toByteArray();
-        player.sendPluginMessage(this, "odysseyclientside:power_channel_rec", data);
+    @EventHandler
+    public void onPlayerQuitEvent(PlayerQuitEvent event) {
+        Player player = event.getPlayer();
+        resetPowerAttributes(player);
+        balancedDietClass.doesSiphon.remove(player.getUniqueId());
     }
 
     @EventHandler
@@ -285,19 +265,17 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
         powerStore.touchName(player);
-        String name = "";
-        if (event.getPlayer().getName().equals("Charli4K") || event.getPlayer().getName().equals("QuakX")) {
-            if (event.getPlayer().getName().equals("Charli4K")) {
-                name = "Terracotta";
-            } else if (event.getPlayer().getName().equals("QuakX")) {
-                name = "Berries";
-            }
-            Disguise disguise = Disguise.builder()
-                    .setName(name)
-                    .setSkin(SkinAPI.MOJANG, UUID.fromString("ab1a82ad-c618-465d-8728-24751b0d07f9"))
-                    .build();
 
-            event.setJoinMessage(ChatColor.YELLOW + disguise.getName() + " joined the server");
+        // Fallback for the quit handler, which doesn't run if the server stopped or crashed.
+        resetPowerAttributes(player);
+
+        // join-aliases in config.yml: show another name in this player's join message.
+        // If the server's config.yml has no join-aliases yet, the list built into the jar is used.
+        // Once it has one (even {}), only that list counts, so it can be emptied to turn this off.
+        String aliasPath = "join-aliases." + player.getName();
+        String alias = getConfig().isSet("join-aliases") ? getConfig().getString(aliasPath, null) : getConfig().getString(aliasPath);
+        if (alias != null && !alias.isBlank()) {
+            event.setJoinMessage(ChatColor.YELLOW + alias + " joined the server");
         }
     }
 
@@ -305,7 +283,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public void onPlayerInteractEvent(PlayerInteractEvent event) {
         Player player = event.getPlayer();
         //Handling the clicking of the item if it is a power item
-        //sendCustomPacket(player, "Sigma");
         if (event.getAction().toString().contains("RIGHT_CLICK")) {
             if (event.getItem() != null) {
                 ItemStack item = event.getItem();
@@ -386,40 +363,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         }
     }
 
-    public void moveEntityTowardsLocation(Entity entity, Location target, long durationInTicks) {
-        Location startLocation = entity.getLocation();  // Starting location of the entity
-        long iterations = durationInTicks / 2;  // Number of iterations (adjust as needed)
-        double initialDistance = startLocation.distance(target);  // Initial distance to the target
-
-        // Start the task to move the entity
-        new BukkitRunnable() {
-            long tickCount = 0;
-
-            @Override
-            public void run() {
-                if (tickCount >= iterations) {
-                    // Final teleport to the exact target location
-                    entity.teleport(target);
-                    this.cancel();  // Stop the task
-                    return;
-                }
-
-                // Calculate the current exponential factor (starts at 1 and decreases)
-                double factor = Math.pow(0.5, tickCount / (double) iterations);
-
-                // Calculate the new position
-                double newX = startLocation.getX() + (target.getX() - startLocation.getX()) * (1 - factor);
-                double newY = startLocation.getY() + (target.getY() - startLocation.getY()) * (1 - factor);
-                double newZ = startLocation.getZ() + (target.getZ() - startLocation.getZ()) * (1 - factor);
-
-                // Teleport the entity to the new location
-                entity.teleport(new Location(entity.getWorld(), newX, newY, newZ));
-
-                tickCount++;  // Increment the tick counter
-            }
-        }.runTaskTimer(this, 0L, 2L);  // Run the task every 2 ticks (adjust as needed)
-    }
-
     /** True if the stack is a dropped power item. Safe for items with no meta. */
     public boolean isPowerItem(ItemStack stack) {
         if (stack == null) return false;
@@ -433,7 +376,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             Item item = (Item) event.getEntity();
 
             if (isPowerItem(item.getItemStack())) {
-                getServer().getLogger().info("BALLER!");
                 event.setCancelled(true);
             }
         }
@@ -446,30 +388,16 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             Item item = (Item) event.getEntity();
 
             if (isPowerItem(item.getItemStack()) && event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
-                getServer().getLogger().info("BALLER!");
                 event.setCancelled(true);
             }
         }
 
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             Player damager = (Player) event.getDamager();
-            Player hitPlayer = (Player) event.getEntity();
-
-            boolean blocked = event.getFinalDamage() == 0;
 
             if (!pvpEnabled && !damager.isOp()) {
                 event.setCancelled(true);
             }
-
-//            if (hitPlayer.isBlocking()) {
-//                if (damager.getInventory().getItemInMainHand().getType().equals(Material.MACE)) {
-//                    hitPlayer.clearActiveItem();
-//                    hitPlayer.setCooldown(Material.SHIELD, 20 * 5);
-//                    hitPlayer.setShieldBlockingDelay(20 * 5);
-//                    hitPlayer.playEffect(EntityEffect.SHIELD_BREAK);
-//                    hitPlayer.getWorld().playSound(hitPlayer.getLocation(), Sound.ITEM_SHIELD_BREAK, 1.f, 1.f);
-//                }
-//            }
         }
     }
 
@@ -488,13 +416,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             event.getInventory().setResult((ItemStack) null);
         }
     }
-
-//    @EventHandler
-//    public void onCrafterCraftItemEvent(CrafterCraftEvent event) {
-//        if (getConfig().getBoolean("world.mace_crafted", false)) {
-//            if (event.getRecipe().getResult().getType().equals(Material.MACE)) event.setCancelled(true);
-//        }
-//    }
 
     @EventHandler
     public void onPlayerPlaceBlockEvent(BlockPlaceEvent event) {
@@ -525,14 +446,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             ItemMeta resultMeta = event.getResult().getItemMeta();
             resultMeta.setDisplayName(displayName);
             event.getResult().setItemMeta(resultMeta);
-            return;
         }
-//        if (displayName.replaceAll("§","").equals(event.getInventory().getRenameText())){
-//            ItemMeta resultMeta = event.getResult().getItemMeta();
-//            resultMeta.setDisplayName(displayName);
-//            event.getResult().setItemMeta(resultMeta);
-//        }
-
     }
 
     @EventHandler
@@ -637,33 +551,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     }
 
-    private void disableShieldIfPlayerInFront(Player player) {
-        // Perform ray tracing to detect if a player is within 4.5 blocks in front
-        Location eyeLocation = player.getEyeLocation();
-        Vector direction = eyeLocation.getDirection();
-        double maxDistance = 4.5;
-
-        // Get a list of entities within a 4.5 block radius
-        List<Entity> nearbyEntities = player.getNearbyEntities(maxDistance, maxDistance, maxDistance);
-        for (Entity entity : nearbyEntities) {
-            if (entity instanceof Player) {
-                Player targetPlayer = (Player) entity;
-                // Calculate the vector from the player to the target
-                Vector toTarget = targetPlayer.getEyeLocation().toVector().subtract(eyeLocation.toVector());
-                // Check if the target is in front of the player within 4.5 blocks
-                if (toTarget.normalize().dot(direction) > 0.95) {
-                    // Target is in front of the player within the specified range
-                    if (targetPlayer.getInventory().getItemInMainHand().getType() == Material.SHIELD || targetPlayer.getInventory().getItemInOffHand().getType() == Material.SHIELD) {
-                        // Disable the shield by enacting a cooldown
-                        targetPlayer.setCooldown(Material.SHIELD, 100); // 5 seconds cooldown (100 ticks)
-                        player.sendMessage("You disabled the shield of " + provider.getInfo(targetPlayer).getName() + "!");
-                        targetPlayer.sendMessage("Your shield was disabled by " + provider.getInfo(player).getName() + "!");
-                    }
-                }
-            }
-        }
-    }
-
     public Advancement grantAdvancement(Player player, String key) {
         NamespacedKey advancementKey = NamespacedKey.minecraft(key);
         Advancement advancement = getServer().getAdvancement(advancementKey);
@@ -682,11 +569,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     public boolean playerIsAtPowerLimit(Player player) {
         return powerStore.getEnabledPowerCount(player) >= 2;
-    }
-
-    /** True if the player has an entry for this power at all (enabled or not), as before. */
-    public boolean playerAlreadyHasPower(Player player, String key) {
-        return powerStore.getPowerKeys(player).contains(key);
     }
 
     public boolean playerHasPower(Player player, String powerKey) {
@@ -756,22 +638,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         return a.clone().multiply(1 - t).add(b.clone().multiply(t));
     }
 
-    private void playSonicBoomEffect(Location startLocation, Vector direction) {
-        // Play particles along the path of the Sonic Boom
-        for (double i = 0; i < 20; i += 0.5) {
-            Location currentLocation = startLocation.clone().add(direction.clone().multiply(i));
-            currentLocation.getWorld().spawnParticle(Particle.SONIC_BOOM, currentLocation, 1, 0, 0, 0, 0);
-        }
-
-        // Play the Warden's Sonic Boom sound
-        startLocation.getWorld().playSound(startLocation, Sound.ENTITY_WARDEN_SONIC_BOOM, 1.0f, 1.0f);
-    }
-
-    private void applyKnockback(Player target, Location source) {
-        Vector knockbackDirection = target.getLocation().toVector().subtract(source.toVector()).normalize();
-        target.setVelocity(knockbackDirection.multiply(1.5)); // Apply knockback
-    }
-
     /**
      * The one list of powers. Keys, cooldown maps and labels are the ones the old switchOnPowers /
      * PowerTwoCommand switches used; display names keep the old renames (e.g. All Effects ->
@@ -795,7 +661,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         powers.register("events/charlis_odyssey", "Charlis Odyssey", charliPowerClass, "Dash: ", () -> charliPowerClass.cooldowns);
         powers.register("events/quaks_odyssey", "Quaks Odyssey", quakPowerClass, "Double Jump: ", () -> quakPowerClass.cooldowns);
         powers.register("events/fortnite_odyssey", "Fortnite Odyssey", fortniteOdysseyClass, "Box Up: ", () -> fortniteOdysseyClass.fullBoxCooldowns);
-        powers.register("adventure/trim_with_all_exclusive_armor_patterns", "Trim With All Exclusive Armor Patterns", scrollWheelTestClass, "Not using this rn lmao: ", () -> scrollWheelTestClass.cooldowns);
+        // Work-in-progress scroll-wheel power: only loaded when enable-test-power is true in config.yml.
+        if (getConfig().getBoolean("enable-test-power", false)) {
+            powers.register("adventure/trim_with_all_exclusive_armor_patterns", "Trim With All Exclusive Armor Patterns", scrollWheelTestClass, "Not using this rn lmao: ", () -> scrollWheelTestClass.cooldowns);
+        }
         // Placeholder slot a WOPC victim holds while their power is stolen; shows when it comes back.
         powers.register("player/power_stolen", "Power Stolen", powerStealerPlaceholder, "", () -> wopcClass.playerGetsPowerBackTime);
     }

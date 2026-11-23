@@ -189,6 +189,27 @@ public class UneasyAlliance extends ParentPowerClass implements Listener {
         return invisiblePlayers.contains(player.getUniqueId());
     }
 
+    /** Shows invisible players again and unfreezes frozen ones, so a /reload can't leave them stuck. */
+    @Override
+    public void onShutdown() {
+        for (UUID id : invisiblePlayers) {
+            Player hidden = Bukkit.getPlayer(id);
+            if (hidden == null) continue;
+            for (Player viewer : Bukkit.getOnlinePlayers()) {
+                viewer.showPlayer(plugin, hidden);
+            }
+        }
+        invisiblePlayers.clear();
+
+        for (UUID id : isFrozen.keySet()) {
+            Player frozen = Bukkit.getPlayer(id);
+            if (frozen != null && (frozen.getGameMode() == GameMode.SURVIVAL || frozen.getGameMode() == GameMode.ADVENTURE)) {
+                frozen.setAllowFlight(false);
+            }
+        }
+        isFrozen.clear();
+    }
+
     public Location getInterpolatedLocation(Location start, Location end, double t) {
         if (t < 0.0 || t > 1.0) {
             throw new IllegalArgumentException("t must be between 0 and 1");

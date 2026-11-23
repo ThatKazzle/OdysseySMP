@@ -24,7 +24,7 @@ import java.util.concurrent.ThreadLocalRandom;
 
 public class Beaconator extends ParentPowerClass implements Listener {
     public final HashMap<UUID, Long> cooldowns = new HashMap<>();
-    public final HashMap<UUID, Long> rewindCooldwns = new HashMap<>();
+    public final HashMap<UUID, Long> rewindCooldowns = new HashMap<>();
     private final Map<UUID, LinkedHashMap<Long, PlayerState>> playerStates = new HashMap<>();
 
     private SpecialParticleUtils particleUtils;
@@ -58,7 +58,7 @@ public class Beaconator extends ParentPowerClass implements Listener {
 
     @Override
     public String getCooldownString(Player player, HashMap<UUID, Long> cooldownMap, String powerName) {
-        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Run it Back: " + getCooldownTimeLeft(player.getUniqueId(), rewindCooldwns);
+        return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Run it Back: " + getCooldownTimeLeft(player.getUniqueId(), rewindCooldowns);
     }
 
     @EventHandler
@@ -103,15 +103,15 @@ public class Beaconator extends ParentPowerClass implements Listener {
     public void rewindAction(Player player) {
         PlayerState state = getPlayerState(player.getUniqueId(), 3000);
 
-        if (!isOnCooldown(player.getUniqueId(), rewindCooldwns)) {
-            setCooldown(player.getUniqueId(), rewindCooldwns, 120);
+        if (!isOnCooldown(player.getUniqueId(), rewindCooldowns)) {
+            setCooldown(player.getUniqueId(), rewindCooldowns, 120);
 
             player.getWorld().spawnParticle(Particle.PORTAL, player.getLocation(), 100, 1, 1, 1, 1);
 
             player.getWorld().playSound(player.getLocation(), Sound.ENTITY_ENDER_PEARL_THROW, 0.5f, 1.f);
             state.apply(player);
         } else {
-            cantUsePowerMessage(player, rewindCooldwns, "Run it Back");
+            cantUsePowerMessage(player, rewindCooldowns, "Run it Back");
         }
     }
 
@@ -160,7 +160,7 @@ public class Beaconator extends ParentPowerClass implements Listener {
                         });
 
                         playerStates.get(playerId).put(currentTime, new PlayerState(player));
-                        if (!isOnCooldown(playerId, rewindCooldwns)) {
+                        if (!isOnCooldown(playerId, rewindCooldowns)) {
                             particleUtils.sendClientDustParticle(player, getPlayerState(playerId, 3000).getRewindLocation().add(new Vector(0, 0.2, 0)), new Particle.DustOptions(Color.PURPLE, 2.f), 1);
                         }
                     }
