@@ -1,5 +1,6 @@
 package commands;
 
+import kazzleinc.simples5.PowerRegistry;
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.ChatColor;
 import org.bukkit.command.Command;
@@ -8,9 +9,7 @@ import org.bukkit.command.CommandSender;
 import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
-import java.util.ArrayList;
-import java.util.List;
-
+/** /rc [player]: ops reset all power cooldowns for themselves, or for the named player only. */
 public class resetCooldownCommand implements CommandExecutor {
 
     SimpleS5 plugin;
@@ -21,87 +20,40 @@ public class resetCooldownCommand implements CommandExecutor {
 
     @Override
     public boolean onCommand(@NotNull CommandSender sender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        if (sender instanceof Player) {
-            Player cmdSender = (Player) sender;
-            Player player2;
-            if (args.length > 0 && plugin.getServer().getPlayer(args[0]) != null) {
-                player2 = plugin.getServer().getPlayer(args[0]);
-            } else {
-                player2 = null;
-            }
+        if (!(sender instanceof Player cmdSender)) return false;
 
-            if (cmdSender.isOp()) {
-                //plugin.modifyHashMapsInSubclasses(cmdSender.getUniqueId());
-
-                resetAllCooldowns(cmdSender);
-                plugin.updateCooldownDisplay();
-            }
-
-            if (player2 == null) {
-
-            } else {
-                if (args.length == 1) {
-                    if (cmdSender.isOp()) {
-                        //plugin.modifyHashMapsInSubclasses(player2.getUniqueId());
-                        resetAllCooldowns(player2);
-                        plugin.updateCooldownDisplay();
-                    } else {
-                        cmdSender.sendMessage(ChatColor.RED + "You can't run that command!");
-                    }
-                } else {
-                    usageMessage(cmdSender);
-                }
-
-            }
-
+        if (!cmdSender.isOp()) {
+            cmdSender.sendMessage(ChatColor.RED + "You can't run that command!");
             return true;
-        } else {
-            return false;
         }
+
+        if (args.length > 1) {
+            usageMessage(cmdSender);
+            return true;
+        }
+
+        Player target = cmdSender;
+        if (args.length == 1) {
+            target = plugin.getServer().getPlayer(args[0]);
+            if (target == null) {
+                cmdSender.sendMessage(ChatColor.RED + "No online player named " + args[0] + ".");
+                return true;
+            }
+        }
+
+        resetAllCooldowns(target);
+        plugin.updateCooldownDisplay();
+
+        if (target != cmdSender) {
+            cmdSender.sendMessage(ChatColor.GREEN + "Reset all cooldowns for " + target.getName() + ".");
+        }
+        return true;
     }
 
+    /** Clears every cooldown of every power for the player, so no power can be missed. */
     public void resetAllCooldowns(Player player) {
-        List<String> enabledKeys = new ArrayList<>();
-
-        if (plugin.powerStore.hasPowersSection(player)) {
-            for (String keys : plugin.powerStore.getPowerKeys(player)) {
-                String key = keys;
-                boolean value = plugin.powerStore.hasPower(player, key);
-
-                if (value) {
-                    enabledKeys.add(key);
-
-                    switch (key) {
-                        case "adventure/very_very_frightening":
-                            plugin.vvfClass.cooldowns.replace(player.getUniqueId(), 0L);
-                            break;
-                        case "nether/all_effects":
-                            plugin.hdwghClass.rightClickedCooldowns.replace(player.getUniqueId(), 0L);
-                            break;
-                        case "husbandry/complete_catalogue":
-                            break;
-                        case "adventure/kill_all_mobs":
-                            plugin.monstersClass.sphereCooldowns.replace(player.getUniqueId(), 0L);
-                            break;
-                        case "adventure/sniper_duel":
-                            plugin.sniperDuelClass.cooldowns.replace(player.getUniqueId(), 0L);
-                            break;
-                        case "nether/uneasy_alliance":
-                            plugin.uneasyAllianceClass.cooldowns.replace(player.getUniqueId(), 0L);
-                            break;
-                        case "husbandry/froglights":
-                            plugin.wopcClass.cooldowns.replace(player.getUniqueId(), 0L);
-                            break;
-                        case "nether/create_full_beacon":
-                            plugin.beaconatorClass.cooldowns.replace(player.getUniqueId(), 0L);
-                            plugin.beaconatorClass.rewindCooldwns.replace(player.getUniqueId(), 0L);
-                            break;
-                        case "end/dragon_egg":
-                            plugin.nextGenerationClass.cooldowns.replace(player.getUniqueId(), 0L);
-                            break;
-                    }
-                }
-            }
+        for (PowerRegistry.PowerDefinition def : plugin.powers.all()) {
+            def.power().resetCooldowns(player.getUniqueId());
         }
     }
 

@@ -30,6 +30,33 @@ public abstract class ParentPowerClass {
         return plugin.powerStore.hasPower(player, powerKey);
     }
 
+    /**
+     * Clears every cooldown this power keeps for the player: every {@code Map<UUID, Long>} field
+     * declared on the power's class, except ones marked {@link NotACooldown}. New cooldown maps
+     * are picked up automatically, so /rc can't fall out of date.
+     */
+    public void resetCooldowns(UUID playerId) {
+        for (Class<?> type = getClass(); type != null && type != Object.class; type = type.getSuperclass()) {
+            for (java.lang.reflect.Field field : type.getDeclaredFields()) {
+                if (java.lang.reflect.Modifier.isStatic(field.getModifiers())) continue;
+                if (!java.util.Map.class.isAssignableFrom(field.getType())) continue;
+                if (field.isAnnotationPresent(NotACooldown.class)) continue;
+                if (!(field.getGenericType() instanceof java.lang.reflect.ParameterizedType generic)) continue;
+
+                java.lang.reflect.Type[] args = generic.getActualTypeArguments();
+                if (args.length != 2 || args[0] != UUID.class || args[1] != Long.class) continue;
+
+                try {
+                    field.setAccessible(true);
+                    Object map = field.get(this);
+                    if (map != null) ((java.util.Map<?, ?>) map).remove(playerId);
+                } catch (IllegalAccessException e) {
+                    plugin.getLogger().warning("Could not reset " + type.getSimpleName() + "." + field.getName() + ": " + e.getMessage());
+                }
+            }
+        }
+    }
+
 
     /**
      * Sets a cooldown on a list, making it easier to do multiple powers.

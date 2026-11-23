@@ -27,6 +27,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
     public HashMap<UUID, Long>  tornadoCooldowns = new HashMap<>();
 
+    @NotACooldown // "stolen power returns at", not a cooldown
     public HashMap<UUID, Long>  playerGetsPowerBackTime = new HashMap<>();
 
     private TrimUtils trimUtils = new TrimUtils();

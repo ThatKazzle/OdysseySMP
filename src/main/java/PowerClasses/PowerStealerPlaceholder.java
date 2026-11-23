@@ -2,6 +2,7 @@ package PowerClasses;
 
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.ChatColor;
+import org.bukkit.Sound;
 import org.bukkit.entity.Player;
 
 import java.util.HashMap;
@@ -25,6 +26,8 @@ public class PowerStealerPlaceholder extends ParentPowerClass {
 
     @Override
     public void action(Player player) {
-
+        // A WOPC victim holds this slot until their stolen power comes back.
+        player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
+        player.sendMessage(ChatColor.RED + "Your power has been stolen, you can't use this!");
     }
 }

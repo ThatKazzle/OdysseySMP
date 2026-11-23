@@ -27,6 +27,7 @@ public class SniperDuel extends ParentPowerClass implements Listener {
     SimpleS5 plugin;
 
     public final HashMap<UUID, Long> cooldowns = new HashMap<>();
+    @NotACooldown // "homing arrows active until", not a cooldown
     public final HashMap<UUID, Long> isUsingHomingArrows = new HashMap<>();
 
     private final List<Player> affectedPlayers = new ArrayList<>();

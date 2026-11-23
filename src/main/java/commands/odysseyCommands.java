@@ -82,7 +82,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
         if (args.length == 1) {
             return StringUtil.copyPartialMatches(args[0], AUTOFILL_ARGS_1, new ArrayList<>());
-        } else if (args.length == 2 && args[0].equals("powers")) {
+        } else if (args.length == 2 && args[0].equals("description")) {
             return StringUtil.copyPartialMatches(args[1], AUTOFILL_ARGS_2, new ArrayList<>());
         }
 
@@ -211,34 +211,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
         for (Map.Entry<String, Boolean> entry : powerStatus.entrySet()) {
             String status = entry.getValue() ? ChatColor.RED + "Taken" : ChatColor.GREEN + "Not Taken";
-            String powerName = "";
-
-            switch (plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey())) {
-                case "All Effects":
-                    powerName = "How Did We Get Here?";
-                    break;
-                case "Kill All Mobs":
-                    powerName = "Monsters Hunted";
-                    break;
-                case "Froglights":
-                    powerName = "WOPC";
-                    break;
-                case "Create Full Beacon":
-                    powerName = "Beaconator";
-                    break;
-                case "Ride Strider In Overworld Lava":
-                    powerName = "Feels Like Home";
-                    break;
-                case "Dragon Egg":
-                    powerName = "The Next Generation";
-                    break;
-                case "Summon Iron Golem":
-                    powerName = "Hired Help";
-                    break;
-                default:
-                    powerName = plugin.getAdvancementNameFormattedFromUnformattedString(entry.getKey());
-                    break;
-            }
+            String powerName = plugin.powers.displayName(entry.getKey());
 
             player.sendMessage(ChatColor.AQUA + powerName + ": " + status);
         }

@@ -33,7 +33,9 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
 
     PotionEffect regenPot = new PotionEffect(PotionEffectType.REGENERATION, 20 * 15, 2, false, false, true);
     PotionEffect strengthPot = new PotionEffect(PotionEffectType.STRENGTH, 20 * 15, 2, false, false, true);
-    PotionEffect fireResPot = new PotionEffect(PotionEffectType.FIRE_RESISTANCE, Integer.MAX_VALUE, 0, false, false, true);
+    // Refreshed on every move while the power is held (onPlayerMoveEvent). Kept short rather than
+    // infinite so it wears off within 10s however the power is lost (withdrawn, stolen, dropped).
+    PotionEffect fireResPot = new PotionEffect(PotionEffectType.FIRE_RESISTANCE, 20 * 10, 0, false, false, true);
 
     SimpleS5 plugin;
 
@@ -154,7 +156,14 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
     @EventHandler
     public void onPlayerMoveEvent(PlayerMoveEvent event) {
         Player player = event.getPlayer();;
-        if (plugin.powerStore.hasPower(player, "ride_strider_in_overworld_lava")) {
+        if (plugin.powerStore.hasPower(player, "nether/ride_strider_in_overworld_lava")) {
+            player.addPotionEffect(fireResPot);
+        }
+    }
+
+    /** Called every second by SimpleS5's timer, so a holder standing still in lava stays protected. */
+    public void refreshFireResistance(Player player) {
+        if (plugin.powerStore.hasPower(player, "nether/ride_strider_in_overworld_lava")) {
             player.addPotionEffect(fireResPot);
         }
     }

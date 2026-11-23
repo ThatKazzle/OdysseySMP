@@ -44,16 +44,6 @@ descriptions:
     - "either Blindness, Wither, Weakness, or Slowness I."
     - "2. §lSword Blessing§r§b: A 1 in 30 chance to give yourself a positive effect, "
     - "   which contains all of the positive effects in the game."
-  how_did_we_get_here?:
-    - " "
-    - "§bAbilities:"
-    - "1. §lDisable ability§r§b: Every 30s, disable a player's"
-    - "   item for 5 seconds by shift-right clicking on a them."
-    - "§bPassives:"
-    - "1. §lPoison-Tipped Sword§r§b: A 1 in 20 chance to effect a player with a negative effect,"
-    - "either Blindness, Wither, Weakness, or Slowness I."
-    - "2. §lSword Blessing§r§b: A 1 in 30 chance to give yourself a positive effect, "
-    - "   which contains all of the positive effects in the game."
   kill_all_mobs:
     - " "
     - "§bAbilities:"
@@ -82,6 +72,7 @@ descriptions:
     - "§bPassives:"
     - "1. §lFire Aspect§r§b: you have a 25% chance to set someone on fire when attacking."
     -     (THIS ONLY WORKS WHEN IN BLAZED)
+    - "2. §lFireproof§r§b: you permanently have Fire Resistance while you hold this power."
   froglights:
     - " "
     - "§bAbilities:"

@@ -77,6 +77,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     /** Player data (powers, slot, claimed advancements). Use this, never config.yml, for player state. */
     public PowerStore powerStore;
 
+    /** Every power, its key, display name and action-bar cooldown. Filled by registerPowers(). */
+    public final PowerRegistry powers = new PowerRegistry();
+
     public boolean resetPlayerHealthAttribute = false;
 
     public BukkitTask secondsTask = null;
@@ -96,29 +99,19 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         odysseyClass = new odysseyCommands(this);
         LongerPotsClass longerPotsClass = new LongerPotsClass(this);
         // Plugin startup logic
-        getServer().getPluginManager().registerEvents(vvfClass, this);
-        getServer().getPluginManager().registerEvents(catalogueClass, this);
-        catalogueClass.startVisualHits();
+        registerPowers();
 
+        // Every power that listens for events is registered once, straight from the registry.
+        Set<ParentPowerClass> listening = Collections.newSetFromMap(new IdentityHashMap<>());
+        for (PowerRegistry.PowerDefinition def : powers.all()) {
+            if (def.power() instanceof Listener listener && listening.add(def.power())) {
+                getServer().getPluginManager().registerEvents(listener, this);
+            }
+        }
         getServer().getPluginManager().registerEvents(odysseyClass, this);
-        getServer().getPluginManager().registerEvents(hdwghClass, this);
-        getServer().getPluginManager().registerEvents(monstersClass, this);
-        getServer().getPluginManager().registerEvents(sniperDuelClass, this);
-        getServer().getPluginManager().registerEvents(uneasyAllianceClass, this);
-        getServer().getPluginManager().registerEvents(feelsLikeHomeClass, this);
-        getServer().getPluginManager().registerEvents(wopcClass, this);
-        getServer().getPluginManager().registerEvents(hiredHelpClass, this);
-        getServer().getPluginManager().registerEvents(bullseyeClass, this);
-        getServer().getPluginManager().registerEvents(balancedDietClass, this);
-        getServer().getPluginManager().registerEvents(nextGenerationClass, this);
-        getServer().getPluginManager().registerEvents(fortniteOdysseyClass, this);
-        getServer().getPluginManager().registerEvents(scrollWheelTestClass, this);
 
-        getServer().getPluginManager().registerEvents(beaconatorClass, this);
+        catalogueClass.startVisualHits();
         beaconatorClass.startTrackingPlayerStates();
-
-        getServer().getPluginManager().registerEvents(charliPowerClass, this);
-        getServer().getPluginManager().registerEvents(quakPowerClass, this);
 
         protocolManager = ProtocolLibrary.getProtocolManager();
         uneasyAllianceClass.registerInvisListener();
@@ -157,6 +150,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                     if (!powerStore.hasMode(player)) {
                         powerStore.setMode(player, 0);
                     }
+
+                    feelsLikeHomeClass.refreshFireResistance(player);
 
                     if (playerHasPower(player, "husbandry/complete_catalogue")) {
                         player.getAttribute(Attribute.GENERIC_MAX_HEALTH).setBaseValue(24);
@@ -265,7 +260,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
         for (String keys : new ArrayList<>(powerStore.getPowerKeys(player))) {
 
-            if (keys.equals("ride_strider_in_overworld_lava")) {
+            if (keys.equals("nether/ride_strider_in_overworld_lava")) {
                 feelsLikeHomeClass.removeFireResistance(player);
             }
 
@@ -319,6 +314,15 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                 String itemPowerKey = meta.getPersistentDataContainer().get(powerPotionKey, PersistentDataType.STRING);
 
+                // Checked first: a power you already hold also counts as "taken", so this used to
+                // say "someone else has it", and the "already have" branch below could never run.
+                String itemAdvancementKey = itemPowerKey == null ? null : getAdvancementKeyFromFormattedString(itemPowerKey);
+                if (itemAdvancementKey != null && item.getType() == Material.AMETHYST_SHARD && event.getHand() == EquipmentSlot.HAND && powerStore.hasPower(player, itemAdvancementKey)) {
+                    player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.f, 1.f);
+                    player.sendTitle(ChatColor.RED + "Unable to Equip!", ChatColor.RED + "You already have this power!", 10, 60, 10);
+                    return;
+                }
+
                 if (meta != null && item.getType() == Material.AMETHYST_SHARD && item.getItemMeta().getPersistentDataContainer().getKeys().contains(powerPotionKey) && event.getHand() == EquipmentSlot.HAND && !powerStore.getPowerTakenStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
                     if (!playerIsAtPowerLimit(player)) {
 
@@ -369,14 +373,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         }
 
                         player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-                    } else if (playerIsAtPowerLimit(player)) {
+                    } else {
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.f, 1.f);
 
                         player.sendTitle(ChatColor.RED + "Unable to Equip!", ChatColor.RED + "You have 2 powers!", 10, 60, 10);
-                    } else if (playerHasPower(player, itemPowerKey)) {
-                            player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.f, 1.f);
-
-                            player.sendTitle(ChatColor.RED + "Unable to Equip!", ChatColor.RED + "You already have this power!", 10, 60, 10);
                     }
                 } else if (itemPowerKey != null && powerStore.getPowerTakenStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
@@ -622,34 +622,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         if (advancement.getDisplay().frame() != AdvancementDisplay.Frame.CHALLENGE) {
             player.playSound(player.getLocation(), Sound.UI_TOAST_CHALLENGE_COMPLETE, 0.5f, 1.f);
         }
-        String powerName;
-
-        switch (getAdvancementNameFormattedFromAdvancement(advancement)) {
-            case "All Effects":
-                powerName = "How Did We Get Here?";
-                break;
-            case "Kill All Mobs":
-                powerName = "Monsters Hunted";
-                break;
-            case "Froglights":
-                powerName = "WOPC";
-                break;
-            case "Create Full Beacon":
-                powerName = "Beaconator";
-                break;
-            case "Ride Strider In Overworld Lava":
-                powerName = "Feels Like Home";
-                break;
-            case "Dragon Egg":
-                powerName = "The Next Generation";
-                break;
-            case "Summon Iron Golem":
-                powerName = "Hired Help";
-                break;
-            default:
-                powerName = getAdvancementNameFormattedFromAdvancement(advancement);
-                break;
-        }
+        String powerName = powers.displayName(getAdvancementNameUnformatted(advancement));
 
         if (isAtPowerLimit) {
             player.sendTitle("New Power Collected!: " + powerName, ChatColor.RED + "But it has been dropped, you have 2 powers!");
@@ -725,16 +698,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             String cooldownMessage = "";
             ArrayList<String> powerList = getPlayerPowersList(player);
 
-            if (powerList != null && !powerList.isEmpty()) {
-                int playerMode = powerStore.getMode(player);
-
-                // A stale or corrupt mode would otherwise throw IndexOutOfBoundsException every second.
-                if (playerMode < 0 || playerMode >= powerList.size()) {
-                    playerMode = 0;
-                    powerStore.setMode(player, 0);
-                }
-
-                cooldownMessage = switchOnPowers(player, powerList.get(playerMode));
+            // selectedSlot resets a stale or corrupt slot, which would otherwise throw every second.
+            int slot = selectedSlot(player, powerList);
+            if (slot >= 0) {
+                cooldownMessage = switchOnPowers(player, powerList.get(slot));
             }
 
             player.sendActionBar(cooldownMessage);
@@ -805,67 +772,96 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         target.setVelocity(knockbackDirection.multiply(1.5)); // Apply knockback
     }
 
-    public String switchOnPowers(Player player, String cooldownKey) {
-        String cooldownMessage = "";
-        switch (cooldownKey) {
-            case "player/power_stolen":
-                cooldownMessage = powerStealerPlaceholder.getCooldownString(player, wopcClass.playerGetsPowerBackTime, "");
-                break;
-            case "adventure/very_very_frightening":
-                cooldownMessage = vvfClass.getCooldownString(player, vvfClass.cooldowns, "Dash: ");
-                break;
-            case "nether/all_effects":
-                cooldownMessage = hdwghClass.getCooldownString(player, hdwghClass.rightClickedCooldowns, "Item Disable: ");
-                break;
-            case "husbandry/complete_catalogue":
-                cooldownMessage = catalogueClass.getCooldownString(player, catalogueClass.auralBarrageCooldowns, "Aural Barrage: ");
-                break;
-            case "adventure/kill_all_mobs":
-                cooldownMessage = monstersClass.getCooldownString(player, monstersClass.sphereCooldowns, "Domain Expansion: ");
-                break;
-            case "adventure/sniper_duel":
-                cooldownMessage = sniperDuelClass.getCooldownString(player, sniperDuelClass.cooldowns, "Sniper Vision: ");
-                break;
-            case "nether/uneasy_alliance":
-                cooldownMessage = uneasyAllianceClass.getCooldownString(player, uneasyAllianceClass.cooldowns, "Invisibility: ");
-                break;
-            case "husbandry/froglights":
-                cooldownMessage = wopcClass.getCooldownString(player, wopcClass.tornadoCooldowns, "Tornado: ");
-                break;
-            case "adventure/summon_iron_golem":
-                cooldownMessage = hiredHelpClass.getCooldownString(player, hiredHelpClass.cooldowns, "Hired Help: ");
-                break;
-            case "nether/ride_strider_in_overworld_lava":
-                cooldownMessage = feelsLikeHomeClass.getCooldownString(player, feelsLikeHomeClass.cooldowns, "Blazed: ");
-                break;
-            case "nether/create_full_beacon":
-                cooldownMessage = beaconatorClass.getCooldownString(player, beaconatorClass.cooldowns, "Beaconator: ");
-                break;
-            case "husbandry/balanced_diet":
-                cooldownMessage = balancedDietClass.getCooldownString(player, balancedDietClass.cooldowns, "Stored Energy: ");
-                break;
-            case "end/dragon_egg":
-                cooldownMessage = nextGenerationClass.getCooldownString(player, nextGenerationClass.cooldowns, "Ground Pound: ");
-                break;
-            case "adventure/bullseye":
-                cooldownMessage = bullseyeClass.getCooldownString(player, bullseyeClass.sonicBoomCooldowns, "Sonic Boom: ");
-                break;
-            case "events/event_power_one":
-                cooldownMessage = eventPowerOneClass.getCooldownString(player, eventPowerOneClass.auralBarrageCooldowns, "Aural Barrage: ");
-                break;
-            case "events/charlis_odyssey":
-                cooldownMessage = charliPowerClass.getCooldownString(player, charliPowerClass.cooldowns, "Dash: ");
-                break;
-            case "events/quaks_odyssey":
-                cooldownMessage = quakPowerClass.getCooldownString(player, quakPowerClass.cooldowns, "Double Jump: ");
-                break;
-            case "events/fortnite_odyssey":
-                cooldownMessage = fortniteOdysseyClass.getCooldownString(player, fortniteOdysseyClass.fullBoxCooldowns, "Box Up: ");
-                break;
-            case "adventure/trim_with_all_exclusive_armor_patterns":
-                cooldownMessage = scrollWheelTestClass.getCooldownString(player, scrollWheelTestClass.cooldowns, "Not using this rn lmao: ");
+    /**
+     * The one list of powers. Keys, cooldown maps and labels are the ones the old switchOnPowers /
+     * PowerTwoCommand switches used; display names keep the old renames (e.g. All Effects ->
+     * "How Did We Get Here?"), and every other power keeps its title-cased advancement name.
+     */
+    public void registerPowers() {
+        powers.register("adventure/very_very_frightening", "Very Very Frightening", vvfClass, "Dash: ", () -> vvfClass.cooldowns);
+        powers.register("nether/all_effects", "How Did We Get Here?", hdwghClass, "Item Disable: ", () -> hdwghClass.rightClickedCooldowns);
+        powers.register("husbandry/complete_catalogue", "Complete Catalogue", catalogueClass, "Aural Barrage: ", () -> catalogueClass.auralBarrageCooldowns);
+        powers.register("adventure/kill_all_mobs", "Monsters Hunted", monstersClass, "Domain Expansion: ", () -> monstersClass.sphereCooldowns);
+        powers.register("adventure/sniper_duel", "Sniper Duel", sniperDuelClass, "Sniper Vision: ", () -> sniperDuelClass.cooldowns);
+        powers.register("nether/uneasy_alliance", "Uneasy Alliance", uneasyAllianceClass, "Invisibility: ", () -> uneasyAllianceClass.cooldowns);
+        powers.register("husbandry/froglights", "WOPC", wopcClass, "Tornado: ", () -> wopcClass.tornadoCooldowns);
+        powers.register("adventure/summon_iron_golem", "Hired Help", hiredHelpClass, "Hired Help: ", () -> hiredHelpClass.cooldowns);
+        powers.register("nether/ride_strider_in_overworld_lava", "Feels Like Home", feelsLikeHomeClass, "Blazed: ", () -> feelsLikeHomeClass.cooldowns);
+        powers.register("nether/create_full_beacon", "Beaconator", beaconatorClass, "Beaconator: ", () -> beaconatorClass.cooldowns);
+        powers.register("husbandry/balanced_diet", "Balanced Diet", balancedDietClass, "Stored Energy: ", () -> balancedDietClass.cooldowns);
+        powers.register("end/dragon_egg", "The Next Generation", nextGenerationClass, "Ground Pound: ", () -> nextGenerationClass.cooldowns);
+        powers.register("adventure/bullseye", "Bullseye", bullseyeClass, "Sonic Boom: ", () -> bullseyeClass.sonicBoomCooldowns);
+        powers.register("events/event_power_one", "Event Power One", eventPowerOneClass, "Aural Barrage: ", () -> eventPowerOneClass.auralBarrageCooldowns);
+        powers.register("events/charlis_odyssey", "Charlis Odyssey", charliPowerClass, "Dash: ", () -> charliPowerClass.cooldowns);
+        powers.register("events/quaks_odyssey", "Quaks Odyssey", quakPowerClass, "Double Jump: ", () -> quakPowerClass.cooldowns);
+        powers.register("events/fortnite_odyssey", "Fortnite Odyssey", fortniteOdysseyClass, "Box Up: ", () -> fortniteOdysseyClass.fullBoxCooldowns);
+        powers.register("adventure/trim_with_all_exclusive_armor_patterns", "Trim With All Exclusive Armor Patterns", scrollWheelTestClass, "Not using this rn lmao: ", () -> scrollWheelTestClass.cooldowns);
+        // Placeholder slot a WOPC victim holds while their power is stolen; shows when it comes back.
+        powers.register("player/power_stolen", "Power Stolen", powerStealerPlaceholder, "", () -> wopcClass.playerGetsPowerBackTime);
+    }
+
+    /**
+     * Index into the player's enabled powers for their selected slot, reset to 0 if it is out of
+     * range. Returns -1 if they have no enabled powers. Slots are numbered 0 and 1 everywhere.
+     */
+    public int selectedSlot(Player player, List<String> enabled) {
+        if (enabled == null || enabled.isEmpty()) return -1;
+        int mode = powerStore.getMode(player);
+        if (mode < 0 || mode >= enabled.size()) {
+            mode = 0;
+            powerStore.setMode(player, 0);
+        }
+        return mode;
+    }
+
+    /**
+     * Switches between the player's two powers (/power1 and the client mod's power1 key).
+     * Returns the key of the power now selected, or null if they have none.
+     */
+    public String cyclePowerSlot(Player player) {
+        ArrayList<String> enabled = powerStore.getEnabledPowers(player);
+        if (enabled == null) return null;
+
+        int mode = powerStore.getMode(player);
+        if (enabled.size() == 2) {
+            if (mode == 0) {
+                powerStore.setMode(player, 1);
+            } else if (mode == 1) {
+                powerStore.setMode(player, 0);
+            }
+        } else if (enabled.size() < 2) {
+            powerStore.setMode(player, 0);
         }
 
-        return cooldownMessage;
+        updateCooldownDisplay();
+
+        int slot = selectedSlot(player, enabled);
+        return slot < 0 ? null : enabled.get(slot);
+    }
+
+    /** Uses the player's selected power (/power2 and the client mod's power2 key). */
+    public void usePower(Player player) {
+        ArrayList<String> enabled = powerStore.getEnabledPowers(player);
+        int slot = selectedSlot(player, enabled);
+        if (slot < 0) {
+            player.playSound(player, Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.1f);
+            player.sendActionBar(ChatColor.RED + "You don't have any powers.");
+            return;
+        }
+
+        PowerRegistry.PowerDefinition def = powers.get(enabled.get(slot));
+        if (def == null) {
+            getLogger().warning("Power Use was called on player [" + player.getName() + "] for '" + enabled.get(slot) + "', but no such power is registered.");
+            return;
+        }
+
+        def.power().action(player);
+        updateCooldownDisplay();
+    }
+
+    /** Action-bar cooldown text for one of the player's powers. */
+    public String switchOnPowers(Player player, String cooldownKey) {
+        PowerRegistry.PowerDefinition def = powers.get(cooldownKey);
+        return def == null ? "" : def.cooldownString(player);
     }
 }
