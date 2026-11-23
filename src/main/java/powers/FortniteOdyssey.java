@@ -92,6 +92,7 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
             int startX = center.getBlockX() - 3;  // 3 blocks to the left
             int startY = center.getBlockY() - 3;  // 3 blocks down
             int startZ = center.getBlockZ() - 3;  // 3 blocks back
+            List<Location> boxLocations = new ArrayList<>();
 
             // Loop through the cube area
             for (int x = startX; x < startX + 7; x++) {
@@ -106,6 +107,7 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
                         Location blockLocation = new Location(center.getWorld(), x, y, z);
                         Block block = blockLocation.getBlock();
                         protectedBlocks.add(blockLocation);
+                        boxLocations.add(blockLocation);
 
                         // Save the original block
                         if (!unreplaceableMaterials.contains(block.getType())) {
@@ -151,6 +153,8 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
                 public void run() {
                     replacer.cancel();
                     restoreBlocks();
+                    // The box is gone: the real blocks here drop items again when broken.
+                    boxLocations.forEach(protectedBlocks::remove);
                 }
             }.runTaskLater(plugin, 200L);  // 200 ticks = 10 seconds
         }
