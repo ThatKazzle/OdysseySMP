@@ -6,7 +6,7 @@
 
   <groupId>kazzleinc</groupId>
   <artifactId>SimpleS5</artifactId>
-  <version>5.11.0</version>
+  <version>5.12.0</version>
   <packaging>jar</packaging>
 
   <name>SimpleS5</name>
@@ -24,6 +24,27 @@
         <version>3.13.0</version>
         <configuration>
           <release>${java.version}</release>
+        </configuration>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-dependency-plugin</artifactId>
+        <version>3.8.1</version>
+        <executions>
+          <execution>
+            <!-- Sets ${org.mockito:mockito-core:jar}, so tests can load Mockito as an agent. -->
+            <goals>
+              <goal>properties</goal>
+            </goals>
+          </execution>
+        </executions>
+      </plugin>
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-surefire-plugin</artifactId>
+        <version>3.5.2</version>
+        <configuration>
+          <argLine>-javaagent:${org.mockito:mockito-core:jar}</argLine>
         </configuration>
       </plugin>
       <plugin>
@@ -91,6 +112,27 @@
           <artifactId>glowingentities</artifactId>
           <version>1.3.5</version>
           <scope>compile</scope>
+      </dependency>
+
+      <!-- Tests only: not shaded into the plugin jar. -->
+      <dependency>
+          <groupId>org.junit.jupiter</groupId>
+          <artifactId>junit-jupiter</artifactId>
+          <version>5.11.4</version>
+          <scope>test</scope>
+      </dependency>
+      <dependency>
+          <groupId>org.mockito</groupId>
+          <artifactId>mockito-core</artifactId>
+          <version>5.20.0</version>
+          <scope>test</scope>
+      </dependency>
+      <!-- ProtocolLib brings an older Byte Buddy that can't run Mockito on new JDKs; use Mockito's. -->
+      <dependency>
+          <groupId>net.bytebuddy</groupId>
+          <artifactId>byte-buddy</artifactId>
+          <version>1.17.7</version>
+          <scope>test</scope>
       </dependency>
   </dependencies>
 </project>
