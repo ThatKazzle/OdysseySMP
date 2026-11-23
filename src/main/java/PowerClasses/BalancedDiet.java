@@ -39,8 +39,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = plugin.getServer().getPlayer(playerName);
+    public void action(Player player) {
         
         if (!player.isSneaking()) {
             fattyAction(player);
@@ -55,7 +54,7 @@ public class BalancedDiet extends ParentPowerClass implements Listener {
     }
 
     public void fattyAction(Player player) {
-        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/balanced_diet") && !isOnCooldown(player.getUniqueId(), cooldowns)) {
+        if (plugin.powerStore.hasPower(player, "husbandry/balanced_diet") && !isOnCooldown(player.getUniqueId(), cooldowns)) {
             setCooldown(player.getUniqueId(), cooldowns, 60 * 2);
 
             player.addPotionEffect(satEffect);

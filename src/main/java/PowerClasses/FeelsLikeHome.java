@@ -48,8 +48,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = plugin.getServer().getPlayer(playerName);
+    public void action(Player player) {
 
         if (hasPower(player, "nether/ride_strider_in_overworld_lava")) {
             if (player.isSneaking()) {
@@ -155,7 +154,7 @@ public class FeelsLikeHome extends ParentPowerClass implements Listener {
     @EventHandler
     public void onPlayerMoveEvent(PlayerMoveEvent event) {
         Player player = event.getPlayer();;
-        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "ride_strider_in_overworld_lava")) {
+        if (plugin.powerStore.hasPower(player, "ride_strider_in_overworld_lava")) {
             player.addPotionEffect(fireResPot);
         }
     }

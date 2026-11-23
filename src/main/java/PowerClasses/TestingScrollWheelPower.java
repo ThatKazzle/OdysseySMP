@@ -34,8 +34,7 @@ public class TestingScrollWheelPower extends ParentPowerClass implements Listene
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
+    public void action(Player player) {
         if (hasPower(player, "adventure/trim_with_all_exclusive_armor_patterns")) {
             if (powerLevel.containsKey(player.getUniqueId())) {
                 player.sendMessage("You are on power " + powerLevel.get(player.getUniqueId()));

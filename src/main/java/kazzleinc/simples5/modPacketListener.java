@@ -30,53 +30,50 @@ public class modPacketListener implements PluginMessageListener {
         String data = new String(message);
         //getServer().getLogger().info("Received data from client: " + data);
 
-        for (String keys : this.plugin.getConfig().getConfigurationSection("players." + player.getName() + ".powers").getKeys(false)) {
-            String key = keys;
-            Boolean value = this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + key);
+        // Always act on the player who sent the message. The name in the payload
+        // ("power1/<name>") used to be trusted, so any client could act for someone else.
+        ArrayList<String> owned = plugin.powerStore.getEnabledPowers(player);
+        if (owned != null) enabledKeys.addAll(owned);
 
-            if (value) {
-                enabledKeys.add(key);
-            }
-        }
         if (!enabledKeys.isEmpty()) {
-            String playerName = data.split("/")[1];
+            String action = data.split("/")[0];
 
-            if (this.plugin.getConfig().get("players." + playerName + ".mode") == null) {
-                this.plugin.getConfig().set("players." + playerName + ".mode", 2);
+            // The client mod numbers slots 1 and 2 (the /power1 command uses 0 and 1). Kept as-is; see PLAN.md 5.1.
+            if (!plugin.powerStore.hasMode(player)) {
+                plugin.powerStore.setMode(player, 2);
             }
 
-            this.plugin.saveConfig();
-            if (data.split("/")[0].equals("power1")) {
-                if (this.plugin.getConfig().getInt("players." + playerName + ".mode") == 1) {
-
-                    this.plugin.getConfig().set("players." + playerName + ".mode", 2);
-
-                } else if (this.plugin.getConfig().getInt("players." + playerName + ".mode") == 2) {
-
-                    this.plugin.getConfig().set("players." + playerName + ".mode", 1);
-
+            if (action.equals("power1")) {
+                if (plugin.powerStore.getMode(player) == 1) {
+                    plugin.powerStore.setMode(player, 2);
+                } else if (plugin.powerStore.getMode(player) == 2) {
+                    plugin.powerStore.setMode(player, 1);
                 }
-                this.plugin.saveConfig();
-                plugin.getServer().getPlayer(playerName).sendActionBar(ChatColor.GREEN + "Current Power Equipped: " + ChatColor.AQUA + this.plugin.getAdvancementNameFormattedFromUnformattedString(enabledKeys.get(this.plugin.getConfig().getInt("players." + playerName + ".mode") - 1)));
-            } else if (data.split("/")[0].equals("power2")) {
-                //this.plugin.getServer().broadcastMessage("player " + playerName + " is in mode " + enabledKeys.get(this.plugin.getConfig().getInt("players." + playerName + ".mode") - 1));
-                switch (enabledKeys.get(this.plugin.getConfig().getInt("players." + playerName + ".mode") - 1)) {
+            }
+
+            int index = plugin.powerStore.getMode(player) - 1;
+            if (index < 0 || index >= enabledKeys.size()) return; // used to throw IndexOutOfBoundsException
+
+            if (action.equals("power1")) {
+                player.sendActionBar(ChatColor.GREEN + "Current Power Equipped: " + ChatColor.AQUA + this.plugin.getAdvancementNameFormattedFromUnformattedString(enabledKeys.get(index)));
+            } else if (action.equals("power2")) {
+                switch (enabledKeys.get(index)) {
                     case "adventure/very_very_frightening":
-                        plugin.vvfClass.action(playerName);
+                        plugin.vvfClass.action(player);
                         break;
                     case "nether/all_effects":
-                        plugin.hdwghClass.action(playerName);
+                        plugin.hdwghClass.action(player);
                         break;
                     case "husbandry/complete_catalogue":
-                        plugin.catalogueClass.action(playerName);
+                        plugin.catalogueClass.action(player);
                         break;
                     case "adventure/kill_all_mobs":
-                        plugin.monstersClass.action(playerName);
+                        plugin.monstersClass.action(player);
                         break;
                     case "adventure/sniper_duel":
-                        plugin.sniperDuelClass.action(playerName);
+                        plugin.sniperDuelClass.action(player);
                     case "nether/uneasy_alliance":
-                        plugin.uneasyAllianceClass.action(playerName);
+                        plugin.uneasyAllianceClass.action(player);
                         break;
                 }
             }

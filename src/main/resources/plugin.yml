@@ -9,8 +9,9 @@ softdepend: [ ProtocolLib ]
 
 commands:
   reloadconfig:
-    description: "Reloads the server config.yml."
+    description: "Reloads the plugin's config.yml (settings and power text). Player data is not affected."
     usage: "/reloadconfig"
+    permission: simples5.admin
   odyssey:
     description: "All things Odyssey related."
     usage: "/odyssey <withdraw|description|powers>"
@@ -33,3 +34,7 @@ commands:
   scatter:
     usage: "/scatter (radius)"
     description: "scatters players."
+permissions:
+  simples5.admin:
+    description: "Use admin commands such as /reloadconfig."
+    default: op

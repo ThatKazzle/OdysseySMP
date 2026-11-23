@@ -64,11 +64,11 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        if (!Bukkit.getPlayer(playerName).isSneaking()) {
-            monstersHuntedAction(playerName);
+    public void action(Player player) {
+        if (!player.isSneaking()) {
+            monstersHuntedAction(player);
         } else {
-            blackHoleAction(playerName);
+            blackHoleAction(player);
         }
 
     }
@@ -90,10 +90,9 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
         return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Black Hole: " + getCooldownTimeLeft(player.getUniqueId(), blackHoleCooldowns);
     }
 
-    private void monstersHuntedAction(String playerName) {
-        Player player = this.plugin.getServer().getPlayer(playerName);
+    private void monstersHuntedAction(Player player) {
 
-        if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "adventure/kill_all_mobs")) {
+        if (plugin.powerStore.hasPower(player, "adventure/kill_all_mobs")) {
             if (isOnCooldown(player.getUniqueId(), sphereCooldowns)) {
                 cantUsePowerMessage(player, sphereCooldowns, "Ice Cage");
             } else if (!isOnCooldown(player.getUniqueId(), sphereCooldowns)) {
@@ -126,10 +125,9 @@ public class MonstersHunted extends ParentPowerClass implements Listener {
         }
     }
 
-    private void blackHoleAction(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
+    private void blackHoleAction(Player player) {
 
-        if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "adventure/kill_all_mobs")) {
+        if (plugin.powerStore.hasPower(player, "adventure/kill_all_mobs")) {
             if (!isOnCooldown(player.getUniqueId(), blackHoleCooldowns)) {
                 RayTraceResult result = player.getWorld().rayTraceBlocks(player.getEyeLocation(), player.getEyeLocation().getDirection(), 10, FluidCollisionMode.NEVER, true);
 

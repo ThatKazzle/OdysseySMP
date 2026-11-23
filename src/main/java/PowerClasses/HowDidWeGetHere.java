@@ -32,7 +32,7 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
+    public void action(Player player) {
 
     }
 
@@ -42,7 +42,7 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
         if (event.getDamager() instanceof Player && event.getEntity() instanceof Player) {
             Player hitPlayer = (Player) event.getEntity();
             Player damager = (Player) event.getDamager();
-            if (this.plugin.getConfig().getBoolean("players." + damager.getName() + ".powers." + "nether/all_effects")) {
+            if (plugin.powerStore.hasPower(damager, "nether/all_effects")) {
                 damager.getWorld().spawnParticle(Particle.REVERSE_PORTAL, damager.getLocation().add(new Vector(0, 1, 0)), 30, 5, 5, 5, new Particle.DustOptions(Color.fromRGB(RandomUtils.getRandomIntInRange(0, 255), RandomUtils.getRandomIntInRange(0, 255), RandomUtils.getRandomIntInRange(0, 255)), 2));
 
                 if (RandomUtils.getRandomIntInRange(0, 20) > 19) {
@@ -81,7 +81,7 @@ public class HowDidWeGetHere extends ParentPowerClass implements Listener {
         if (event.getRightClicked() instanceof Player) {
             Player player = event.getPlayer();
             Player clickedPlayer = (Player) event.getRightClicked();
-            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "nether/all_effects") && event.getHand() == EquipmentSlot.HAND && clickedPlayer.getInventory().getItemInMainHand().getType() != Material.AIR) {
+            if (plugin.powerStore.hasPower(player, "nether/all_effects") && event.getHand() == EquipmentSlot.HAND && clickedPlayer.getInventory().getItemInMainHand().getType() != Material.AIR) {
                 if (isOnCooldown(player.getUniqueId(), rightClickedCooldowns)) {
                     cantUsePowerMessage(player, rightClickedCooldowns, "Item Disable");
                 } else if (player.isSneaking() && !isOnCooldown(player.getUniqueId(), rightClickedCooldowns)) {

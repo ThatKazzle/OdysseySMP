@@ -20,14 +20,14 @@ public abstract class ParentPowerClass {
         this.plugin = plugin;
     }
 
-    public abstract void action(String playerName);
+    public abstract void action(Player player);
 
     public boolean isOnCooldown(UUID playerId, HashMap<UUID, Long> map) {
         return map.containsKey(playerId) && map.get(playerId) > System.currentTimeMillis();
     }
 
     public boolean hasPower(Player player, String powerKey) {
-        return plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + powerKey);
+        return plugin.powerStore.hasPower(player, powerKey);
     }
 
 

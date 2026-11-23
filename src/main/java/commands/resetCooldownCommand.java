@@ -63,10 +63,10 @@ public class resetCooldownCommand implements CommandExecutor {
     public void resetAllCooldowns(Player player) {
         List<String> enabledKeys = new ArrayList<>();
 
-        if (this.plugin.getConfig().getConfigurationSection("players." + player.getName() + ".powers") != null) {
-            for (String keys : this.plugin.getConfig().getConfigurationSection("players." + player.getName() + ".powers").getKeys(false)) {
+        if (plugin.powerStore.hasPowersSection(player)) {
+            for (String keys : plugin.powerStore.getPowerKeys(player)) {
                 String key = keys;
-                Boolean value = this.plugin.getConfig().getBoolean("players." + player.getName() + ".powers." + key);
+                boolean value = plugin.powerStore.hasPower(player, key);
 
                 if (value) {
                     enabledKeys.add(key);

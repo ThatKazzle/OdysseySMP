@@ -64,7 +64,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                 }
 
             } else if (args.length == 1 && args[0].equals("powers")) {
-                sendPowerStatus(player, checkPowerStatus());
+                sendPowerStatus(player, plugin.powerStore.getPowerTakenStatus());
             } else {
                 player.sendMessage(ChatColor.RED + "Usage: " + command.getUsage());
             }
@@ -100,9 +100,9 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
         Inventory gui = Bukkit.createInventory(null, 9, "Choose an Odyssey to withdraw:");
 
         FileConfiguration config = plugin.getConfig();
-        for (String keys : this.plugin.getConfig().getConfigurationSection("players." + plugin.provider.getInfo(player).getName() + ".powers").getKeys(false)) {
+        for (String keys : plugin.powerStore.getPowerKeys(player)) {
             String key = keys;
-            Boolean value = this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + keys);
+            boolean value = plugin.powerStore.hasPower(player, keys);
             if (value) {
                 ItemStack item = new PowerPotionItem(this.plugin, this.plugin.getAdvancementNameFormattedFromUnformattedString(keys), this.plugin.powerPotionKey).getItemStack();
 
@@ -142,13 +142,12 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
                 player.sendMessage(ChatColor.RED + "Ye nice try idiot, you cant dupe.");
             } else {
                 this.plugin.removePlayerAdvancement(player, plugin.getAdvancementKeyFromFormattedString(powerName));
-                this.plugin.getConfig().set("players." + player.getName() + ".powers." +  plugin.getAdvancementKeyFromFormattedString(powerName), false);
+                plugin.powerStore.setPower(player, plugin.getAdvancementKeyFromFormattedString(powerName), false);
 
                 ItemMeta newMeta = clickedItem.getItemMeta();
                 newMeta.getPersistentDataContainer().getKeys().remove(this.canClickKey);
                 clickedItem.setItemMeta(newMeta);
 
-                this.plugin.saveConfig();
 
                 giveItem(player, clickedItem);
                 player.closeInventory();
@@ -178,52 +177,11 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     }
 
     private void sendAllTakenPowersMessage(Player player) {
-        Map<String, Boolean> allPowers = plugin.getAllPowers(plugin.getConfig());
+        Map<String, Boolean> allPowers = plugin.powerStore.getAllPowers();
 
         for (Map.Entry<String, Boolean> entry : allPowers.entrySet()) {
             plugin.getLogger().info(entry.getKey() + ": " + entry.getValue());
         }
-    }
-
-    private Map<String, Boolean> checkPowerStatus() {
-        Map<String, Boolean> powerStatus = new HashMap<>();
-
-        // Get the defaults section
-        ConfigurationSection defaultsSection = plugin.getConfig().getConfigurationSection("defaults");
-        if (defaultsSection == null) {
-            return powerStatus; // Return empty map if "defaults" section is not found
-        }
-
-        // Get all default power keys
-        Set<String> defaultPowerKeys = defaultsSection.getKeys(false);
-
-        // Initialize all powers as "not taken"
-        for (String defaultPowerKey : defaultPowerKeys) {
-            powerStatus.put(defaultPowerKey, false);
-        }
-
-        // Get the "players" section
-        ConfigurationSection playersSection = plugin.getConfig().getConfigurationSection("players");
-        if (playersSection == null) {
-            return powerStatus; // Return if "players" section is not found
-        }
-
-        // Loop through each player
-        Set<String> playerKeys = playersSection.getKeys(false);
-        for (String playerKey : playerKeys) {
-            ConfigurationSection powersSection = playersSection.getConfigurationSection(playerKey + ".powers");
-            if (powersSection != null) {
-                // Loop through each power for the player
-                for (String defaultPowerKey : defaultPowerKeys) {
-                    String powerPath = defaultsSection.getString(defaultPowerKey);
-                    if (powersSection.getBoolean(powerPath, false)) {
-                        powerStatus.put(defaultPowerKey, true); // Mark as "taken" if any player has it set to true
-                    }
-                }
-            }
-        }
-
-        return powerStatus;
     }
 
 //    private void sendPowerStatus(Player player, Map<String, Boolean> powerStatus) {

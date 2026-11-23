@@ -28,8 +28,7 @@ public class CharliPower extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
+    public void action(Player player) {
         if (!player.isSneaking()) {
             dashAction(player);
         } else {
@@ -111,7 +110,7 @@ public class CharliPower extends ParentPowerClass implements Listener {
     public void onEntityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "events/charlis_odyssey") && dashed.contains(player)) {
+            if (plugin.powerStore.hasPower(player, "events/charlis_odyssey") && dashed.contains(player)) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                     event.setCancelled(true);
 

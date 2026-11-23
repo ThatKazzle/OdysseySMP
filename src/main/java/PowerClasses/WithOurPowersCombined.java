@@ -36,8 +36,7 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = plugin.getServer().getPlayer(playerName);
+    public void action(Player player) {
         if (!player.isSneaking()) {
             tornadoAction(player);
         } else {
@@ -110,10 +109,10 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
         Player beforeConversion = ((Player) result.getHitEntity());
 
-        Player targetPlayer = Bukkit.getPlayer(plugin.provider.getInfo(beforeConversion).getName());
-        String targetPlayerName = plugin.provider.getInfo(beforeConversion).getName();
+        Player targetPlayer = beforeConversion; // the player actually hit, not a name lookup
+        String targetPlayerName = plugin.provider.getInfo(beforeConversion).getName(); // display only
 
-        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights")) {
+        if (plugin.powerStore.hasPower(player, "husbandry/froglights")) {
             if (isOnCooldown(player.getUniqueId(), cooldowns)) {
                 cantUsePowerMessage(player, cooldowns, "Odyssey Stealer");
             } else if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
@@ -125,8 +124,10 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
 
                     String targetPlayerFormattedKey;
 
-                    if (plugin.getPlayerPowersList(targetPlayer).get(plugin.getConfig().getInt("players." + targetPlayerName + ".mode")) != null) {
-                        targetPlayerEnabledKey = plugin.getPlayerPowersList(targetPlayer).get(plugin.getConfig().getInt("players." + targetPlayerName + ".mode"));
+                    java.util.List<String> targetPowers = plugin.powerStore.getEnabledPowers(targetPlayer);
+                    int targetMode = plugin.powerStore.getMode(targetPlayer);
+                    if (targetPowers != null && targetMode >= 0 && targetMode < targetPowers.size()) {
+                        targetPlayerEnabledKey = targetPowers.get(targetMode);
 
                         targetPlayerFormattedKey = plugin.getAdvancementNameFormattedFromUnformattedString(targetPlayerEnabledKey);
                     } else {
@@ -134,15 +135,15 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                         return;
                     }
 
-                    plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights", false);
-                    plugin.getConfig().set("players." + targetPlayerName + ".powers." + targetPlayerEnabledKey, false);
+                    plugin.powerStore.setPower(player, "husbandry/froglights", false);
+                    plugin.powerStore.setPower(targetPlayer, targetPlayerEnabledKey, false);
 
                     playerStoredPower.put(beforeConversion.getUniqueId(), targetPlayerEnabledKey);
                     playerStoleFromPlayer.put(player.getUniqueId(), beforeConversion.getUniqueId());
 
-                    plugin.getConfig().set("players." + targetPlayerName + ".powers." + "player/power_stolen", true);
+                    plugin.powerStore.setPower(targetPlayer, "player/power_stolen", true);
 
-                    plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + targetPlayerEnabledKey, true);
+                    plugin.powerStore.setPower(player, targetPlayerEnabledKey, true);
 
                     player.sendMessage(ChatColor.RED + "You stole " + ChatColor.AQUA + targetPlayerFormattedKey + ChatColor.RED + " from " + ChatColor.AQUA + targetPlayerName + "!");
                     targetPlayer.sendMessage(ChatColor.AQUA + plugin.provider.getInfo(player).getName() + ChatColor.RED + " stole " + ChatColor.AQUA + targetPlayerFormattedKey + "!");
@@ -150,11 +151,11 @@ public class WithOurPowersCombined extends ParentPowerClass implements Listener 
                     setCooldown(targetPlayer.getUniqueId(), playerGetsPowerBackTime, 60 * 5);
 
                     plugin.getServer().getScheduler().runTaskLater(plugin, () -> {
-                        plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + targetPlayerEnabledKey, false);
-                        plugin.getConfig().set("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/froglights", true);
+                        plugin.powerStore.setPower(player, targetPlayerEnabledKey, false);
+                        plugin.powerStore.setPower(player, "husbandry/froglights", true);
 
-                        plugin.getConfig().set("players." + targetPlayerName + ".powers." + "player/power_stolen", false);
-                        plugin.getConfig().set("players." + targetPlayerName + ".powers." + targetPlayerEnabledKey, true);
+                        plugin.powerStore.setPower(targetPlayer, "player/power_stolen", false);
+                        plugin.powerStore.setPower(targetPlayer, targetPlayerEnabledKey, true);
                         playerStoredPower.remove(beforeConversion.getUniqueId());
                         playerStoleFromPlayer.remove(player.getUniqueId());
 

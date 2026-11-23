@@ -30,8 +30,7 @@ public class HiredHelp extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
+    public void action(Player player) {
 
         if (isOnCooldown(player.getUniqueId(), cooldowns)) {
             cantUsePowerMessage(player, cooldowns, "Hired Help");

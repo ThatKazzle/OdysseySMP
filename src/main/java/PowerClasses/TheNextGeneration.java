@@ -34,8 +34,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
+    public void action(Player player) {
 
         if (!player.isSneaking()) {
             groundPoundAction(player);
@@ -78,7 +77,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
     }
 
     public void groundPoundAction(Player player) {
-        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "end/dragon_egg")) {
+        if (plugin.powerStore.hasPower(player, "end/dragon_egg")) {
             if (!isOnCooldown(player.getUniqueId(), cooldowns)) {
                 setCooldown(player.getUniqueId(), cooldowns, 60 * 2);
 
@@ -151,7 +150,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
         if (event.getEntity() instanceof Player) {
             Player damagedPlayer = ((Player) event.getEntity());
             if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
-                if (fallDamageIgnoreList.contains(damagedPlayer) && plugin.getConfig().getBoolean("players." + damagedPlayer.getName() + ".powers." + "end/dragon_egg")) {
+                if (fallDamageIgnoreList.contains(damagedPlayer) && plugin.powerStore.hasPower(damagedPlayer, "end/dragon_egg")) {
                     event.setCancelled(true);
 
                     fallDamageIgnoreList.remove(damagedPlayer);
@@ -189,7 +188,7 @@ public class TheNextGeneration extends ParentPowerClass implements Listener {
         if (event.getDamager() instanceof AreaEffectCloud) {
             if (event.getEntity() instanceof Player) {
                 Player player = (Player) event.getEntity();
-                if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "end/dragon_egg")) {
+                if (plugin.powerStore.hasPower(player, "end/dragon_egg")) {
                     event.setCancelled(true);
                 }
             }

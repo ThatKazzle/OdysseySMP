@@ -36,10 +36,9 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
+    public void action(Player player) {
         if (player.isSneaking()) {
-            effectStealerAction(Bukkit.getPlayer(playerName));
+            effectStealerAction(player);
         } else {
             auralBarrage(player);
         }
@@ -64,7 +63,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
     }
 
     public void effectStealerAction(Player player) {
-        if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/complete_catalogue")) {
+        if (plugin.powerStore.hasPower(player, "husbandry/complete_catalogue")) {
             if (!isOnCooldown(player.getUniqueId(), effectStealerCooldown)) {
 
                 RayTraceResult result = player.getWorld().rayTraceEntities(player.getEyeLocation(), player.getEyeLocation().getDirection(), 6, entity -> entity != player);
@@ -98,7 +97,7 @@ public class CompleteCatalogue extends ParentPowerClass implements Listener {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
 
-            if (plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "husbandry/complete_catalogue") && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
+            if (plugin.powerStore.hasPower(player, "husbandry/complete_catalogue") && event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                 event.setCancelled(true);
             }
         }

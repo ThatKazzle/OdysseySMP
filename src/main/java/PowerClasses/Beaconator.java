@@ -46,8 +46,7 @@ public class Beaconator extends ParentPowerClass implements Listener {
     //3 minute cooldown
 
     @Override
-    public void action(String playerName) {
-        Player player = plugin.getServer().getPlayer(playerName);
+    public void action(Player player) {
         if (hasPower(player, "nether/create_full_beacon")) {
             if (!player.isSneaking()) {
                 rewindAction(player);

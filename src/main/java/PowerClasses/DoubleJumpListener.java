@@ -46,11 +46,11 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        if (plugin.getServer().getPlayer(playerName).isOnGround()) {
-            zeusAction(Objects.requireNonNull(plugin.getServer().getPlayer(playerName)));
+    public void action(Player player) {
+        if (player.isOnGround()) {
+            zeusAction(player);
         } else {
-            veryVeryFrighteningAction(playerName);
+            veryVeryFrighteningAction(player);
         }
 
     }
@@ -60,10 +60,9 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
         return "" + ChatColor.AQUA + powerName + getCooldownTimeLeft(player.getUniqueId(), cooldownMap) + ChatColor.BOLD + ChatColor.GOLD + " | " + ChatColor.RESET + ChatColor.AQUA + "Zeus Bolt: " + getCooldownTimeLeft(player.getUniqueId(), zeusCooldowns);
     }
 
-    private void veryVeryFrighteningAction(String playerName) {
-        Player player = plugin.getServer().getPlayer(playerName);
+    private void veryVeryFrighteningAction(Player player) {
         //player.sendMessage("Recieved, method called!");
-        if (!player.isOnGround() && this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "adventure/very_very_frightening")) { // there is a line like this in every event to make sure nothing gets called if they dont have the advancement
+        if (!player.isOnGround() && plugin.powerStore.hasPower(player, "adventure/very_very_frightening")) { // there is a line like this in every event to make sure nothing gets called if they dont have the advancement
             if (isOnCooldown(player.getUniqueId(), cooldowns)) {
                 cantUsePowerMessage(player, cooldowns, "Dash");
             } else if (!player.isOnGround() && !player.isInWater() && !isOnCooldown(player.getUniqueId(), cooldowns)) {
@@ -97,7 +96,7 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
     public void onEntityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "adventure/very_very_frightening") && dashed.contains(player)) {
+            if (plugin.powerStore.hasPower(player, "adventure/very_very_frightening") && dashed.contains(player)) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                     event.setCancelled(true);
 
@@ -108,7 +107,7 @@ public class DoubleJumpListener extends ParentPowerClass implements Listener {
     }
 
     public void zeusAction(Player player) {
-        if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "adventure/very_very_frightening")) {
+        if (plugin.powerStore.hasPower(player, "adventure/very_very_frightening")) {
             if (isOnCooldown(player.getUniqueId(), zeusCooldowns)) {
                 cantUsePowerMessage(player, zeusCooldowns, "Zeus Bolt");
             } else if (!isOnCooldown(player.getUniqueId(), zeusCooldowns)) {

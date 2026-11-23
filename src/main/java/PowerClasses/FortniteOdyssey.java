@@ -58,8 +58,7 @@ public class FortniteOdyssey extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
+    public void action(Player player) {
         if (!player.isSneaking()) {
             createAndRestoreCube(player, Material.IRON_BLOCK);
         } else {

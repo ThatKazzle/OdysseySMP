@@ -27,83 +27,72 @@ public class PowerTwoCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
-            String playerName = plugin.provider.getInfo(player).getName();
-            if (this.plugin.getConfig().getConfigurationSection("players." + plugin.provider.getInfo(player).getName() + ".powers") != null) {
-                if (!enabledKeys.isEmpty()) {
-                    enabledKeys.clear();
-                }
-
-                for (String keys : this.plugin.getConfig().getConfigurationSection("players." + plugin.provider.getInfo(player).getName() + ".powers").getKeys(false)) {
-                    String key = keys;
-                    Boolean value = this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + key);
-
-                    if (value) {
-                        enabledKeys.add(key);
-                    }
-                }
+            String playerName = player.getName(); // for log messages only
+            if (plugin.powerStore.hasPowersSection(player)) {
+                enabledKeys.clear();
+                enabledKeys.addAll(plugin.powerStore.getEnabledPowers(player));
 
                 if (!enabledKeys.isEmpty()) {
-                    String modePath = "players." + playerName + ".mode";
-                    int playerMode = this.plugin.getConfig().getInt(modePath, 0);
+                    int playerMode = plugin.powerStore.getMode(player);
                     if (playerMode < 0 || playerMode >= enabledKeys.size()) {
                         playerMode = 0;
-                        this.plugin.getConfig().set(modePath, 0);
+                        plugin.powerStore.setMode(player, 0);
                     }
 
                     switch (enabledKeys.get(playerMode)) {
                         case "adventure/very_very_frightening":
-                            plugin.vvfClass.action(playerName);
+                            plugin.vvfClass.action(player);
                             break;
                         case "nether/all_effects":
-                            plugin.hdwghClass.action(playerName);
+                            plugin.hdwghClass.action(player);
                             break;
                         case "husbandry/complete_catalogue":
-                            plugin.catalogueClass.action(playerName);
+                            plugin.catalogueClass.action(player);
                             break;
                         case "adventure/kill_all_mobs":
-                            plugin.monstersClass.action(playerName);
+                            plugin.monstersClass.action(player);
                             break;
                         case "adventure/sniper_duel":
-                            plugin.sniperDuelClass.action(playerName);
+                            plugin.sniperDuelClass.action(player);
                             break;
                         case "nether/uneasy_alliance":
-                            plugin.uneasyAllianceClass.action(playerName);
+                            plugin.uneasyAllianceClass.action(player);
                             break;
                         case "husbandry/froglights":
-                            plugin.wopcClass.action(playerName);
+                            plugin.wopcClass.action(player);
                             break;
                         case "adventure/summon_iron_golem":
-                            plugin.hiredHelpClass.action(playerName);
+                            plugin.hiredHelpClass.action(player);
                             break;
                         case "nether/ride_strider_in_overworld_lava":
-                            plugin.feelsLikeHomeClass.action(playerName);
+                            plugin.feelsLikeHomeClass.action(player);
                             break;
                         case "nether/create_full_beacon":
-                            plugin.beaconatorClass.action(playerName);
+                            plugin.beaconatorClass.action(player);
                             break;
                         case "husbandry/balanced_diet":
-                            plugin.balancedDietClass.action(playerName);
+                            plugin.balancedDietClass.action(player);
                             break;
                         case "end/dragon_egg":
-                            plugin.nextGenerationClass.action(playerName);
+                            plugin.nextGenerationClass.action(player);
                             break;
                         case "adventure/bullseye":
-                            plugin.bullseyeClass.action(playerName);
+                            plugin.bullseyeClass.action(player);
                             break;
                         case "events/event_power_one":
-                            plugin.eventPowerOneClass.action(playerName);
+                            plugin.eventPowerOneClass.action(player);
                             break;
                         case "events/charlis_odyssey":
-                            plugin.charliPowerClass.action(playerName);
+                            plugin.charliPowerClass.action(player);
                             break;
                         case "events/quaks_odyssey":
-                            plugin.quakPowerClass.action(playerName);
+                            plugin.quakPowerClass.action(player);
                             break;
                         case "events/fortnite_odyssey":
-                            plugin.fortniteOdysseyClass.action(playerName);
+                            plugin.fortniteOdysseyClass.action(player);
                             break;
                         case "adventure/trim_with_all_exclusive_armor_patterns":
-                            plugin.scrollWheelTestClass.action(playerName);
+                            plugin.scrollWheelTestClass.action(player);
                             break;
                         case "player/power_stolen":
                             player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);

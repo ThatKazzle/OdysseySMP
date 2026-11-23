@@ -32,8 +32,7 @@ public class QuakPower extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
+    public void action(Player player) {
         if (!player.isSneaking()) {
             doubleJumpAction(player);
         } else {
@@ -95,7 +94,7 @@ public class QuakPower extends ParentPowerClass implements Listener {
     public void onEntityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof Player) {
             Player player = (Player) event.getEntity();
-            if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "events/quaks_odyssey") && dashed.contains(player)) {
+            if (plugin.powerStore.hasPower(player, "events/quaks_odyssey") && dashed.contains(player)) {
                 if (event.getCause() == EntityDamageEvent.DamageCause.FALL) {
                     event.setCancelled(true);
 

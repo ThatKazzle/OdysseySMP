@@ -33,8 +33,7 @@ public class EventPowerOne extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = Bukkit.getPlayer(playerName);
+    public void action(Player player) {
         if (!player.isSneaking()) {
             auralBarrage(player);
         } else {

@@ -37,10 +37,9 @@ public class SniperDuel extends ParentPowerClass implements Listener {
     }
 
     @Override
-    public void action(String playerName) {
-        Player player = this.plugin.getServer().getPlayer(playerName);
+    public void action(Player player) {
 
-        if (this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + "adventure/sniper_duel")) {
+        if (plugin.powerStore.hasPower(player, "adventure/sniper_duel")) {
             if (isOnCooldown(player.getUniqueId(), cooldowns)) {
                 player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
 

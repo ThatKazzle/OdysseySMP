@@ -24,44 +24,23 @@ public class powerOneCommand implements CommandExecutor {
     public boolean onCommand(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] strings) {
         if (commandSender instanceof Player) {
             Player player = (Player) commandSender;
-            String playerName = plugin.provider.getInfo(player).getName();
+            if (plugin.powerStore.hasPowersSection(player)) {
+                enabledKeys.clear();
+                enabledKeys.addAll(plugin.powerStore.getEnabledPowers(player));
 
-            if (this.plugin.getConfig().getConfigurationSection("players." + plugin.provider.getInfo(player).getName() + ".powers") != null) {
-                if (!enabledKeys.isEmpty()) {
-                    enabledKeys.clear();
-                }
-
-                for (String keys : this.plugin.getConfig().getConfigurationSection("players." + plugin.provider.getInfo(player).getName() + ".powers").getKeys(false)) {
-                    String key = keys;
-                    Boolean value = this.plugin.getConfig().getBoolean("players." + plugin.provider.getInfo(player).getName() + ".powers." + key);
-
-                    if (value) {
-                        enabledKeys.add(key);
-                    }
-                }
-
-                int playerMode = this.plugin.getConfig().getInt("players." + playerName + ".mode");
+                int playerMode = plugin.powerStore.getMode(player);
 
                 if (enabledKeys.size() == 2) {
                     if (playerMode == 0) {
-
-                        this.plugin.getConfig().set("players." + playerName + ".mode", 1);
-
+                        plugin.powerStore.setMode(player, 1);
                     } else if (playerMode == 1) {
-
-                        this.plugin.getConfig().set("players." + playerName + ".mode", 0);
-
+                        plugin.powerStore.setMode(player, 0);
                     }
-
-                } else if (enabledKeys.size() == 1) {
-                    this.plugin.getConfig().set("players." + playerName + ".mode", 0);
-                } else if (enabledKeys.isEmpty()) {
-                    this.plugin.getConfig().set("players." + playerName + ".mode", 0);
+                } else if (enabledKeys.size() < 2) {
+                    plugin.powerStore.setMode(player, 0);
                 }
 
                 this.plugin.updateCooldownDisplay();
-
-                this.plugin.saveConfig();
             }
 
 

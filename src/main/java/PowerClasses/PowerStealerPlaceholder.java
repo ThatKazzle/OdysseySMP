@@ -24,7 +24,7 @@ public class PowerStealerPlaceholder extends ParentPowerClass {
     }
 
     @Override
-    public void action(String playerName) {
+    public void action(Player player) {
 
     }
 }

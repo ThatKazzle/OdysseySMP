@@ -1,6 +1,5 @@
-players:
-  ItsKazzle:
-    mode: 1
+# Static settings and text only. Player data (powers, selected slot, claimed advancements,
+# mace status) lives in data.yml, keyed by player UUID. Edit this file freely and run /reloadconfig.
 defaults:
   very_very_frightening: "adventure/very_very_frightening"
   complete_catalogue: "husbandry/complete_catalogue"

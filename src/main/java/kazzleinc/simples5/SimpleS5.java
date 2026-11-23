@@ -74,6 +74,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     public final DisguiseProvider provider = DisguiseManager.getProvider();
 
+    /** Player data (powers, slot, claimed advancements). Use this, never config.yml, for player state. */
+    public PowerStore powerStore;
+
     public boolean resetPlayerHealthAttribute = false;
 
     public BukkitTask secondsTask = null;
@@ -81,6 +84,15 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     @Override
     public void onEnable() {
         saveDefaultConfig();
+
+        // Player data lives in data.yml (keyed by UUID). On first start after updating, this moves
+        // the old name-keyed data out of config.yml, after backing config.yml up.
+        powerStore = new PowerStore(this);
+        powerStore.load();
+        powerStore.migrateFromConfig();
+        powerStore.startAutoFlush();
+        for (Player online : Bukkit.getOnlinePlayers()) powerStore.touchName(online);
+
         odysseyClass = new odysseyCommands(this);
         LongerPotsClass longerPotsClass = new LongerPotsClass(this);
         // Plugin startup logic
@@ -138,12 +150,12 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                 //fixing the bug with the catalogue not removing the power
                 for (Player player : Bukkit.getOnlinePlayers()) {
-                    if (getPlayerPowersList(player) != null && getPlayerPowersList(player).size() == 1) {
-                        localPlugin.getConfig().set("players." + provider.getInfo(player).getName() + ".mode", 0);
+                    if (powerStore.getEnabledPowerCount(player) == 1) {
+                        powerStore.setMode(player, 0);
                     }
 
-                    if (localPlugin.getConfig().getInt("players." + provider.getInfo(player).getName() + ".mode", -1) == -1) {
-                        localPlugin.getConfig().set("players." + provider.getInfo(player).getName() + ".mode", 0);
+                    if (!powerStore.hasMode(player)) {
+                        powerStore.setMode(player, 0);
                     }
 
                     if (playerHasPower(player, "husbandry/complete_catalogue")) {
@@ -172,7 +184,8 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     @Override
     public void onDisable() {
-        // Plugin shutdown logic
+        // Write any unsaved player data before the server stops.
+        if (powerStore != null) powerStore.shutdown();
     }
 
     @EventHandler
@@ -226,18 +239,17 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         Player player = event.getPlayer();
 
 
-        if (checkPowerStatus().getOrDefault(advName.split("/")[1], false)) {
+        if (powerStore.getPowerTakenStatus().getOrDefault(advName.split("/")[1], false)) {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
             player.sendMessage(ChatColor.RED + "You gained the advancement, but was not granted the power because someone else has it.");
-        } else if (getConfig().getBoolean("capped_advancements." + advName.split("/")[1])) {
+        } else if (powerStore.isCapped(advName.split("/")[1])) {
             player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
             player.sendMessage("Nice try, but this power has already been redeemed.");
         } else {
             for (String keys : getConfig().getConfigurationSection("defaults").getKeys(false)) {
                 if (keys.equals(advName.split("/")[1]) && !advName.equals("adventure/bullseye")) {
                     grantAdvancementPower(advancement, player, playerIsAtPowerLimit(player));
-                    getConfig().set("capped_advancements." + advName.split("/")[1], true);
-                    saveConfig();
+                    powerStore.setCapped(advName.split("/")[1], true);
                     break;
                 }
             }
@@ -249,23 +261,21 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getPlayer();
-        ConfigurationSection powersSection = getConfig().getConfigurationSection("players." + provider.getInfo(player).getName() + ".powers");
-        if (powersSection == null) return;
+        if (!powerStore.hasPowersSection(player)) return;
 
-        for (String keys : powersSection.getKeys(false)) {
+        for (String keys : new ArrayList<>(powerStore.getPowerKeys(player))) {
 
             if (keys.equals("ride_strider_in_overworld_lava")) {
                 feelsLikeHomeClass.removeFireResistance(player);
             }
 
-            if (getConfig().getBoolean("players." + provider.getInfo(player).getName() + ".powers." + keys)) {
+            if (powerStore.hasPower(player, keys)) {
                 player.getWorld().dropItem(player.getLocation(), new PowerPotionItem(this, getAdvancementNameFormattedFromUnformattedString(keys), powerPotionKey).getItemStack());
                 removePlayerAdvancement(player, keys);
-                getConfig().set("players." + provider.getInfo(player).getName() + ".powers." + keys, false);
+                powerStore.setPower(player, keys, false);
             }
 
         }
-        saveConfig();
     }
 
     //I have to do this because I cant set an attribute on someone in the pause screen for some reason
@@ -279,6 +289,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     @EventHandler
     public void onJoin(PlayerJoinEvent event) {
         Player player = event.getPlayer();
+        powerStore.touchName(player);
         String name = "";
         if (event.getPlayer().getName().equals("Charli4K") || event.getPlayer().getName().equals("QuakX")) {
             if (event.getPlayer().getName().equals("Charli4K")) {
@@ -308,15 +319,15 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                 String itemPowerKey = meta.getPersistentDataContainer().get(powerPotionKey, PersistentDataType.STRING);
 
-                if (meta != null && item.getType() == Material.AMETHYST_SHARD && item.getItemMeta().getPersistentDataContainer().getKeys().contains(powerPotionKey) && event.getHand() == EquipmentSlot.HAND && !checkPowerStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
+                if (meta != null && item.getType() == Material.AMETHYST_SHARD && item.getItemMeta().getPersistentDataContainer().getKeys().contains(powerPotionKey) && event.getHand() == EquipmentSlot.HAND && !powerStore.getPowerTakenStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
                     if (!playerIsAtPowerLimit(player)) {
 
-                        getConfig().set("capped_advancements." + getAdvancementKeyFromFormattedString(itemPowerKey), true);
+                        powerStore.setCapped(getAdvancementKeyFromFormattedString(itemPowerKey), true);
 
                         switch (getAdvancementKeyFromFormattedString(itemPowerKey)) {
                             case "adventure/bullseye" -> {
 
-                                getConfig().set("players." + provider.getInfo(player).getName() + ".powers." + "adventure/bullseye", true);
+                                powerStore.setPower(player, "adventure/bullseye", true);
 
                                 World world = player.getWorld();
                                 new BukkitRunnable() {
@@ -336,19 +347,19 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                                 player.getWorld().setStorm(true);
                             }
                             case "events/charlis_odyssey" -> {
-                                getConfig().set("players." + player.getName() + ".powers." + "events/charlis_odyssey", true);
+                                powerStore.setPower(player, "events/charlis_odyssey", true);
 
                                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
                                 player.sendMessage(ChatColor.LIGHT_PURPLE + "Charli4K's Odyssey Equipped...");
                             }
                             case "events/quaks_odyssey" -> {
-                                getConfig().set("players." + player.getName() + ".powers." + "events/quaks_odyssey", true);
+                                powerStore.setPower(player, "events/quaks_odyssey", true);
 
                                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
                                 player.sendMessage(ChatColor.YELLOW + "QuakX's Odyssey Equipped...");
                             }
                             case "events/fortnite_odyssey" -> {
-                                getConfig().set("players." + player.getName() + ".powers." + "events/fortnite_odyssey", true);
+                                powerStore.setPower(player, "events/fortnite_odyssey", true);
 
                                 player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 1.f);
                             }
@@ -358,7 +369,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
                         }
 
                         player.getInventory().getItemInMainHand().setAmount(player.getInventory().getItemInMainHand().getAmount() - 1);
-                        saveConfig();
                     } else if (playerIsAtPowerLimit(player)) {
                         player.playSound(player.getLocation(), Sound.BLOCK_ANVIL_LAND, 1.f, 1.f);
 
@@ -368,7 +378,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
                             player.sendTitle(ChatColor.RED + "Unable to Equip!", ChatColor.RED + "You already have this power!", 10, 60, 10);
                     }
-                } else if (itemPowerKey != null && checkPowerStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
+                } else if (itemPowerKey != null && powerStore.getPowerTakenStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
                     player.playSound(player.getLocation(), Sound.BLOCK_NOTE_BLOCK_PLING, 1.f, 0.5f);
                     player.sendMessage(ChatColor.RED + "You were not granted the power because someone else has it.");
                 }
@@ -465,17 +475,16 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
     @EventHandler
     public void onCraft(CraftItemEvent event) {
-        if (event.getRecipe().getResult().getType().equals(Material.MACE) && !this.getConfig().getBoolean("world.mace_crafted")) {
+        if (event.getRecipe().getResult().getType().equals(Material.MACE) && !powerStore.isMaceCrafted()) {
             event.getWhoClicked().sendMessage(ChatColor.GREEN + "You were the first person to get the Mace, and no one can craft it anymore.");
-            this.getConfig().set("world.mace_crafted", true);
-            this.saveConfig();
+            powerStore.setMaceCrafted(true);
         }
 
     }
 
     @EventHandler
     public void prepareCraft(PrepareItemCraftEvent event) {
-        if (event.getRecipe().getResult().getType().equals(Material.MACE) && this.getConfig().getBoolean("world.mace_crafted")) {
+        if (event.getRecipe().getResult().getType().equals(Material.MACE) && powerStore.isMaceCrafted()) {
             event.getInventory().setResult((ItemStack) null);
         }
     }
@@ -540,23 +549,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     }
 
 
+    /** Enabled power keys for the player, or null if they have no powers entry. */
     public ArrayList<String> getPlayerPowersList(Player player) {
-        ArrayList<String> enabledKeys = new ArrayList<>();
-
-        if (getConfig().getConfigurationSection("players." + provider.getInfo(player).getName() + ".powers") != null) {
-            for (String keys : getConfig().getConfigurationSection("players." + provider.getInfo(player).getName() + ".powers").getKeys(false)) {
-                String key = keys;
-                Boolean value = getConfig().getBoolean("players." + provider.getInfo(player).getName() + ".powers." + key);
-
-                if (value) {
-                    enabledKeys.add(key);
-                }
-            }
-
-            return enabledKeys;
-        } else {
-            return null;
-        }
+        return powerStore.getEnabledPowers(player);
     }
 
     public String getAdvancementNameUnformatted(Advancement advancement) {
@@ -576,7 +571,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     }
 
     public void removePlayerAdvancement(Player player, String advancementName) {
-        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "advancement revoke " + provider.getInfo(player).getName() + " only " + advancementName);
+        Bukkit.dispatchCommand(Bukkit.getConsoleSender(), "advancement revoke " + player.getName() + " only " + advancementName);
     }
 
     public String getAdvancementKeyFromFormattedString(String str) {
@@ -664,10 +659,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         } else {
             player.sendTitle("New Power Collected!: " + powerName, "type " + ChatColor.GREEN + "\"/od powers\"" + ChatColor.RESET + " for details.");
 
-            getConfig().set("players." + provider.getInfo(player).getName() + ".powers." + getAdvancementNameUnformatted(advancement), true);
+            powerStore.setPower(player, getAdvancementNameUnformatted(advancement), true);
         }
 
-        saveConfig();
     }
 
     private void disableShieldIfPlayerInFront(Player player) {
@@ -697,47 +691,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         }
     }
 
-    private Map<String, Boolean> checkPowerStatus() {
-        Map<String, Boolean> powerStatus = new HashMap<>();
-
-        // Get the defaults section
-        ConfigurationSection defaultsSection = getConfig().getConfigurationSection("defaults");
-        if (defaultsSection == null) {
-            return powerStatus; // Return empty map if "defaults" section is not found
-        }
-
-        // Get all default power keys
-        Set<String> defaultPowerKeys = defaultsSection.getKeys(false);
-
-        // Initialize all powers as "not taken"
-        for (String defaultPowerKey : defaultPowerKeys) {
-            powerStatus.put(defaultPowerKey, false);
-        }
-
-        // Get the "players" section
-        ConfigurationSection playersSection = getConfig().getConfigurationSection("players");
-        if (playersSection == null) {
-            return powerStatus; // Return if "players" section is not found
-        }
-
-        // Loop through each player
-        Set<String> playerKeys = playersSection.getKeys(false);
-        for (String playerKey : playerKeys) {
-            ConfigurationSection powersSection = playersSection.getConfigurationSection(playerKey + ".powers");
-            if (powersSection != null) {
-                // Loop through each power for the player
-                for (String defaultPowerKey : defaultPowerKeys) {
-                    String powerPath = defaultsSection.getString(defaultPowerKey);
-                    if (powersSection.getBoolean(powerPath, false)) {
-                        powerStatus.put(defaultPowerKey, true); // Mark as "taken" if any player has it set to true
-                    }
-                }
-            }
-        }
-
-        return powerStatus;
-    }
-
     public Advancement grantAdvancement(Player player, String key) {
         NamespacedKey advancementKey = NamespacedKey.minecraft(key);
         Advancement advancement = getServer().getAdvancement(advancementKey);
@@ -755,47 +708,16 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     }
 
     public boolean playerIsAtPowerLimit(Player player) {
-        if (getConfig().getConfigurationSection("players." + provider.getInfo(player).getName() + ".powers") == null) {
-            return false;
-        } else {
-            ConfigurationSection section = getConfig().getConfigurationSection("players." + provider.getInfo(player).getName() + ".powers");
-
-            int powerCount = 0;
-
-            for (Object values : section.getValues(false).values()) {
-                if (Boolean.parseBoolean(values.toString())) {
-                    powerCount += 1;
-
-                }
-            }
-            return powerCount >= 2;
-        }
-
-
+        return powerStore.getEnabledPowerCount(player) >= 2;
     }
 
+    /** True if the player has an entry for this power at all (enabled or not), as before. */
     public boolean playerAlreadyHasPower(Player player, String key) {
-        if (getConfig().getConfigurationSection("players." + provider.getInfo(player).getName() + ".powers") == null) {
-            return false;
-        } else {
-            ConfigurationSection section = getConfig().getConfigurationSection("players." + provider.getInfo(player).getName() + ".powers");
-
-            int powerCount = 0;
-
-            for (String values : section.getKeys(false)) {
-                if (Objects.equals(values, key)) {
-                    powerCount = 1;
-                }
-            }
-
-            return powerCount == 1;
-        }
-
-
+        return powerStore.getPowerKeys(player).contains(key);
     }
 
     public boolean playerHasPower(Player player, String powerKey) {
-        return getConfig().getBoolean("players." + provider.getInfo(player).getName() + ".powers." + powerKey);
+        return powerStore.hasPower(player, powerKey);
     }
 
     public void updateCooldownDisplay() {
@@ -804,13 +726,12 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             ArrayList<String> powerList = getPlayerPowersList(player);
 
             if (powerList != null && !powerList.isEmpty()) {
-                String modePath = "players." + provider.getInfo(player).getName() + ".mode";
-                int playerMode = getConfig().getInt(modePath, 0);
+                int playerMode = powerStore.getMode(player);
 
                 // A stale or corrupt mode would otherwise throw IndexOutOfBoundsException every second.
                 if (playerMode < 0 || playerMode >= powerList.size()) {
                     playerMode = 0;
-                    getConfig().set(modePath, 0);
+                    powerStore.setMode(player, 0);
                 }
 
                 cooldownMessage = switchOnPowers(player, powerList.get(playerMode));
@@ -824,33 +745,6 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         BigDecimal bd = BigDecimal.valueOf(number);
         bd = bd.setScale(decimalPlaces, RoundingMode.HALF_UP);
         return bd.doubleValue();
-    }
-
-    public Map<String, Boolean> getAllPowers(FileConfiguration config) {
-        Map<String, Boolean> powersMap = new HashMap<>();
-
-        // Get the "players" section
-        ConfigurationSection playersSection = config.getConfigurationSection("players");
-        if (playersSection == null) {
-            return powersMap; // Return empty map if "players" section is not found
-        }
-
-        // Get all player keys
-        Set<String> playerKeys = playersSection.getKeys(false);
-        for (String playerKey : playerKeys) {
-            // Get the "powers" section for each player
-            ConfigurationSection powersSection = playersSection.getConfigurationSection(playerKey + ".powers");
-            if (powersSection != null) {
-                // Get all power keys and their values
-                Set<String> powerKeys = powersSection.getKeys(false);
-                for (String powerKey : powerKeys) {
-                    boolean value = powersSection.getBoolean(powerKey);
-                    powersMap.put(playerKey + "/" + powerKey, value); // Add to map with player key as prefix
-                }
-            }
-        }
-
-        return powersMap;
     }
 
     /**
