@@ -17,11 +17,11 @@ import org.jetbrains.annotations.NotNull;
 
 import java.util.Random;
 
-public class playerScatterCommand implements CommandExecutor {
+public class PlayerScatterCommand implements CommandExecutor {
 
     SimpleS5 plugin;
 
-    public playerScatterCommand(SimpleS5 plugin) {
+    public PlayerScatterCommand(SimpleS5 plugin) {
         this.plugin = plugin;
     }
 

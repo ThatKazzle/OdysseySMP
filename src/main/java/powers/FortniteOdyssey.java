@@ -1,4 +1,4 @@
-package PowerClasses;
+package powers;
 
 import io.papermc.paper.event.block.BlockBreakBlockEvent;
 import kazzleinc.simples5.SimpleS5;

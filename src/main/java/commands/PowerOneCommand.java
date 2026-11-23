@@ -8,10 +8,10 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 /** /power1: switch between your two powers. The logic is shared with the client mod in SimpleS5.cyclePowerSlot. */
-public class powerOneCommand implements CommandExecutor {
+public class PowerOneCommand implements CommandExecutor {
     SimpleS5 plugin;
 
-    public powerOneCommand(SimpleS5 plugin) {
+    public PowerOneCommand(SimpleS5 plugin) {
         this.plugin = plugin;
     }
 

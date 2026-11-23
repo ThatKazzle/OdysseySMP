@@ -10,11 +10,11 @@ import org.bukkit.entity.Player;
 import org.jetbrains.annotations.NotNull;
 
 /** /rc [player]: ops reset all power cooldowns for themselves, or for the named player only. */
-public class resetCooldownCommand implements CommandExecutor {
+public class ResetCooldownCommand implements CommandExecutor {
 
     SimpleS5 plugin;
 
-    public resetCooldownCommand(SimpleS5 plugin) {
+    public ResetCooldownCommand(SimpleS5 plugin) {
         this.plugin = plugin;
     }
 

@@ -13,11 +13,11 @@ import java.util.ArrayList;
  * "power2/&lt;name&gt;" (use power). The name is ignored: we always act on the player who sent it.
  * Uses the same code as /power1 and /power2, so slots, powers and messages match the commands.
  */
-public class modPacketListener implements PluginMessageListener {
+public class ModPacketListener implements PluginMessageListener {
 
     SimpleS5 plugin;
 
-    public modPacketListener(SimpleS5 plugin) {
+    public ModPacketListener(SimpleS5 plugin) {
         this.plugin = plugin;
     }
 

@@ -1,6 +1,6 @@
 package kazzleinc.simples5;
 
-import PowerClasses.ParentPowerClass;
+import powers.ParentPowerClass;
 import org.bukkit.entity.Player;
 
 import java.util.*;

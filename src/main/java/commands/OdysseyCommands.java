@@ -26,7 +26,7 @@ import org.jetbrains.annotations.Nullable;
 
 import java.util.*;
 
-public class odysseyCommands implements CommandExecutor, TabCompleter, Listener {
+public class OdysseyCommands implements CommandExecutor, TabCompleter, Listener {
     SimpleS5 plugin;
     String usageString = ChatColor.RED + "usage: /odyssey <withdraw|powers>";
 
@@ -36,7 +36,7 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     private NamespacedKey canClickKey;
 
 
-    public odysseyCommands(SimpleS5 plugin) {
+    public OdysseyCommands(SimpleS5 plugin) {
         this.plugin = plugin;
 
         canClickKey = new NamespacedKey(plugin, "isInGUI");

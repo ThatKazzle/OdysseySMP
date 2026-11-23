@@ -1,6 +1,6 @@
 package kazzleinc.simples5;
 
-import PowerClasses.*;
+import powers.*;
 import com.comphenix.protocol.ProtocolLibrary;
 import com.comphenix.protocol.ProtocolManager;
 import commands.*;
@@ -41,7 +41,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     public ProtocolManager protocolManager;
 
     public NamespacedKey powerPotionKey = new NamespacedKey(this, "power");
-    public odysseyCommands odysseyClass;
+    public OdysseyCommands odysseyClass;
 
     public GlowingEntities glowingEntitiesClass;
 
@@ -87,7 +87,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         powerStore.startAutoFlush();
         for (Player online : Bukkit.getOnlinePlayers()) powerStore.touchName(online);
 
-        odysseyClass = new odysseyCommands(this);
+        odysseyClass = new OdysseyCommands(this);
         LongerPotsClass longerPotsClass = new LongerPotsClass(this);
         // Plugin startup logic
         registerPowers();
@@ -109,19 +109,19 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
 
         getServer().getPluginManager().registerEvents(this, this);
         
-        getCommand("reloadconfig").setExecutor(new reloadConfigCommand(this));
+        getCommand("reloadconfig").setExecutor(new ReloadConfigCommand(this));
 
         getCommand("odyssey").setExecutor(odysseyClass);
         getCommand("odyssey").setTabCompleter(odysseyClass);
 
-        getCommand("resetCooldowns").setExecutor(new resetCooldownCommand(this));
+        getCommand("resetCooldowns").setExecutor(new ResetCooldownCommand(this));
 
-        getCommand("power1").setExecutor(new powerOneCommand(this));
+        getCommand("power1").setExecutor(new PowerOneCommand(this));
         getCommand("power2").setExecutor(new PowerTwoCommand(this));
         getCommand("toggle-pvp").setExecutor(new PvpToggleCommand(this));
-        getCommand("scatter").setExecutor(new playerScatterCommand(this));
+        getCommand("scatter").setExecutor(new PlayerScatterCommand(this));
 
-        getServer().getMessenger().registerIncomingPluginChannel(this, "odysseyclientside:power_channel", new modPacketListener(this));
+        getServer().getMessenger().registerIncomingPluginChannel(this, "odysseyclientside:power_channel", new ModPacketListener(this));
 
         secondsTask = new BukkitRunnable() {
             @Override

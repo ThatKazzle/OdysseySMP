@@ -1,4 +1,4 @@
-package PowerClasses;
+package powers;
 
 import kazzleinc.simples5.RandomUtils;
 import kazzleinc.simples5.SimpleS5;

@@ -1,4 +1,4 @@
-package PowerClasses;
+package powers;
 
 import kazzleinc.simples5.SimpleS5;
 import org.bukkit.Bukkit;

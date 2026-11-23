@@ -248,7 +248,7 @@ public class PowerStore {
 
     /**
      * For each key under config.yml {@code defaults}, whether any player currently has that power.
-     * Replaces the two identical checkPowerStatus() copies in SimpleS5 and odysseyCommands.
+     * Replaces the two identical checkPowerStatus() copies in SimpleS5 and OdysseyCommands.
      */
     public Map<String, Boolean> getPowerTakenStatus() {
         Map<String, Boolean> status = new HashMap<>();

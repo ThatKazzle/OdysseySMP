@@ -7,11 +7,11 @@ import org.bukkit.command.CommandExecutor;
 import org.bukkit.command.CommandSender;
 import org.jetbrains.annotations.NotNull;
 
-public class reloadConfigCommand implements CommandExecutor {
+public class ReloadConfigCommand implements CommandExecutor {
 
     SimpleS5 plugin;
 
-    public reloadConfigCommand(SimpleS5 plugin) {
+    public ReloadConfigCommand(SimpleS5 plugin) {
         this.plugin = plugin;
     }
 

@@ -1,4 +1,4 @@
-package PowerClasses;
+package powers;
 
 import com.destroystokyo.paper.profile.PlayerProfile;
 import kazzleinc.simples5.SimpleS5;

@@ -1,4 +1,4 @@
-package PowerClasses;
+package powers;
 
 import it.unimi.dsi.fastutil.Hash;
 import kazzleinc.simples5.ParticleUtils;

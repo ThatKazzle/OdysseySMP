@@ -1,4 +1,4 @@
-package PowerClasses;
+package powers;
 
 import kazzleinc.simples5.FollowParticle;
 import kazzleinc.simples5.ParticleUtils;

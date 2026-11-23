@@ -1,4 +1,4 @@
-package PowerClasses;
+package powers;
 
 import com.comphenix.protocol.PacketType;
 import kazzleinc.simples5.ParticleUtils;
