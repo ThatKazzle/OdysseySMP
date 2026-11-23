@@ -249,7 +249,10 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     @EventHandler
     public void onPlayerDeath(PlayerDeathEvent event) {
         Player player = event.getPlayer();
-        for (String keys : getConfig().getConfigurationSection("players." + provider.getInfo(player).getName() + ".powers").getKeys(false)) {
+        ConfigurationSection powersSection = getConfig().getConfigurationSection("players." + provider.getInfo(player).getName() + ".powers");
+        if (powersSection == null) return;
+
+        for (String keys : powersSection.getKeys(false)) {
 
             if (keys.equals("ride_strider_in_overworld_lava")) {
                 feelsLikeHomeClass.removeFireResistance(player);
@@ -301,8 +304,9 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
             if (event.getItem() != null) {
                 ItemStack item = event.getItem();
                 ItemMeta meta = item.getItemMeta();
+                if (meta == null) return;
 
-                String itemPowerKey = item.getItemMeta().getPersistentDataContainer().get(powerPotionKey, PersistentDataType.STRING);
+                String itemPowerKey = meta.getPersistentDataContainer().get(powerPotionKey, PersistentDataType.STRING);
 
                 if (meta != null && item.getType() == Material.AMETHYST_SHARD && item.getItemMeta().getPersistentDataContainer().getKeys().contains(powerPotionKey) && event.getHand() == EquipmentSlot.HAND && !checkPowerStatus().getOrDefault(getAdvancementNameUnformattedFromFormattedString(itemPowerKey), false)) {
                     if (!playerIsAtPowerLimit(player)) {
@@ -406,12 +410,19 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         }.runTaskTimer(this, 0L, 2L);  // Run the task every 2 ticks (adjust as needed)
     }
 
+    /** True if the stack is a dropped power item. Safe for items with no meta. */
+    public boolean isPowerItem(ItemStack stack) {
+        if (stack == null) return false;
+        ItemMeta meta = stack.getItemMeta();
+        return meta != null && meta.getPersistentDataContainer().has(powerPotionKey);
+    }
+
     @EventHandler
     public void onEntityDamageEvent(EntityDamageEvent event) {
         if (event.getEntity() instanceof Item) {
             Item item = (Item) event.getEntity();
 
-            if (item.getItemStack().getItemMeta().getPersistentDataContainer().has(powerPotionKey)) {
+            if (isPowerItem(item.getItemStack())) {
                 getServer().getLogger().info("BALLER!");
                 event.setCancelled(true);
             }
@@ -424,7 +435,7 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
         if (event.getEntity() instanceof Item) {
             Item item = (Item) event.getEntity();
 
-            if (item.getItemStack().getItemMeta().getPersistentDataContainer().has(powerPotionKey) && event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
+            if (isPowerItem(item.getItemStack()) && event.getCause() == EntityDamageEvent.DamageCause.ENTITY_EXPLOSION) {
                 getServer().getLogger().info("BALLER!");
                 event.setCancelled(true);
             }
@@ -788,24 +799,21 @@ public final class SimpleS5 extends JavaPlugin implements Listener {
     }
 
     public void updateCooldownDisplay() {
-        String cooldownMessage = "";
         for (Player player : getServer().getOnlinePlayers()) {
-            if (localPlugin.playerIsAtPowerLimit(player) && getPlayerPowersList(player) != null) {
-                ArrayList<String> powerList = getPlayerPowersList(player);
-                int playerMode = (Integer) getConfig().get("players." + provider.getInfo(player).getName() + ".mode", -1);
+            String cooldownMessage = "";
+            ArrayList<String> powerList = getPlayerPowersList(player);
 
-                if (playerMode != -1 && powerList.get(playerMode) != null) {
-                    cooldownMessage = switchOnPowers(player, powerList.get(playerMode));
+            if (powerList != null && !powerList.isEmpty()) {
+                String modePath = "players." + provider.getInfo(player).getName() + ".mode";
+                int playerMode = getConfig().getInt(modePath, 0);
+
+                // A stale or corrupt mode would otherwise throw IndexOutOfBoundsException every second.
+                if (playerMode < 0 || playerMode >= powerList.size()) {
+                    playerMode = 0;
+                    getConfig().set(modePath, 0);
                 }
 
-            } else if (getPlayerPowersList(player) != null && localPlugin.getPlayerPowersList(player).size() == 1) {
-                ArrayList<String> powerList = getPlayerPowersList(player);
-                if (localPlugin.getPlayerPowersList(player).get(0) != null) {
-                    cooldownMessage = switchOnPowers(player, powerList.get(0));
-                }
-
-            } else {
-                cooldownMessage = "";
+                cooldownMessage = switchOnPowers(player, powerList.get(playerMode));
             }
 
             player.sendActionBar(cooldownMessage);

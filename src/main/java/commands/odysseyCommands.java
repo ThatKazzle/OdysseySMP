@@ -78,7 +78,8 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
 
     @Override
     public @Nullable List<String> onTabComplete(@NotNull CommandSender commandSender, @NotNull Command command, @NotNull String s, @NotNull String[] args) {
-        Player player = (Player) commandSender;
+        if (!(commandSender instanceof Player)) return Collections.emptyList();
+
         if (args.length == 1) {
             return StringUtil.copyPartialMatches(args[0], AUTOFILL_ARGS_1, new ArrayList<>());
         } else if (args.length == 2 && args[0].equals("powers")) {
@@ -89,6 +90,13 @@ public class odysseyCommands implements CommandExecutor, TabCompleter, Listener 
     }
 
     public void openGUI(Player player) {
+        List<String> ownedPowers = plugin.getPlayerPowersList(player);
+        if (ownedPowers == null || ownedPowers.isEmpty()) {
+            player.playSound(player.getLocation(), Sound.ENTITY_VILLAGER_NO, 1.f, 1.f);
+            player.sendMessage(ChatColor.RED + "You have no powers to withdraw.");
+            return;
+        }
+
         Inventory gui = Bukkit.createInventory(null, 9, "Choose an Odyssey to withdraw:");
 
         FileConfiguration config = plugin.getConfig();

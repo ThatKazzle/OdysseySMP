@@ -43,7 +43,14 @@ public class PowerTwoCommand implements CommandExecutor {
                 }
 
                 if (!enabledKeys.isEmpty()) {
-                    switch (enabledKeys.get(this.plugin.getConfig().getInt("players." + playerName + ".mode"))) {
+                    String modePath = "players." + playerName + ".mode";
+                    int playerMode = this.plugin.getConfig().getInt(modePath, 0);
+                    if (playerMode < 0 || playerMode >= enabledKeys.size()) {
+                        playerMode = 0;
+                        this.plugin.getConfig().set(modePath, 0);
+                    }
+
+                    switch (enabledKeys.get(playerMode)) {
                         case "adventure/very_very_frightening":
                             plugin.vvfClass.action(playerName);
                             break;
